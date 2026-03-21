@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DSA Patterns Cheat Sheet</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0a0d14;
+            --surface: #111520;
+            --card: #161b2e;
+            --border: #1e2840;
+            --accent: #00e5ff;
+            --accent2: #7c3aed;
+            --accent3: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --mono: 'JetBrains Mono', monospace;
+            --display: 'Syne', sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--display);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: 240px;
+            min-width: 240px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 200;
+            padding: 0 0 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo {
+            padding: 20px 18px 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-logo p {
+            font-size: 10px;
+            color: var(--muted);
+            font-family: var(--mono);
+            margin-top: 3px;
+        }
+
+        #close-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 20px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .sidebar-cat {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 12px 18px 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 18px;
+            font-size: 12px;
+            color: #8899bb;
+            cursor: pointer;
+            border: none;
+            border-left: 2px solid transparent;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: var(--display);
+            transition: all 0.15s;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            color: var(--accent);
+            background: rgba(0, 229, 255, 0.05);
+            border-left: 2px solid var(--accent);
+        }
+
+        .sidebar-link .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent2);
+            flex-shrink: 0;
+        }
+
+        /* MOBILE TOP BAR */
+        #topbar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+            z-index: 300;
+        }
+
+        #topbar-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--accent);
+            font-family: var(--display);
+        }
+
+        #menu-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 150;
+        }
+
+        #overlay.show {
+            display: block;
+        }
+
+        /* MAIN */
+        #main {
+            margin-left: 240px;
+            flex: 1;
+            padding: 40px 36px 80px;
+            max-width: calc(100% - 240px);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            #topbar {
+                display: flex;
+            }
+
+            #close-btn {
+                display: block;
+            }
+
+            #sidebar {
+                transform: translateX(-100%);
+                top: 0;
+                width: 260px;
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+
+            #main {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 72px 14px 60px;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .page-sub {
+                font-size: 11px;
+            }
+
+            .two-col {
+                grid-template-columns: 1fr !important;
+            }
+
+            pre {
+                font-size: 10px;
+                padding: 10px;
+            }
+
+            .diagram-box {
+                overflow-x: auto;
+            }
+
+            .diagram-box svg {
+                min-width: 320px;
+            }
+
+            .card-header {
+                padding: 12px 14px 10px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .card-body {
+                padding: 14px;
+            }
+
+            .card-header h2 {
+                font-size: 14px;
+            }
+
+            .section-divider {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cx-badge {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+
+            .prob-tag {
+                font-size: 9px;
+                padding: 3px 7px;
+            }
+
+            pre {
+                font-size: 9.5px;
+            }
+
+            .card-header h2 {
+                font-size: 13px;
+            }
+
+            .badge {
+                font-size: 9px;
+                padding: 2px 7px;
+            }
+
+            .desc {
+                font-size: 12px;
+            }
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .page-title span {
+            color: var(--accent);
+        }
+
+        .page-sub {
+            font-size: 13px;
+            color: var(--muted);
+            font-family: var(--mono);
+            margin-bottom: 40px;
+        }
+
+        /* PATTERN CARD */
+        .pattern-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 32px;
+            overflow: hidden;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 24px 14px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .card-header .badge {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            white-space: nowrap;
+        }
+
+        .card-header .badge.g {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--green);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .card-header .badge.p {
+            background: rgba(124, 58, 237, 0.1);
+            color: #a78bfa;
+            border-color: rgba(124, 58, 237, 0.2);
+        }
+
+        .card-header .badge.o {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent3);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .card-header h2 {
+            font-size: 17px;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .card-header .toggle {
+            font-size: 16px;
+            color: var(--muted);
+            transition: transform 0.3s;
+        }
+
+        .card-header.open .toggle {
+            transform: rotate(180deg);
+        }
+
+        .card-body {
+            display: none;
+            padding: 22px 24px;
+        }
+
+        .card-body.open {
+            display: block;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* DESCRIPTION */
+        .desc {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .use-when {
+            background: rgba(0, 229, 255, 0.04);
+            border-left: 3px solid var(--accent);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-when h4 {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+
+        .use-when ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .use-when li {
+            font-size: 12px;
+            color: #94a3b8;
+            padding: 2px 0;
+            font-family: var(--mono);
+        }
+
+        .use-when li::before {
+            content: "→ ";
+            color: var(--accent);
+        }
+
+        /* COMPLEXITY */
+        .complexity {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .cx-badge {
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .cx-time {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--accent3);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .cx-space {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--green);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* DIAGRAM */
+        .diagram-box {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+        }
+
+        .diagram-box svg {
+            display: block;
+            margin: auto;
+        }
+
+        /* CODE */
+        .code-block {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .code-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            padding: 8px 14px;
+            border-bottom: 1px solid var(--border);
+            background: #0a0d14;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        pre {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            padding: 14px;
+            overflow-x: auto;
+            line-height: 1.7;
+            color: #cdd6f4;
+        }
+
+        .kw {
+            color: #cba6f7;
+        }
+
+        .fn {
+            color: #89b4fa;
+        }
+
+        .str {
+            color: #a6e3a1;
+        }
+
+        .cm {
+            color: #585b70;
+        }
+
+        .num {
+            color: #fab387;
+        }
+
+        .var {
+            color: #cdd6f4;
+        }
+
+        .ret {
+            color: #f38ba8;
+        }
+
+        /* EXAMPLES */
+        .ex-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .example-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .ex-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .ex-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .ex-label.i {
+            background: rgba(124, 58, 237, 0.15);
+            color: #a78bfa;
+        }
+
+        .ex-label.o {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--green);
+        }
+
+        .ex-val {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* PROBLEMS */
+        .problems {
+            margin-top: 12px;
+        }
+
+        .prob-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .prob-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .prob-tag {
+            font-family: var(--mono);
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(30, 40, 64, 0.8);
+            border: 1px solid var(--border);
+            color: #8899bb;
+        }
+
+        .prob-tag.e {
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--green);
+        }
+
+        .prob-tag.m {
+            border-color: rgba(245, 158, 11, 0.3);
+            color: var(--accent3);
+        }
+
+        .prob-tag.h {
+            border-color: rgba(239, 68, 68, 0.3);
+            color: var(--red);
+        }
+
+        /* DIVIDER */
+        .section-divider {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent2);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin: 36px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- MOBILE TOPBAR -->
+    <div id="topbar">
+        <span id="topbar-title">⚡ DSA Patterns</span>
+        <button id="menu-btn" onclick="openSidebar()">☰</button>
+    </div>
+    <div id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <nav id="sidebar">
+        <div class="sidebar-logo">
+            <div>
+                <h1>⚡ DSA Patterns</h1>
+                <p>// cheat sheet v1.0</p>
+            </div>
+            <button id="close-btn" onclick="closeSidebar()">✕</button>
+        </div>
+        <div class="sidebar-cat">Array / String</div>
+        <button class="sidebar-link" data-target="sliding-window"><span class="dot"></span>Sliding Window</button>
+        <button class="sidebar-link" data-target="two-pointers"><span class="dot"></span>Two Pointers</button>
+        <button class="sidebar-link" data-target="prefix-sum"><span class="dot"></span>Prefix Sum</button>
+        <button class="sidebar-link" data-target="monotonic-stack"><span class="dot"></span>Monotonic Stack</button>
+        <button class="sidebar-link" data-target="binary-search"><span class="dot"></span>Binary Search</button>
+        <div class="sidebar-cat">Linked List</div>
+        <button class="sidebar-link" data-target="fast-slow"><span class="dot"></span>Fast &amp; Slow Pointers</button>
+        <button class="sidebar-link" data-target="inplace-reversal"><span class="dot"></span>In-place Reversal</button>
+        <div class="sidebar-cat">Tree / Graph</div>
+        <button class="sidebar-link" data-target="tree-bfs"><span class="dot"></span>Tree BFS</button>
+        <button class="sidebar-link" data-target="tree-dfs"><span class="dot"></span>Tree DFS</button>
+        <button class="sidebar-link" data-target="union-find"><span class="dot"></span>Union Find</button>
+        <div class="sidebar-cat">Sorting / Intervals</div>
+        <button class="sidebar-link" data-target="merge-intervals"><span class="dot"></span>Merge Intervals</button>
+        <button class="sidebar-link" data-target="cyclic-sort"><span class="dot"></span>Cyclic Sort</button>
+        <div class="sidebar-cat">Heap / Priority Queue</div>
+        <button class="sidebar-link" data-target="top-k"><span class="dot"></span>Top K Elements</button>
+        <button class="sidebar-link" data-target="two-heaps"><span class="dot"></span>Two Heaps</button>
+        <button class="sidebar-link" data-target="kway-merge"><span class="dot"></span>K-way Merge</button>
+        <div class="sidebar-cat">Recursion / DP</div>
+        <button class="sidebar-link" data-target="subsets"><span class="dot"></span>Subsets / Backtrack</button>
+        <button class="sidebar-link" data-target="dp"><span class="dot"></span>Dynamic Programming</button>
+        <div class="sidebar-cat">Bitwise</div>
+        <button class="sidebar-link" data-target="bitwise-xor"><span class="dot"></span>Bitwise XOR</button>
+    </nav>
+
+    <!-- MAIN -->
+    <main id="main">
+        <h1 class="page-title">DSA <span>Patterns</span> Cheat Sheet</h1>
+        <p class="page-sub">// 16 core patterns · diagrams · code · examples · complexity</p>
+
+        <!-- ═══════════ SLIDING WINDOW ═══════════ -->
+        <div class="section-divider">Array & String Patterns</div>
+
+        <div class="pattern-card" id="sliding-window">
+            <div class="card-header open" onclick="toggle(this)">
+                <span class="badge">01</span>
+                <h2>Sliding Window</h2>
+                <span class="badge g">Array · String</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body open">
+                <p class="desc">Maintain a window (subarray/substring) that slides over data. Expand right, shrink left
+                    based on a condition. Avoids nested loops → O(n) instead of O(n²).</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Contiguous subarray/substring problem</li>
+                        <li>Max/min sum of fixed-length window</li>
+                        <li>Longest substring with constraint</li>
+                        <li>Keywords: "subarray", "window", "consecutive"</li>
+                    </ul>
+                </div>
+                <div class="complexity">
+                    <span class="cx-badge cx-time">⏱ Time: O(n)</span>
+                    <span class="cx-badge cx-space">💾 Space: O(1) or O(k)</span>
+                </div>
+                <div class="diagram-box">
+                    <svg width="580" height="130" viewBox="0 0 580 130">
+                        <defs>
+                            <linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#00e5ff;stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.3" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Array boxes -->
+                        <g transform="translate(20,20)">
+                            <text x="0" y="12" fill="#64748b" font-size="10" font-family="JetBrains Mono">arr = [2, 1,
+                                5, 1, 3, 2] k = 3</text>
+                            <!-- cells -->
+                            <g transform="translate(0,20)">
+                                <rect x="0" y="0" width="80" height="36" rx="6" fill="#161b2e" stroke="#1e2840" />
+                                <text x="40" y="23" fill="#94a3b8" font-size="16" font-family="JetBrains Mono"
+                                    text-anchor="middle">2</text>
+                                <rect x="84" y="0" width="80" height="36" rx="6" fill="url(#wg)" stroke="#00e5ff"
+                                    stroke-width="2" />
+                                <text x="124" y="23" fill="#00e5ff" font-size="16" font-family="JetBrains Mono"
+                                    text-anchor="middle">1</text>
+                                <rect x="168" y="0" width="80" height="36" rx="6" fill="url(#wg)" stroke="#00e5ff"
+                                    stroke-width="2" />
+                                <text x="208" y="23" fill="#00e5ff" font-size="16" font-family="JetBrains Mono"
+                                    text-anchor="middle">5</text>
+                                <rect x="252" y="0" width="80" height="36" rx="6" fill="url(#wg)" stroke="#7c3aed"
+                                    stroke-width="2" />
+                                <text x="292" y="23" fill="#a78bfa" font-size="16" font-family="JetBrains Mono"
+                                    text-anchor="middle">1</text>
+                                <rect x="336" y="0" width="80" height="36" rx="6" fill="#161b2e" stroke="#1e2840" />
+                                <text x="376" y="23" fill="#94a3b8" font-size="16" font-family="JetBrains Mono"
+                                    text-anchor="middle">3</text>
+                                <rect x="420" y="0" width="80" height="36" rx="6" fill="#161b2e" stroke="#1e2840" />
+                                <text x="460" y="23" fill="#94a3b8" font-size="16" font-family="JetBrains Mono"
+                                    text-anchor="middle">2</text>
+                                <!-- labels -->
+                                <text x="84" y="52" fill="#64748b" font-size="9" font-family="JetBrains Mono">L=1</text>
+                                <text x="322" y="52" fill="#7c3aed" font-size="9"
+                                    font-family="JetBrains Mono">R=3</text>
+                                <!-- brace -->
+                                <line x1="84" y1="46" x2="331" y2="46" stroke="#00e5ff" stroke-width="1"
+                                    stroke-dasharray="4,2" />
+                                <text x="180" y="66" fill="#00e5ff" font-size="10" font-family="JetBrains Mono">window
+                                    sum = 7 ✓ (max so far)</text>
+                            </g>
+                        </g>
+                        <!-- arrows -->
+                        <text x="20" y="118" fill="#64748b" font-size="9" font-family="JetBrains Mono">Window slides
+                            right → shrink left when condition violated</text>
+                    </svg>
+                </div>
+                <div class="two-col">
+                    <div>
+                        <div class="code-block">
+                            <div class="code-label">Java — Fixed Window (Max Sum)</div>
+                            <pre><span class="kw">int</span> <span class="fn">maxSum</span>(<span class="kw">int</span>[] arr, <span class="kw">int</span> k) {
+  <span class="kw">int</span> sum = <span class="num">0</span>, max = <span class="num">0</span>;
+  <span class="cm">// first window</span>
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; k; i++)
+    sum += arr[i];
+  max = sum;
+  <span class="cm">// slide</span>
+  <span class="kw">for</span> (<span class="kw">int</span> i = k; i &lt; arr.length; i++) {
+    sum += arr[i] - arr[i - k];
+    max = Math.<span class="fn">max</span>(max, sum);
+  }
+  <span class="kw">return</span> max;
+}</pre>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-label">Java — Variable Window (Longest Substring)</div>
+                            <pre><span class="kw">int</span> <span class="fn">longestK</span>(String s, <span class="kw">int</span> k) {
+  Map&lt;Character,Integer&gt; freq = <span class="kw">new</span> HashMap&lt;&gt;();
+  <span class="kw">int</span> l = <span class="num">0</span>, max = <span class="num">0</span>;
+  <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r &lt; s.length(); r++) {
+    freq.<span class="fn">merge</span>(s.<span class="fn">charAt</span>(r), <span class="num">1</span>, Integer::sum);
+    <span class="kw">while</span> (freq.<span class="fn">size</span>() &gt; k) {  <span class="cm">// shrink</span>
+      <span class="kw">char</span> c = s.<span class="fn">charAt</span>(l++);
+      freq.<span class="fn">merge</span>(c, -<span class="num">1</span>, Integer::sum);
+      <span class="kw">if</span> (freq.<span class="fn">get</span>(c) == <span class="num">0</span>) freq.<span class="fn">remove</span>(c);
+    }
+    max = Math.<span class="fn">max</span>(max, r - l + <span class="num">1</span>);
+  }
+  <span class="kw">return</span> max;
+}</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="ex-title">Example Walkthrough</div>
+                        <div class="example-box">
+                            <div class="ex-row"><span class="ex-label i">Input</span><span
+                                    class="ex-val">arr=[2,1,5,1,3,2], k=3</span></div>
+                            <div class="ex-row"><span class="ex-label i">Win 1</span><span class="ex-val">[2,1,5] →
+                                    sum=8</span></div>
+                            <div class="ex-row"><span class="ex-label i">Win 2</span><span class="ex-val">[1,5,1] →
+                                    sum=7</span></div>
+                            <div class="ex-row"><span class="ex-label i">Win 3</span><span class="ex-val">[5,1,3] →
+                                    sum=9 ← max</span></div>
+                            <div class="ex-row"><span class="ex-label o">Output</span><span class="ex-val">9</span>
+                            </div>
+                        </div>
+                        <div class="problems">
+                            <div class="prob-title">Classic Problems</div>
+                            <div class="prob-list">
+                                <span class="prob-tag e">Max Sum Subarray K</span>
+                                <span class="prob-tag m">Longest Substring No Repeat</span>
+                                <span class="prob-tag m">Fruits in Baskets</span>
+                                <span class="prob-tag h">Min Window Substring</span>
+                                <span class="prob-tag m">Permutation in String</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ TWO POINTERS ═══════════ -->
+        <div class="pattern-card" id="two-pointers">
+            <div class="card-header open" onclick="toggle(this)">
+                <span class="badge">02</span>
+                <h2>Two Pointers</h2>
+                <span class="badge g">Array · String</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body open">
+                <p class="desc">Two indices move toward each other (or same direction) to find pairs/triplets satisfying
+                    a condition. Works on sorted arrays or when iterating two sequences simultaneously.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Sorted array, find pair with target sum</li>
+                        <li>Remove duplicates / partition array in-place</li>
+                        <li>Palindrome check, reverse string</li>
+                        <li>Container with most water type problems</li>
+                    </ul>
+                </div>
+                <div class="complexity">
+                    <span class="cx-badge cx-time">⏱ Time: O(n)</span>
+                    <span class="cx-badge cx-space">💾 Space: O(1)</span>
+                </div>
+                <div class="diagram-box">
+                    <svg width="540" height="100" viewBox="0 0 540 100">
+                        <g transform="translate(20,10)">
+                            <text x="0" y="12" fill="#64748b" font-size="10" font-family="JetBrains Mono">arr = [-3, -1,
+                                1, 2, 3, 4] target = 0</text>
+                            <g transform="translate(0,22)">
+                                <rect x="0" y="0" width="66" height="34" rx="6" fill="rgba(0,229,255,0.15)"
+                                    stroke="#00e5ff" stroke-width="2" />
+                                <text x="33" y="22" fill="#00e5ff" font-size="15" font-family="JetBrains Mono"
+                                    text-anchor="middle">-3</text>
+                                <rect x="70" y="0" width="66" height="34" rx="6" fill="#161b2e" stroke="#1e2840" />
+                                <text x="103" y="22" fill="#94a3b8" font-size="15" font-family="JetBrains Mono"
+                                    text-anchor="middle">-1</text>
+                                <rect x="140" y="0" width="66" height="34" rx="6" fill="#161b2e" stroke="#1e2840" />
+                                <text x="173" y="22" fill="#94a3b8" font-size="15" font-family="JetBrains Mono"
+                                    text-anchor="middle">1</text>
+                                <rect x="210" y="0" width="66" height="34" rx="6" fill="#161b2e" stroke="#1e2840" />
+                                <text x="243" y="22" fill="#94a3b8" font-size="15" font-family="JetBrains Mono"
+                                    text-anchor="middle">2</text>
+                                <rect x="280" y="0" width="66" height="34" rx="6" fill="#161b2e" stroke="#1e2840" />
+                                <text x="313" y="22" fill="#94a3b8" font-size="15" font-family="JetBrains Mono"
+                                    text-anchor="middle">3</text>
+                                <rect x="350" y="0" width="66" height="34" rx="6" fill="rgba(124,58,237,0.2)"
+                                    stroke="#7c3aed" stroke-width="2" />
+                                <text x="383" y="22" fill="#a78bfa" font-size="15" font-family="JetBrains Mono"
+                                    text-anchor="middle">4</text>
+                                <text x="10" y="52" fill="#00e5ff" font-size="9" font-family="JetBrains Mono">L →</text>
+                                <text x="350" y="52" fill="#a78bfa" font-size="9" font-family="JetBrains Mono">←
+                                    R</text>
+                                <text x="120" y="68" fill="#64748b" font-size="9" font-family="JetBrains Mono">-3+4=1
+                                    &gt; 0 → R-- | -3+3=0 ✓ FOUND</text>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                <div class="two-col">
+                    <div class="code-block">
+                        <div class="code-label">Java — Two Sum (Sorted Array)</div>
+                        <pre><span class="kw">int</span>[] <span class="fn">twoSum</span>(<span class="kw">int</span>[] a, <span class="kw">int</span> target) {
+  <span class="kw">int</span> l = <span class="num">0</span>, r = a.length - <span class="num">1</span>;
+  <span class="kw">while</span> (l &lt; r) {
+    <span class="kw">int</span> s = a[l] + a[r];
+    <span class="kw">if</span> (s == target)
+      <span class="kw">return new int</span>[]{l, r};
+    <span class="kw">else if</span> (s &lt; target) l++;
+    <span class="kw">else</span> r--;
+  }
+  <span class="kw">return new int</span>[]{-<span class="num">1</span>, -<span class="num">1</span>};
+}</pre>
+                    </div>
+                    <div>
+                        <div class="problems">
+                            <div class="prob-title">Classic Problems</div>
+                            <div class="prob-list">
+                                <span class="prob-tag e">Two Sum II (sorted)</span>
+                                <span class="prob-tag m">3Sum</span>
+                                <span class="prob-tag m">Container With Most Water</span>
+                                <span class="prob-tag e">Valid Palindrome</span>
+                                <span class="prob-tag m">Trapping Rain Water</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ PREFIX SUM ═══════════ -->
+        <div class="pattern-card" id="prefix-sum">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">03</span>
+                <h2>Prefix Sum</h2>
+                <span class="badge g">Array</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">Precompute cumulative sums so any range sum query [l,r] = prefix[r] - prefix[l-1] is
+                    answered in O(1). Build the prefix array once, answer many queries fast.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Multiple range sum queries on same array</li>
+                        <li>Subarray sum equals K (with hashmap)</li>
+                        <li>Count subarrays with specific property</li>
+                    </ul>
+                </div>
+                <div class="complexity">
+                    <span class="cx-badge cx-time">⏱ Build: O(n) · Query: O(1)</span>
+                    <span class="cx-badge cx-space">💾 Space: O(n)</span>
+                </div>
+                <div class="diagram-box">
+                    <svg width="500" height="110" viewBox="0 0 500 110">
+                        <g transform="translate(20,10)">
+                            <text x="0" y="10" fill="#64748b" font-size="10" font-family="JetBrains Mono">arr = [3, 1,
+                                4, 1, 5]</text>
+                            <text x="0" y="25" fill="#64748b" font-size="10" font-family="JetBrains Mono">prefix = [3,
+                                4, 8, 9,14]</text>
+                            <!-- cells -->
+                            <g transform="translate(0,32)">
+                                <rect x="0" y="0" width="70" height="30" rx="5" fill="#161b2e" stroke="#1e2840" />
+                                <text x="35" y="20" fill="#94a3b8" font-size="14" font-family="JetBrains Mono"
+                                    text-anchor="middle">3</text>
+                                <rect x="74" y="0" width="70" height="30" rx="5" fill="#161b2e" stroke="#1e2840" />
+                                <text x="109" y="20" fill="#94a3b8" font-size="14" font-family="JetBrains Mono"
+                                    text-anchor="middle">1</text>
+                                <rect x="148" y="0" width="70" height="30" rx="5" fill="rgba(0,229,255,0.12)"
+                                    stroke="#00e5ff" />
+                                <text x="183" y="20" fill="#00e5ff" font-size="14" font-family="JetBrains Mono"
+                                    text-anchor="middle">4</text>
+                                <rect x="222" y="0" width="70" height="30" rx="5" fill="rgba(0,229,255,0.12)"
+                                    stroke="#00e5ff" />
+                                <text x="257" y="20" fill="#00e5ff" font-size="14" font-family="JetBrains Mono"
+                                    text-anchor="middle">1</text>
+                                <rect x="296" y="0" width="70" height="30" rx="5" fill="rgba(0,229,255,0.12)"
+                                    stroke="#7c3aed" />
+                                <text x="331" y="20" fill="#a78bfa" font-size="14" font-family="JetBrains Mono"
+                                    text-anchor="middle">5</text>
+                                <text x="100" y="50" fill="#10b981" font-size="10"
+                                    font-family="JetBrains Mono">sum(2..4) = prefix[4]–prefix[1] = 14–4 = 10</text>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                <div class="code-block">
+                    <div class="code-label">Java — Subarray Sum Equals K</div>
+                    <pre><span class="kw">int</span> <span class="fn">subarraySum</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+  Map&lt;Integer,Integer&gt; map = <span class="kw">new</span> HashMap&lt;&gt;();
+  map.<span class="fn">put</span>(<span class="num">0</span>, <span class="num">1</span>); <span class="cm">// empty prefix</span>
+  <span class="kw">int</span> sum = <span class="num">0</span>, count = <span class="num">0</span>;
+  <span class="kw">for</span> (<span class="kw">int</span> n : nums) {
+    sum += n;
+    count += map.<span class="fn">getOrDefault</span>(sum - k, <span class="num">0</span>);
+    map.<span class="fn">merge</span>(sum, <span class="num">1</span>, Integer::sum);
+  }
+  <span class="kw">return</span> count;
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Range Sum Query</span>
+                    <span class="prob-tag m">Subarray Sum = K</span>
+                    <span class="prob-tag m">Product of Array Except Self</span>
+                    <span class="prob-tag h">Count Subarrays with Score &lt; K</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ MONOTONIC STACK ═══════════ -->
+        <div class="pattern-card" id="monotonic-stack">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">04</span>
+                <h2>Monotonic Stack</h2>
+                <span class="badge o">Stack</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">Stack that maintains elements in monotonically increasing or decreasing order. Pop when
+                    incoming element breaks the order — the popped element's answer is the current element.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Next Greater / Smaller Element</li>
+                        <li>Largest Rectangle in Histogram</li>
+                        <li>Daily Temperatures, Stock Span</li>
+                    </ul>
+                </div>
+                <div class="complexity">
+                    <span class="cx-badge cx-time">⏱ Time: O(n)</span>
+                    <span class="cx-badge cx-space">💾 Space: O(n)</span>
+                </div>
+                <div class="code-block">
+                    <div class="code-label">Java — Next Greater Element</div>
+                    <pre><span class="kw">int</span>[] <span class="fn">nextGreater</span>(<span class="kw">int</span>[] arr) {
+  <span class="kw">int</span>[] res = <span class="kw">new int</span>[arr.length];
+  Arrays.<span class="fn">fill</span>(res, -<span class="num">1</span>);
+  Deque&lt;Integer&gt; stack = <span class="kw">new</span> ArrayDeque&lt;&gt;();
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; arr.length; i++) {
+    <span class="kw">while</span> (!stack.<span class="fn">isEmpty</span>() &amp;&amp;
+           arr[stack.<span class="fn">peek</span>()] &lt; arr[i]) {
+      res[stack.<span class="fn">pop</span>()] = arr[i]; <span class="cm">// found NGE</span>
+    }
+    stack.<span class="fn">push</span>(i);
+  }
+  <span class="kw">return</span> res;
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Next Greater Element I</span>
+                    <span class="prob-tag m">Daily Temperatures</span>
+                    <span class="prob-tag h">Largest Rectangle in Histogram</span>
+                    <span class="prob-tag h">Trapping Rain Water</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ BINARY SEARCH ═══════════ -->
+        <div class="pattern-card" id="binary-search">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">05</span>
+                <h2>Binary Search</h2>
+                <span class="badge g">Array</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">Eliminate half the search space each step. Beyond finding a value, binary search applies
+                    to "search on answer" — binary search over the answer space when a monotone condition exists.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Sorted array, find target</li>
+                        <li>"Minimum possible maximum" / "Maximum possible minimum"</li>
+                        <li>Condition is monotone: false…false→true…true</li>
+                    </ul>
+                </div>
+                <div class="complexity">
+                    <span class="cx-badge cx-time">⏱ Time: O(log n)</span>
+                    <span class="cx-badge cx-space">💾 Space: O(1)</span>
+                </div>
+                <div class="diagram-box">
+                    <svg width="500" height="90" viewBox="0 0 500 90">
+                        <g transform="translate(20,10)">
+                            <text x="0" y="10" fill="#64748b" font-size="10" font-family="JetBrains Mono">arr =
+                                [1,3,5,7,9,11,13] target = 9</text>
+                            <g transform="translate(0,18)">
+                                <rect x="0" y="0" width="56" height="30" rx="5" fill="#161b2e" stroke="#1e2840" />
+                                <text x="28" y="20" fill="#94a3b8" font-size="13" text-anchor="middle"
+                                    font-family="JetBrains Mono">1</text>
+                                <rect x="58" y="0" width="56" height="30" rx="5" fill="#161b2e" stroke="#1e2840" />
+                                <text x="86" y="20" fill="#94a3b8" font-size="13" text-anchor="middle"
+                                    font-family="JetBrains Mono">3</text>
+                                <rect x="116" y="0" width="56" height="30" rx="5" fill="#161b2e" stroke="#1e2840" />
+                                <text x="144" y="20" fill="#94a3b8" font-size="13" text-anchor="middle"
+                                    font-family="JetBrains Mono">5</text>
+                                <rect x="174" y="0" width="56" height="30" rx="5" fill="rgba(245,158,11,0.2)"
+                                    stroke="#f59e0b" />
+                                <text x="202" y="20" fill="#f59e0b" font-size="13" text-anchor="middle"
+                                    font-family="JetBrains Mono">7</text>
+                                <rect x="232" y="0" width="56" height="30" rx="5" fill="rgba(16,185,129,0.2)"
+                                    stroke="#10b981" stroke-width="2" />
+                                <text x="260" y="20" fill="#10b981" font-size="13" text-anchor="middle"
+                                    font-family="JetBrains Mono">9</text>
+                                <rect x="290" y="0" width="56" height="30" rx="5" fill="#161b2e" stroke="#1e2840" />
+                                <text x="318" y="20" fill="#94a3b8" font-size="13" text-anchor="middle"
+                                    font-family="JetBrains Mono">11</text>
+                                <rect x="348" y="0" width="56" height="30" rx="5" fill="#161b2e" stroke="#1e2840" />
+                                <text x="376" y="20" fill="#94a3b8" font-size="13" text-anchor="middle"
+                                    font-family="JetBrains Mono">13</text>
+                                <text x="188" y="48" fill="#f59e0b" font-size="9"
+                                    font-family="JetBrains Mono">mid=7&lt;9→L=mid+1</text>
+                                <text x="240" y="60" fill="#10b981" font-size="9" font-family="JetBrains Mono">✓
+                                    found</text>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                <div class="code-block">
+                    <div class="code-label">Java — Universal Template</div>
+                    <pre><span class="kw">int</span> <span class="fn">binarySearch</span>(<span class="kw">int</span>[] arr, <span class="kw">int</span> target) {
+  <span class="kw">int</span> l = <span class="num">0</span>, r = arr.length - <span class="num">1</span>;
+  <span class="kw">while</span> (l &lt;= r) {
+    <span class="kw">int</span> mid = l + (r - l) / <span class="num">2</span>; <span class="cm">// avoid overflow</span>
+    <span class="kw">if</span> (arr[mid] == target) <span class="kw">return</span> mid;
+    <span class="kw">else if</span> (arr[mid] &lt; target) l = mid + <span class="num">1</span>;
+    <span class="kw">else</span> r = mid - <span class="num">1</span>;
+  }
+  <span class="kw">return</span> -<span class="num">1</span>; <span class="cm">// l = insertion point</span>
+}
+
+<span class="cm">// Search on Answer template</span>
+<span class="kw">int</span> lo = minAns, hi = maxAns;
+<span class="kw">while</span> (lo &lt; hi) {
+  <span class="kw">int</span> mid = (lo + hi) / <span class="num">2</span>;
+  <span class="kw">if</span> (<span class="fn">feasible</span>(mid)) hi = mid;
+  <span class="kw">else</span> lo = mid + <span class="num">1</span>;
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Binary Search</span>
+                    <span class="prob-tag m">Find Peak Element</span>
+                    <span class="prob-tag m">Search Rotated Array</span>
+                    <span class="prob-tag h">Split Array Largest Sum</span>
+                    <span class="prob-tag m">Koko Eating Bananas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ LINKED LIST ═══════════ -->
+        <div class="section-divider">Linked List Patterns</div>
+
+        <div class="pattern-card" id="fast-slow">
+            <div class="card-header open" onclick="toggle(this)">
+                <span class="badge">06</span>
+                <h2>Fast & Slow Pointers</h2>
+                <span class="badge p">LinkedList</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body open">
+                <p class="desc">Two pointers move at different speeds (1x and 2x). Slow reaches middle when fast reaches
+                    end. If they ever meet, there's a cycle. Also used to find cycle start.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Detect cycle in LinkedList / array</li>
+                        <li>Find middle of LinkedList</li>
+                        <li>Find cycle start (Floyd's algorithm)</li>
+                        <li>Happy number problem</li>
+                    </ul>
+                </div>
+                <div class="complexity">
+                    <span class="cx-badge cx-time">⏱ Time: O(n)</span>
+                    <span class="cx-badge cx-space">💾 Space: O(1)</span>
+                </div>
+                <div class="diagram-box">
+                    <svg width="520" height="110" viewBox="0 0 520 110">
+                        <defs>
+                            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L6,3 z" fill="#64748b" />
+                            </marker>
+                            <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L6,3 z" fill="#00e5ff" />
+                            </marker>
+                            <marker id="arr3" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L6,3 z" fill="#f59e0b" />
+                            </marker>
+                        </defs>
+                        <g transform="translate(20,20)">
+                            <text x="0" y="10" fill="#64748b" font-size="10" font-family="JetBrains Mono">1 → 2 → 3 → 4
+                                → 5 → 6 → (back to 3)</text>
+                            <!-- nodes -->
+                            <circle cx="30" cy="55" r="18" fill="#161b2e" stroke="#1e2840" />
+                            <text x="30" y="60" fill="#94a3b8" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">1</text>
+                            <circle cx="100" cy="55" r="18" fill="#161b2e" stroke="#1e2840" />
+                            <text x="100" y="60" fill="#94a3b8" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">2</text>
+                            <circle cx="170" cy="55" r="18" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" />
+                            <text x="170" y="60" fill="#f59e0b" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">3</text>
+                            <circle cx="240" cy="55" r="18" fill="#161b2e" stroke="#1e2840" />
+                            <text x="240" y="60" fill="#94a3b8" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">4</text>
+                            <circle cx="310" cy="55" r="18" fill="#161b2e" stroke="#1e2840" />
+                            <text x="310" y="60" fill="#94a3b8" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">5</text>
+                            <circle cx="380" cy="55" r="18" fill="rgba(239,68,68,0.2)" stroke="#ef4444" />
+                            <text x="380" y="60" fill="#ef4444" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">6</text>
+                            <!-- arrows -->
+                            <line x1="49" y1="55" x2="81" y2="55" stroke="#64748b" marker-end="url(#arr)" />
+                            <line x1="119" y1="55" x2="151" y2="55" stroke="#64748b" marker-end="url(#arr)" />
+                            <line x1="189" y1="55" x2="221" y2="55" stroke="#64748b" marker-end="url(#arr)" />
+                            <line x1="259" y1="55" x2="291" y2="55" stroke="#64748b" marker-end="url(#arr)" />
+                            <line x1="329" y1="55" x2="361" y2="55" stroke="#64748b" marker-end="url(#arr)" />
+                            <!-- cycle back -->
+                            <path d="M 398 55 Q 430 20 300 20 Q 155 20 170 36" stroke="#ef4444" fill="none"
+                                stroke-dasharray="4,2" marker-end="url(#arr3)" />
+                            <!-- labels -->
+                            <text x="30" y="82" fill="#00e5ff" font-size="9" text-anchor="middle"
+                                font-family="JetBrains Mono">S,F</text>
+                            <text x="0" y="95" fill="#64748b" font-size="9" font-family="JetBrains Mono">→ Slow+1 Fast+2
+                                each step. If F==S → cycle!</text>
+                        </g>
+                    </svg>
+                </div>
+                <div class="code-block">
+                    <div class="code-label">Java — Detect Cycle + Find Start</div>
+                    <pre><span class="kw">boolean</span> <span class="fn">hasCycle</span>(ListNode head) {
+  ListNode slow = head, fast = head;
+  <span class="kw">while</span> (fast != <span class="kw">null</span> &amp;&amp; fast.next != <span class="kw">null</span>) {
+    slow = slow.next;
+    fast = fast.next.next;
+    <span class="kw">if</span> (slow == fast) <span class="kw">return true</span>;
+  }
+  <span class="kw">return false</span>;
+}
+
+<span class="cm">// Find cycle start (Floyd's algorithm)</span>
+ListNode <span class="fn">cycleStart</span>(ListNode head) {
+  ListNode slow = head, fast = head;
+  <span class="kw">while</span> (fast.next != <span class="kw">null</span> &amp;&amp; fast.next.next != <span class="kw">null</span>) {
+    slow = slow.next; fast = fast.next.next;
+    <span class="kw">if</span> (slow == fast) {
+      slow = head; <span class="cm">// reset slow to head</span>
+      <span class="kw">while</span> (slow != fast) { slow = slow.next; fast = fast.next; }
+      <span class="kw">return</span> slow; <span class="cm">// cycle start</span>
+    }
+  }
+  <span class="kw">return null</span>;
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Linked List Cycle</span>
+                    <span class="prob-tag m">Linked List Cycle II</span>
+                    <span class="prob-tag m">Middle of Linked List</span>
+                    <span class="prob-tag m">Happy Number</span>
+                    <span class="prob-tag h">Reorder List</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pattern-card" id="inplace-reversal">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">07</span>
+                <h2>In-place Reversal of LinkedList</h2>
+                <span class="badge p">LinkedList</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">Reverse a linked list (or a sub-portion) without extra space by relinking pointers. Use
+                    prev/curr/next variables.</p>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Time: O(n)</span><span
+                        class="cx-badge cx-space">💾 Space: O(1)</span></div>
+                <div class="code-block">
+                    <div class="code-label">Java — Reverse Between (positions)</div>
+                    <pre>ListNode <span class="fn">reverseBetween</span>(ListNode head, <span class="kw">int</span> l, <span class="kw">int</span> r) {
+  ListNode dummy = <span class="kw">new</span> ListNode(<span class="num">0</span>, head);
+  ListNode pre = dummy;
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; l - <span class="num">1</span>; i++) pre = pre.next;
+  ListNode curr = pre.next;
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; r - l; i++) {
+    ListNode next = curr.next;
+    curr.next = next.next;
+    next.next = pre.next;
+    pre.next = next;
+  }
+  <span class="kw">return</span> dummy.next;
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Reverse Linked List</span>
+                    <span class="prob-tag m">Reverse Linked List II</span>
+                    <span class="prob-tag m">Reverse Nodes in K-Group</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ TREE / GRAPH ═══════════ -->
+        <div class="section-divider">Tree & Graph Patterns</div>
+
+        <div class="pattern-card" id="tree-bfs">
+            <div class="card-header open" onclick="toggle(this)">
+                <span class="badge">08</span>
+                <h2>Tree BFS (Level Order)</h2>
+                <span class="badge g">Tree · Graph</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body open">
+                <p class="desc">Process nodes level by level using a queue. Start with root, enqueue children. Great for
+                    shortest path in unweighted graphs and anything level-related.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Level-order traversal</li>
+                        <li>Minimum depth / shortest path</li>
+                        <li>Right view, zigzag traversal</li>
+                        <li>Rotten Oranges, 0-1 Matrix</li>
+                    </ul>
+                </div>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Time: O(n)</span><span
+                        class="cx-badge cx-space">💾 Space: O(w) — max width</span></div>
+                <div class="diagram-box">
+                    <svg width="420" height="130" viewBox="0 0 420 130">
+                        <g transform="translate(60,15)">
+                            <!-- level 0 -->
+                            <circle cx="150" cy="20" r="18" fill="rgba(0,229,255,0.2)" stroke="#00e5ff" />
+                            <text x="150" y="25" fill="#00e5ff" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">1</text>
+                            <text x="178" y="18" fill="#00e5ff" font-size="9" font-family="JetBrains Mono">L0</text>
+                            <!-- level 1 -->
+                            <circle cx="80" cy="70" r="18" fill="rgba(124,58,237,0.2)" stroke="#7c3aed" />
+                            <text x="80" y="75" fill="#a78bfa" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">2</text>
+                            <circle cx="220" cy="70" r="18" fill="rgba(124,58,237,0.2)" stroke="#7c3aed" />
+                            <text x="220" y="75" fill="#a78bfa" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">3</text>
+                            <text x="244" y="68" fill="#7c3aed" font-size="9" font-family="JetBrains Mono">L1</text>
+                            <!-- level 2 -->
+                            <circle cx="40" cy="115" r="18" fill="rgba(16,185,129,0.2)" stroke="#10b981" />
+                            <text x="40" y="120" fill="#10b981" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">4</text>
+                            <circle cx="120" cy="115" r="18" fill="rgba(16,185,129,0.2)" stroke="#10b981" />
+                            <text x="120" y="120" fill="#10b981" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">5</text>
+                            <circle cx="200" cy="115" r="18" fill="rgba(16,185,129,0.2)" stroke="#10b981" />
+                            <text x="200" y="120" fill="#10b981" font-size="13" text-anchor="middle"
+                                font-family="JetBrains Mono">6</text>
+                            <text x="224" y="112" fill="#10b981" font-size="9" font-family="JetBrains Mono">L2</text>
+                            <!-- edges -->
+                            <line x1="135" y1="35" x2="96" y2="55" stroke="#64748b" />
+                            <line x1="165" y1="35" x2="204" y2="55" stroke="#64748b" />
+                            <line x1="66" y1="85" x2="55" y2="100" stroke="#64748b" />
+                            <line x1="93" y1="85" x2="108" y2="100" stroke="#64748b" />
+                            <line x1="210" y1="85" x2="200" y2="100" stroke="#64748b" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="code-block">
+                    <div class="code-label">Java — Level Order Traversal</div>
+                    <pre>List&lt;List&lt;Integer&gt;&gt; <span class="fn">levelOrder</span>(TreeNode root) {
+  List&lt;List&lt;Integer&gt;&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+  <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> res;
+  Queue&lt;TreeNode&gt; q = <span class="kw">new</span> LinkedList&lt;&gt;();
+  q.<span class="fn">offer</span>(root);
+  <span class="kw">while</span> (!q.<span class="fn">isEmpty</span>()) {
+    <span class="kw">int</span> size = q.<span class="fn">size</span>(); <span class="cm">// current level size</span>
+    List&lt;Integer&gt; level = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; size; i++) {
+      TreeNode node = q.<span class="fn">poll</span>();
+      level.<span class="fn">add</span>(node.val);
+      <span class="kw">if</span> (node.left != <span class="kw">null</span>) q.<span class="fn">offer</span>(node.left);
+      <span class="kw">if</span> (node.right != <span class="kw">null</span>) q.<span class="fn">offer</span>(node.right);
+    }
+    res.<span class="fn">add</span>(level);
+  }
+  <span class="kw">return</span> res;
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Binary Tree Level Order</span>
+                    <span class="prob-tag m">Right Side View</span>
+                    <span class="prob-tag m">Zigzag Level Order</span>
+                    <span class="prob-tag m">Rotten Oranges</span>
+                    <span class="prob-tag m">01 Matrix</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pattern-card" id="tree-dfs">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">09</span>
+                <h2>Tree DFS</h2>
+                <span class="badge g">Tree · Graph</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">Explore as deep as possible before backtracking. Three flavors: Pre-order (root→L→R),
+                    In-order (L→root→R), Post-order (L→R→root). Recursive or iterative with explicit stack.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Path sum problems</li>
+                        <li>Serialize/Deserialize tree</li>
+                        <li>Lowest Common Ancestor</li>
+                        <li>Validate BST</li>
+                    </ul>
+                </div>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Time: O(n)</span><span
+                        class="cx-badge cx-space">💾 Space: O(h) — height</span></div>
+                <div class="code-block">
+                    <div class="code-label">Java — Path Sum II</div>
+                    <pre><span class="kw">void</span> <span class="fn">dfs</span>(TreeNode node, <span class="kw">int</span> target, <span class="kw">int</span> curr,
+         List&lt;Integer&gt; path, List&lt;List&lt;Integer&gt;&gt; res) {
+  <span class="kw">if</span> (node == <span class="kw">null</span>) <span class="kw">return</span>;
+  path.<span class="fn">add</span>(node.val);
+  curr += node.val;
+  <span class="kw">if</span> (node.left == <span class="kw">null</span> &amp;&amp; node.right == <span class="kw">null</span>
+      &amp;&amp; curr == target)
+    res.<span class="fn">add</span>(<span class="kw">new</span> ArrayList&lt;&gt;(path));
+  <span class="fn">dfs</span>(node.left, target, curr, path, res);
+  <span class="fn">dfs</span>(node.right, target, curr, path, res);
+  path.<span class="fn">remove</span>(path.<span class="fn">size</span>() - <span class="num">1</span>); <span class="cm">// backtrack</span>
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Max Depth of Binary Tree</span>
+                    <span class="prob-tag m">Path Sum II</span>
+                    <span class="prob-tag m">LCA of BST</span>
+                    <span class="prob-tag h">Binary Tree Max Path Sum</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pattern-card" id="union-find">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">10</span>
+                <h2>Union Find (Disjoint Set)</h2>
+                <span class="badge g">Graph</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">Track which elements belong to the same connected component. Union merges two sets. Find
+                    returns the root/representative. Path compression + union by rank makes it nearly O(1) amortized.
+                </p>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Time: O(α(n)) ≈ O(1)</span><span
+                        class="cx-badge cx-space">💾 Space: O(n)</span></div>
+                <div class="code-block">
+                    <div class="code-label">Java — Union Find Template</div>
+                    <pre><span class="kw">class</span> UnionFind {
+  <span class="kw">int</span>[] parent, rank;
+  UnionFind(<span class="kw">int</span> n) {
+    parent = <span class="kw">new int</span>[n]; rank = <span class="kw">new int</span>[n];
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; n; i++) parent[i] = i;
+  }
+  <span class="kw">int</span> <span class="fn">find</span>(<span class="kw">int</span> x) { <span class="cm">// path compression</span>
+    <span class="kw">if</span> (parent[x] != x) parent[x] = <span class="fn">find</span>(parent[x]);
+    <span class="kw">return</span> parent[x];
+  }
+  <span class="kw">boolean</span> <span class="fn">union</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {
+    <span class="kw">int</span> px = <span class="fn">find</span>(x), py = <span class="fn">find</span>(y);
+    <span class="kw">if</span> (px == py) <span class="kw">return false</span>; <span class="cm">// already connected</span>
+    <span class="kw">if</span> (rank[px] &lt; rank[py]) parent[px] = py;
+    <span class="kw">else if</span> (rank[px] &gt; rank[py]) parent[py] = px;
+    <span class="kw">else</span> { parent[py] = px; rank[px]++; }
+    <span class="kw">return true</span>;
+  }
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag m">Number of Connected Components</span>
+                    <span class="prob-tag m">Redundant Connection</span>
+                    <span class="prob-tag h">Accounts Merge</span>
+                    <span class="prob-tag h">Number of Islands II</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ SORTING / INTERVALS ═══════════ -->
+        <div class="section-divider">Sorting & Interval Patterns</div>
+
+        <div class="pattern-card" id="merge-intervals">
+            <div class="card-header open" onclick="toggle(this)">
+                <span class="badge">11</span>
+                <h2>Merge Intervals</h2>
+                <span class="badge o">Intervals</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body open">
+                <p class="desc">Sort intervals by start time. Merge overlapping intervals by checking if current start ≤
+                    previous end. Variants: insert interval, non-overlapping intervals.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Overlapping intervals (meeting rooms)</li>
+                        <li>Insert/remove intervals</li>
+                        <li>Minimum platforms/workers needed</li>
+                    </ul>
+                </div>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Time: O(n log n)</span><span
+                        class="cx-badge cx-space">💾 Space: O(n)</span></div>
+                <div class="diagram-box">
+                    <svg width="480" height="100" viewBox="0 0 480 100">
+                        <g transform="translate(20,10)">
+                            <text x="0" y="10" fill="#64748b" font-size="10" font-family="JetBrains Mono">Input: [1,3]
+                                [2,6] [8,10] [15,18]</text>
+                            <text x="0" y="25" fill="#64748b" font-size="10" font-family="JetBrains Mono">Output: [1,6]
+                                [8,10] [15,18]</text>
+                            <!-- timeline -->
+                            <line x1="0" y1="55" x2="440" y2="55" stroke="#1e2840" />
+                            <!-- intervals -->
+                            <rect x="10" y="42" width="80" height="14" rx="3" fill="rgba(0,229,255,0.3)"
+                                stroke="#00e5ff" />
+                            <text x="50" y="53" fill="#00e5ff" font-size="9" text-anchor="middle"
+                                font-family="JetBrains Mono">[1,3]</text>
+                            <rect x="60" y="58" width="140" height="14" rx="3" fill="rgba(124,58,237,0.3)"
+                                stroke="#7c3aed" />
+                            <text x="130" y="69" fill="#a78bfa" font-size="9" text-anchor="middle"
+                                font-family="JetBrains Mono">[2,6]</text>
+                            <rect x="220" y="42" width="70" height="26" rx="3" fill="rgba(16,185,129,0.2)"
+                                stroke="#10b981" />
+                            <text x="255" y="59" fill="#10b981" font-size="9" text-anchor="middle"
+                                font-family="JetBrains Mono">[8,10]</text>
+                            <rect x="340" y="42" width="90" height="26" rx="3" fill="rgba(245,158,11,0.2)"
+                                stroke="#f59e0b" />
+                            <text x="385" y="59" fill="#f59e0b" font-size="9" text-anchor="middle"
+                                font-family="JetBrains Mono">[15,18]</text>
+                            <!-- merge indicator -->
+                            <rect x="10" y="82" width="190" height="10" rx="3" fill="rgba(239,68,68,0.3)"
+                                stroke="#ef4444" />
+                            <text x="105" y="90" fill="#ef4444" font-size="9" text-anchor="middle"
+                                font-family="JetBrains Mono">MERGED [1,6]</text>
+                        </g>
+                    </svg>
+                </div>
+                <div class="code-block">
+                    <div class="code-label">Java — Merge Intervals</div>
+                    <pre><span class="kw">int</span>[][] <span class="fn">merge</span>(<span class="kw">int</span>[][] intervals) {
+  Arrays.<span class="fn">sort</span>(intervals, (a,b) -> a[<span class="num">0</span>] - b[<span class="num">0</span>]);
+  List&lt;<span class="kw">int</span>[]&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+  <span class="kw">int</span>[] cur = intervals[<span class="num">0</span>];
+  <span class="kw">for</span> (<span class="kw">int</span>[] iv : intervals) {
+    <span class="kw">if</span> (iv[<span class="num">0</span>] &lt;= cur[<span class="num">1</span>])          <span class="cm">// overlap</span>
+      cur[<span class="num">1</span>] = Math.<span class="fn">max</span>(cur[<span class="num">1</span>], iv[<span class="num">1</span>]);
+    <span class="kw">else</span> { res.<span class="fn">add</span>(cur); cur = iv; }
+  }
+  res.<span class="fn">add</span>(cur);
+  <span class="kw">return</span> res.<span class="fn">toArray</span>(<span class="kw">new int</span>[<span class="num">0</span>][]);
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag m">Merge Intervals</span>
+                    <span class="prob-tag m">Insert Interval</span>
+                    <span class="prob-tag m">Meeting Rooms II</span>
+                    <span class="prob-tag h">Employee Free Time</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pattern-card" id="cyclic-sort">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">12</span>
+                <h2>Cyclic Sort</h2>
+                <span class="badge o">Array</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">When array contains numbers in range [1, n], place each number at its correct index
+                    (num-1). In one pass O(n), find missing/duplicate numbers without extra space.</p>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Time: O(n)</span><span
+                        class="cx-badge cx-space">💾 Space: O(1)</span></div>
+                <div class="code-block">
+                    <div class="code-label">Java — Find All Missing Numbers</div>
+                    <pre><span class="kw">void</span> <span class="fn">cyclicSort</span>(<span class="kw">int</span>[] arr) {
+  <span class="kw">int</span> i = <span class="num">0</span>;
+  <span class="kw">while</span> (i &lt; arr.length) {
+    <span class="kw">int</span> j = arr[i] - <span class="num">1</span>; <span class="cm">// correct index</span>
+    <span class="kw">if</span> (arr[i] != arr[j])
+      <span class="kw">swap</span>(arr, i, j);  <span class="cm">// put in right place</span>
+    <span class="kw">else</span> i++;
+  }
+}
+<span class="cm">// After sort: positions where arr[i]!=i+1 are missing</span></pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Missing Number</span>
+                    <span class="prob-tag m">Find All Missing Numbers</span>
+                    <span class="prob-tag m">Find Duplicate Number</span>
+                    <span class="prob-tag h">First Missing Positive</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ HEAP ═══════════ -->
+        <div class="section-divider">Heap & Priority Queue Patterns</div>
+
+        <div class="pattern-card" id="top-k">
+            <div class="card-header open" onclick="toggle(this)">
+                <span class="badge">13</span>
+                <h2>Top K Elements</h2>
+                <span class="badge o">Heap</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body open">
+                <p class="desc">Use a min-heap of size K to track the K largest elements. When heap size exceeds K,
+                    remove the minimum. Result: K largest remain. Flip for K smallest with max-heap.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>K largest/smallest elements</li>
+                        <li>K most frequent elements</li>
+                        <li>Kth largest in stream</li>
+                        <li>Closest K points to origin</li>
+                    </ul>
+                </div>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Time: O(n log k)</span><span
+                        class="cx-badge cx-space">💾 Space: O(k)</span></div>
+                <div class="code-block">
+                    <div class="code-label">Java — K Largest Elements</div>
+                    <pre><span class="kw">int</span>[] <span class="fn">kLargest</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+  PriorityQueue&lt;Integer&gt; minH = <span class="kw">new</span> PriorityQueue&lt;&gt;();
+  <span class="kw">for</span> (<span class="kw">int</span> n : nums) {
+    minH.<span class="fn">offer</span>(n);
+    <span class="kw">if</span> (minH.<span class="fn">size</span>() &gt; k) minH.<span class="fn">poll</span>(); <span class="cm">// remove min</span>
+  }
+  <span class="kw">return</span> minH.<span class="fn">stream</span>().<span class="fn">mapToInt</span>(x->x).<span class="fn">toArray</span>();
+}
+
+<span class="cm">// K most frequent (with bucket sort)</span>
+<span class="kw">int</span>[] <span class="fn">topKFrequent</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+  Map&lt;Integer,Integer&gt; freq = <span class="kw">new</span> HashMap&lt;&gt;();
+  <span class="kw">for</span> (<span class="kw">int</span> n : nums) freq.<span class="fn">merge</span>(n, <span class="num">1</span>, Integer::sum);
+  PriorityQueue&lt;Map.Entry&lt;Integer,Integer&gt;&gt; pq =
+    <span class="kw">new</span> PriorityQueue&lt;&gt;((a,b)->a.getValue()-b.getValue());
+  <span class="kw">for</span> (<span class="kw">var</span> e : freq.<span class="fn">entrySet</span>()) {
+    pq.<span class="fn">offer</span>(e);
+    <span class="kw">if</span> (pq.<span class="fn">size</span>() &gt; k) pq.<span class="fn">poll</span>();
+  }
+  <span class="kw">return</span> pq.<span class="fn">stream</span>().<span class="fn">mapToInt</span>(Map.Entry::getKey).<span class="fn">toArray</span>();
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Kth Largest Element</span>
+                    <span class="prob-tag m">Top K Frequent Elements</span>
+                    <span class="prob-tag m">K Closest Points to Origin</span>
+                    <span class="prob-tag h">Find Median from Stream</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pattern-card" id="two-heaps">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">14</span>
+                <h2>Two Heaps</h2>
+                <span class="badge o">Heap</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">Maintain a max-heap for the lower half and a min-heap for the upper half. Keep sizes
+                    balanced. Median = top of one heap (odd count) or average of both tops (even count).</p>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Add: O(log n) · Median: O(1)</span><span
+                        class="cx-badge cx-space">💾 Space: O(n)</span></div>
+                <div class="code-block">
+                    <div class="code-label">Java — Find Median from Data Stream</div>
+                    <pre><span class="kw">class</span> MedianFinder {
+  PriorityQueue&lt;Integer&gt; lo = <span class="kw">new</span> PriorityQueue&lt;&gt;(Collections.reverseOrder());
+  PriorityQueue&lt;Integer&gt; hi = <span class="kw">new</span> PriorityQueue&lt;&gt;();
+
+  <span class="kw">void</span> <span class="fn">addNum</span>(<span class="kw">int</span> n) {
+    lo.<span class="fn">offer</span>(n);
+    hi.<span class="fn">offer</span>(lo.<span class="fn">poll</span>()); <span class="cm">// balance</span>
+    <span class="kw">if</span> (lo.<span class="fn">size</span>() &lt; hi.<span class="fn">size</span>()) lo.<span class="fn">offer</span>(hi.<span class="fn">poll</span>());
+  }
+  <span class="kw">double</span> <span class="fn">findMedian</span>() {
+    <span class="kw">return</span> lo.<span class="fn">size</span>() > hi.<span class="fn">size</span>()
+      ? lo.<span class="fn">peek</span>()
+      : (lo.<span class="fn">peek</span>() + hi.<span class="fn">peek</span>()) / <span class="num">2.0</span>;
+  }
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag h">Find Median from Data Stream</span>
+                    <span class="prob-tag h">Sliding Window Median</span>
+                    <span class="prob-tag h">IPO</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pattern-card" id="kway-merge">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">15</span>
+                <h2>K-way Merge</h2>
+                <span class="badge o">Heap</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">Merge K sorted lists using a min-heap. Push the first element of each list, then pop the
+                    minimum and push its successor. Result is globally sorted.</p>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Time: O(n log k)</span><span
+                        class="cx-badge cx-space">💾 Space: O(k)</span></div>
+                <div class="code-block">
+                    <div class="code-label">Java — Merge K Sorted Lists</div>
+                    <pre>ListNode <span class="fn">mergeKLists</span>(ListNode[] lists) {
+  PriorityQueue&lt;ListNode&gt; pq =
+    <span class="kw">new</span> PriorityQueue&lt;&gt;((a,b)->a.val-b.val);
+  <span class="kw">for</span> (ListNode l : lists)
+    <span class="kw">if</span> (l != <span class="kw">null</span>) pq.<span class="fn">offer</span>(l);
+  ListNode dummy = <span class="kw">new</span> ListNode(<span class="num">0</span>), cur = dummy;
+  <span class="kw">while</span> (!pq.<span class="fn">isEmpty</span>()) {
+    cur.next = pq.<span class="fn">poll</span>();
+    cur = cur.next;
+    <span class="kw">if</span> (cur.next != <span class="kw">null</span>) pq.<span class="fn">offer</span>(cur.next);
+  }
+  <span class="kw">return</span> dummy.next;
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag h">Merge K Sorted Lists</span>
+                    <span class="prob-tag m">Kth Smallest in Sorted Matrix</span>
+                    <span class="prob-tag h">Smallest Range Covering K Lists</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ DP / BACKTRACK ═══════════ -->
+        <div class="section-divider">Recursion, DP & Backtracking</div>
+
+        <div class="pattern-card" id="subsets">
+            <div class="card-header open" onclick="toggle(this)">
+                <span class="badge">16</span>
+                <h2>Subsets / Backtracking</h2>
+                <span class="badge p">Recursion</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body open">
+                <p class="desc">Generate all subsets / permutations / combinations by making a choice (include /
+                    exclude), recurse, then undo (backtrack). Decision tree has 2^n or n! leaves.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>All subsets, combinations, permutations</li>
+                        <li>N-Queens, Sudoku, Word Search</li>
+                        <li>Phone number letter combinations</li>
+                    </ul>
+                </div>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Subsets O(2^n) · Perms O(n!)</span><span
+                        class="cx-badge cx-space">💾 Space: O(n)</span></div>
+                <div class="diagram-box">
+                    <svg width="480" height="120" viewBox="0 0 480 120">
+                        <g transform="translate(20,10)">
+                            <text x="180" y="14" fill="#64748b" font-size="9" font-family="JetBrains Mono">[]</text>
+                            <text x="60" y="45" fill="#00e5ff" font-size="9" font-family="JetBrains Mono">[1]</text>
+                            <text x="300" y="45" fill="#00e5ff" font-size="9" font-family="JetBrains Mono">[ ]</text>
+                            <text x="10" y="78" fill="#a78bfa" font-size="9" font-family="JetBrains Mono">[1,2]</text>
+                            <text x="90" y="78" fill="#a78bfa" font-size="9" font-family="JetBrains Mono">[1]</text>
+                            <text x="250" y="78" fill="#a78bfa" font-size="9" font-family="JetBrains Mono">[2]</text>
+                            <text x="330" y="78" fill="#a78bfa" font-size="9" font-family="JetBrains Mono">[ ]</text>
+                            <text x="0" y="108" fill="#10b981" font-size="9" font-family="JetBrains Mono">[1,2,3]</text>
+                            <text x="60" y="108" fill="#10b981" font-size="9" font-family="JetBrains Mono">[1,2]</text>
+                            <text x="115" y="108" fill="#10b981" font-size="9" font-family="JetBrains Mono">[1,3]</text>
+                            <text x="165" y="108" fill="#10b981" font-size="9" font-family="JetBrains Mono">[1]</text>
+                            <text x="210" y="108" fill="#10b981" font-size="9" font-family="JetBrains Mono">[2,3]</text>
+                            <text x="260" y="108" fill="#10b981" font-size="9" font-family="JetBrains Mono">[2]</text>
+                            <text x="305" y="108" fill="#10b981" font-size="9" font-family="JetBrains Mono">[3]</text>
+                            <text x="350" y="108" fill="#10b981" font-size="9" font-family="JetBrains Mono">[ ]</text>
+                            <!-- lines -->
+                            <line x1="185" y1="18" x2="70" y2="38" stroke="#1e2840" />
+                            <line x1="185" y1="18" x2="305" y2="38" stroke="#1e2840" />
+                            <line x1="70" y1="50" x2="25" y2="70" stroke="#1e2840" />
+                            <line x1="70" y1="50" x2="100" y2="70" stroke="#1e2840" />
+                            <line x1="305" y1="50" x2="260" y2="70" stroke="#1e2840" />
+                            <line x1="305" y1="50" x2="340" y2="70" stroke="#1e2840" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="code-block">
+                    <div class="code-label">Java — Subsets (Backtracking)</div>
+                    <pre>List&lt;List&lt;Integer&gt;&gt; <span class="fn">subsets</span>(<span class="kw">int</span>[] nums) {
+  List&lt;List&lt;Integer&gt;&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+  <span class="fn">backtrack</span>(nums, <span class="num">0</span>, <span class="kw">new</span> ArrayList&lt;&gt;(), res);
+  <span class="kw">return</span> res;
+}
+<span class="kw">void</span> <span class="fn">backtrack</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> start,
+    List&lt;Integer&gt; curr, List&lt;List&lt;Integer&gt;&gt; res) {
+  res.<span class="fn">add</span>(<span class="kw">new</span> ArrayList&lt;&gt;(curr));
+  <span class="kw">for</span> (<span class="kw">int</span> i = start; i &lt; nums.length; i++) {
+    curr.<span class="fn">add</span>(nums[i]);        <span class="cm">// choose</span>
+    <span class="fn">backtrack</span>(nums, i+<span class="num">1</span>, curr, res); <span class="cm">// explore</span>
+    curr.<span class="fn">remove</span>(curr.<span class="fn">size</span>()-<span class="num">1</span>); <span class="cm">// unchoose</span>
+  }
+}</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag m">Subsets</span>
+                    <span class="prob-tag m">Permutations</span>
+                    <span class="prob-tag m">Combination Sum</span>
+                    <span class="prob-tag h">N-Queens</span>
+                    <span class="prob-tag m">Word Search</span>
+                    <span class="prob-tag m">Palindrome Partitioning</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pattern-card" id="dp">
+            <div class="card-header open" onclick="toggle(this)">
+                <span class="badge">17</span>
+                <h2>Dynamic Programming</h2>
+                <span class="badge p">DP</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body open">
+                <p class="desc">Break problem into overlapping subproblems. Store results (memoization / tabulation).
+                    Key insight: optimal solution built from optimal subsolutions.</p>
+                <div class="use-when">
+                    <h4>Use When</h4>
+                    <ul>
+                        <li>Overlapping subproblems + optimal substructure</li>
+                        <li>Count ways, max/min value, yes/no feasibility</li>
+                        <li>Keywords: "minimum cost", "maximum profit", "how many ways"</li>
+                    </ul>
+                </div>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Varies: O(n²) · O(n·W) etc.</span><span
+                        class="cx-badge cx-space">💾 Space: O(n) or O(n²)</span></div>
+                <div class="two-col">
+                    <div>
+                        <div class="code-block">
+                            <div class="code-label">Java — 0/1 Knapsack</div>
+                            <pre><span class="kw">int</span> <span class="fn">knapsack</span>(<span class="kw">int</span>[] w, <span class="kw">int</span>[] v, <span class="kw">int</span> W) {
+  <span class="kw">int</span> n = w.length;
+  <span class="kw">int</span>[] dp = <span class="kw">new int</span>[W+<span class="num">1</span>];
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; n; i++)
+    <span class="kw">for</span> (<span class="kw">int</span> j = W; j >= w[i]; j--)
+      dp[j] = Math.<span class="fn">max</span>(dp[j],
+               dp[j-w[i]] + v[i]);
+  <span class="kw">return</span> dp[W];
+}</pre>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-label">Java — LCS</div>
+                            <pre><span class="kw">int</span> <span class="fn">lcs</span>(String a, String b) {
+  <span class="kw">int</span> m=a.<span class="fn">length</span>(), n=b.<span class="fn">length</span>();
+  <span class="kw">int</span>[][] dp = <span class="kw">new int</span>[m+<span class="num">1</span>][n+<span class="num">1</span>];
+  <span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>;i<=m;i++)
+    <span class="kw">for</span>(<span class="kw">int</span> j=<span class="num">1</span>;j<=n;j++)
+      dp[i][j] = a.<span class="fn">charAt</span>(i-<span class="num">1</span>)==b.<span class="fn">charAt</span>(j-<span class="num">1</span>)
+        ? dp[i-<span class="num">1</span>][j-<span class="num">1</span>]+<span class="num">1</span>
+        : Math.<span class="fn">max</span>(dp[i-<span class="num">1</span>][j],dp[i][j-<span class="num">1</span>]);
+  <span class="kw">return</span> dp[m][n];
+}</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="ex-title">DP Problem Types</div>
+                        <div class="use-when" style="margin-bottom:10px">
+                            <h4>1D DP</h4>
+                            <ul>
+                                <li>Climbing Stairs, House Robber</li>
+                                <li>Coin Change, Jump Game</li>
+                            </ul>
+                        </div>
+                        <div class="use-when" style="margin-bottom:10px">
+                            <h4>2D DP</h4>
+                            <ul>
+                                <li>Unique Paths, Edit Distance</li>
+                                <li>LCS, Longest Palindromic Subseq</li>
+                            </ul>
+                        </div>
+                        <div class="use-when">
+                            <h4>Knapsack variants</h4>
+                            <ul>
+                                <li>0/1 Knapsack, Subset Sum</li>
+                                <li>Partition Equal Subset Sum</li>
+                            </ul>
+                        </div>
+                        <div class="prob-list" style="margin-top:10px">
+                            <span class="prob-tag e">Climbing Stairs</span>
+                            <span class="prob-tag m">Coin Change</span>
+                            <span class="prob-tag m">LIS</span>
+                            <span class="prob-tag m">Edit Distance</span>
+                            <span class="prob-tag h">Burst Balloons</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ BITWISE ═══════════ -->
+        <div class="section-divider">Bitwise Patterns</div>
+
+        <div class="pattern-card" id="bitwise-xor">
+            <div class="card-header" onclick="toggle(this)">
+                <span class="badge">18</span>
+                <h2>Bitwise XOR</h2>
+                <span class="badge g">Bit Manipulation</span>
+                <span class="toggle">▾</span>
+            </div>
+            <div class="card-body">
+                <p class="desc">XOR properties: a⊕a=0, a⊕0=a, commutative & associative. XOR all elements → duplicates
+                    cancel → missing/single number remains.</p>
+                <div class="use-when">
+                    <h4>Key Properties</h4>
+                    <ul>
+                        <li>n &amp; (n-1) → clears lowest set bit</li>
+                        <li>n &amp; (-n) → isolates lowest set bit</li>
+                        <li>a ⊕ a = 0 (self-cancellation)</li>
+                        <li>x &lt;&lt; k = x × 2^k | x &gt;&gt; k = x / 2^k</li>
+                    </ul>
+                </div>
+                <div class="complexity"><span class="cx-badge cx-time">⏱ Time: O(n)</span><span
+                        class="cx-badge cx-space">💾 Space: O(1)</span></div>
+                <div class="code-block">
+                    <div class="code-label">Java — Bit Tricks</div>
+                    <pre><span class="cm">// Single number (XOR all)</span>
+<span class="kw">int</span> <span class="fn">singleNumber</span>(<span class="kw">int</span>[] nums) {
+  <span class="kw">int</span> x = <span class="num">0</span>;
+  <span class="kw">for</span> (<span class="kw">int</span> n : nums) x ^= n;
+  <span class="kw">return</span> x;
+}
+<span class="cm">// Count set bits (Brian Kernighan)</span>
+<span class="kw">int</span> <span class="fn">countBits</span>(<span class="kw">int</span> n) {
+  <span class="kw">int</span> count = <span class="num">0</span>;
+  <span class="kw">while</span> (n != <span class="num">0</span>) { n &amp;= n-<span class="num">1</span>; count++; }
+  <span class="kw">return</span> count;
+}
+<span class="cm">// Check power of 2</span>
+<span class="kw">boolean</span> <span class="fn">isPow2</span>(<span class="kw">int</span> n) { <span class="kw">return</span> n>0 &amp;&amp; (n&(n-<span class="num">1</span>))==<span class="num">0</span>; }</pre>
+                </div>
+                <div class="prob-list">
+                    <span class="prob-tag e">Single Number</span>
+                    <span class="prob-tag m">Single Number II</span>
+                    <span class="prob-tag m">Two Single Numbers</span>
+                    <span class="prob-tag e">Number of 1 Bits</span>
+                    <span class="prob-tag m">Counting Bits</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div style="margin-top:48px;padding:20px 0;border-top:1px solid var(--border);text-align:center">
+            <p style="font-family:var(--mono);font-size:11px;color:var(--muted)">// 18 patterns · Study smart, not hard
+                · <span style="color:var(--accent)">Good luck Gowtham! ⚡</span></p>
+        </div>
+    </main>
+
+    <script>
+        function toggle(header) {
+            header.classList.toggle('open');
+            header.nextElementSibling.classList.toggle('open');
+        }
+
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('show');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        // Sidebar navigation — data-target based, no href, no external link warning
+        document.querySelectorAll('.sidebar-link').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-target');
+                const target = document.getElementById(targetId);
+                if (!target) return;
+
+                // Auto-open card if collapsed
+                const header = target.querySelector('.card-header');
+                const body = target.querySelector('.card-body');
+                if (header && body && !body.classList.contains('open')) {
+                    header.classList.add('open');
+                    body.classList.add('open');
+                }
+
+                // Smooth scroll with offset
+                const offset = window.innerWidth <= 768 ? 64 : 24;
+                const y = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+
+                // Active state
+                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+
+                // Close sidebar on mobile after click
+                if (window.innerWidth <= 768) closeSidebar();
+            });
+        });
+
+        // Scroll spy
+        const sections = document.querySelectorAll('.pattern-card');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(s => {
+                if (window.scrollY >= s.offsetTop - 100) current = s.id;
+            });
+            document.querySelectorAll('.sidebar-link').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-target') === current);
+            });
+        });
+    </script>
+</body>
+
+</html>

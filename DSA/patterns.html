@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DSA Patterns — Learn by Doing</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Clash+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #080b12;
+            --surface: #0d1117;
+            --card: #111827;
+            --border: #1f2937;
+            --border2: #374151;
+            --text: #f1f5f9;
+            --muted: #6b7280;
+            --muted2: #9ca3af;
+            --mono: 'Space Mono', monospace;
+            --display: 'Clash Display', 'DM Sans', sans-serif;
+            --body: 'DM Sans', sans-serif;
+            --accent: #00e5ff;
+            --radius: 12px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--body);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── GRID BG ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ══════════════════════════════
+   HOME SCREEN
+══════════════════════════════ */
+        #home {
+            position: relative;
+            z-index: 1;
+            padding: 48px 24px 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .home-hero {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-top: 20px;
+        }
+
+        .home-hero .eyebrow {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.1s forwards;
+        }
+
+        .home-hero h1 {
+            font-family: var(--display);
+            font-size: clamp(36px, 6vw, 72px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.2s forwards;
+        }
+
+        .home-hero h1 .gradient {
+            background: linear-gradient(135deg, #00e5ff 0%, #a78bfa 50%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .home-hero p {
+            font-size: 16px;
+            color: var(--muted2);
+            max-width: 520px;
+            margin: 0 auto 32px;
+            line-height: 1.7;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.3s forwards;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.4s forwards;
+        }
+
+        .stat-pill {
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--muted2);
+        }
+
+        .stat-pill span {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* CATEGORY SECTION */
+        .cat-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            padding-left: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cat-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .cat-section {
+            margin-bottom: 40px;
+        }
+
+        /* PATTERN CARDS GRID */
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .pat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            opacity: 0;
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        .pat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--c, #00e5ff);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .pat-card:hover {
+            border-color: var(--border2);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .pat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .pat-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .pat-num {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .pat-difficulty {
+            font-family: var(--mono);
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .diff-e {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+        }
+
+        .diff-m {
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+        }
+
+        .diff-h {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+        }
+
+        .pat-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .pat-card h3 {
+            font-family: var(--display);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .pat-card p {
+            font-size: 12px;
+            color: var(--muted2);
+            line-height: 1.6;
+        }
+
+        .pat-card-footer {
+            display: flex;
+            gap: 6px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .pat-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--muted2);
+            font-family: var(--mono);
+        }
+
+        .pat-arrow {
+            position: absolute;
+            bottom: 18px;
+            right: 18px;
+            font-size: 18px;
+            color: var(--muted);
+            opacity: 0;
+            transition: opacity 0.2s, color 0.2s;
+        }
+
+        .pat-card:hover .pat-arrow {
+            opacity: 1;
+            color: var(--c, #00e5ff);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ══════════════════════════════
+   LESSON SCREEN
+══════════════════════════════ */
+        #lesson {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        #lesson.show {
+            display: block;
+        }
+
+        /* TOP BAR */
+        .lesson-topbar {
+            position: sticky;
+            top: 0;
+            background: rgba(8, 11, 18, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted2);
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: var(--body);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border2);
+            color: var(--text);
+        }
+
+        .lesson-breadcrumb {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .lesson-breadcrumb .current {
+            color: var(--accent);
+        }
+
+        .lesson-nav {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .nav-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted2);
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: var(--body);
+            transition: all 0.15s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            border-color: var(--border2);
+            color: var(--text);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* LESSON BODY */
+        .lesson-body {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* LESSON HEADER */
+        .lesson-header {
+            margin-bottom: 36px;
+        }
+
+        .lesson-cat-badge {
+            font-family: var(--mono);
+            font-size: 10px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--c, #00e5ff);
+            color: var(--c, #00e5ff);
+            background: rgba(0, 229, 255, 0.06);
+            display: inline-block;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .lesson-title {
+            font-family: var(--display);
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 10px;
+        }
+
+        .lesson-title .num {
+            color: var(--c, #00e5ff);
+            opacity: 0.4;
+            margin-right: 8px;
+        }
+
+        .lesson-tagline {
+            font-size: 15px;
+            color: var(--muted2);
+            line-height: 1.7;
+            max-width: 600px;
+        }
+
+        /* COMPLEXITY BAR */
+        .complexity-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 16px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 28px;
+        }
+
+        .cx {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .cx-label {
+            font-family: var(--mono);
+            font-size: 9px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cx-val {
+            font-family: var(--mono);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--c, #00e5ff);
+        }
+
+        .cx-divider {
+            width: 1px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        /* CONCEPT SECTION */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .section-header h2 {
+            font-family: var(--display);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section-num {
+            font-family: var(--mono);
+            font-size: 10px;
+            background: var(--c, #00e5ff);
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .concept-block {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+
+        .concept-text {
+            font-size: 14px;
+            color: var(--muted2);
+            line-height: 1.9;
+            margin-bottom: 16px;
+        }
+
+        .when-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .when-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .when-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: var(--muted2);
+        }
+
+        .when-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--c, #00e5ff);
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        /* DIAGRAM */
+        .diagram-section {
+            margin-bottom: 28px;
+        }
+
+        .diagram-container {
+            background: #0a0d14;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .diagram-title {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+        }
+
+        /* EXAMPLES */
+        .examples-section {
+            margin-bottom: 28px;
+        }
+
+        .example-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .ex-tab {
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 6px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .ex-tab.active {
+            border-color: var(--c, #00e5ff);
+            color: var(--c, #00e5ff);
+            background: rgba(0, 229, 255, 0.06);
+        }
+
+        .example-panel {
+            display: none;
+        }
+
+        .example-panel.active {
+            display: block;
+        }
+
+        .ex-problem {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--c, #00e5ff);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+        }
+
+        .ex-problem .q-label {
+            font-family: var(--mono);
+            font-size: 9px;
+            color: var(--c, #00e5ff);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .ex-problem .q-text {
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .ex-problem .q-io {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--muted2);
+            margin-top: 8px;
+        }
+
+        /* STEP STEPPER */
+        .stepper {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .stepper-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stepper-title {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stepper-counter {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .step-counter-num {
+            color: var(--c, #00e5ff);
+            font-weight: 700;
+        }
+
+        .stepper-viz {
+            padding: 20px 18px;
+            min-height: 100px;
+        }
+
+        .stepper-desc {
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--muted2);
+            line-height: 1.6;
+        }
+
+        .stepper-controls {
+            padding: 12px 18px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            padding: 7px 18px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: var(--body);
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step-btn:hover:not(:disabled) {
+            border-color: var(--c, #00e5ff);
+            color: var(--c, #00e5ff);
+        }
+
+        .step-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .step-dots {
+            display: flex;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: background 0.2s;
+        }
+
+        .step-dot.active {
+            background: var(--c, #00e5ff);
+        }
+
+        /* ARRAY VIZ */
+        .arr-viz {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .arr-cell {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+            font-size: 16px;
+            font-weight: 700;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--muted2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .arr-cell.active {
+            border-color: var(--c, #00e5ff);
+            background: rgba(0, 229, 255, 0.12);
+            color: var(--c, #00e5ff);
+            transform: translateY(-4px);
+        }
+
+        .arr-cell.window {
+            border-color: rgba(0, 229, 255, 0.4);
+            background: rgba(0, 229, 255, 0.06);
+            color: var(--text);
+        }
+
+        .arr-cell.found {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            transform: translateY(-4px);
+        }
+
+        .arr-cell.removed {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+            color: #ef4444;
+        }
+
+        .arr-cell.pivot {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+            transform: scale(1.08);
+        }
+
+        .arr-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            font-family: var(--mono);
+            color: var(--c, #00e5ff);
+            white-space: nowrap;
+        }
+
+        /* RESULT BOX */
+        .result-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .result-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-val {
+            font-family: var(--mono);
+            font-size: 15px;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        /* CODE BLOCK */
+        .code-section {
+            margin-bottom: 28px;
+        }
+
+        .code-box {
+            background: #070a0f;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .code-lang {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            font-size: 11px;
+            padding: 3px 10px;
+            cursor: pointer;
+            font-family: var(--mono);
+            transition: all 0.15s;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--border2);
+            color: var(--text);
+        }
+
+        pre {
+            font-family: var(--mono);
+            font-size: 12px;
+            padding: 18px;
+            overflow-x: auto;
+            line-height: 1.8;
+            color: #cdd6f4;
+        }
+
+        .kw {
+            color: #cba6f7;
+        }
+
+        .fn {
+            color: #89b4fa;
+        }
+
+        .cm {
+            color: #45475a;
+            font-style: italic;
+        }
+
+        .num {
+            color: #fab387;
+        }
+
+        .str {
+            color: #a6e3a1;
+        }
+
+        .type {
+            color: #94e2d5;
+        }
+
+        /* PROBLEMS */
+        .problems-section {
+            margin-bottom: 28px;
+        }
+
+        .prob-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .prob-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted2);
+            transition: border-color 0.15s;
+        }
+
+        .prob-item:hover {
+            border-color: var(--border2);
+        }
+
+        .prob-diff {
+            font-family: var(--mono);
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .prob-diff.e {
+            color: #10b981;
+        }
+
+        .prob-diff.m {
+            color: #f59e0b;
+        }
+
+        .prob-diff.h {
+            color: #ef4444;
+        }
+
+        /* TREE VIZ */
+        .tree-viz svg {
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* PROGRESS BAR */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: var(--c, #00e5ff);
+            transition: width 0.3s ease;
+            z-index: 999;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .lesson-body {
+                padding: 24px 16px 60px;
+            }
+
+            .arr-cell {
+                width: 36px;
+                height: 36px;
+                font-size: 13px;
+            }
+
+            .complexity-row {
+                flex-direction: column;
+            }
+
+            .cx-divider {
+                display: none;
+            }
+
+            .lesson-nav .nav-btn span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HOME SCREEN -->
+    <div id="home">
+        <div class="home-hero">
+            <div class="eyebrow">// Master DSA — One Pattern at a Time</div>
+            <h1>Learn <span class="gradient">DSA Patterns</span><br />Like Never Before</h1>
+            <p>18 core patterns. Animated diagrams. Step-by-step examples. Real code. Everything you need to crack any
+                interview.</p>
+            <div class="stats-row">
+                <div class="stat-pill"><span>18</span> Patterns</div>
+                <div class="stat-pill"><span>54+</span> Examples</div>
+                <div class="stat-pill"><span>90+</span> Problems</div>
+                <div class="stat-pill"><span>Java</span> Code</div>
+            </div>
+        </div>
+        <div id="cards-container"></div>
+    </div>
+
+    <!-- LESSON SCREEN -->
+    <div id="lesson">
+        <div class="progress-bar" id="progress-bar"></div>
+        <div class="lesson-topbar">
+            <button class="back-btn" onclick="goHome()">← Back</button>
+            <div class="lesson-breadcrumb">
+                DSA Patterns <span style="opacity:0.3">›</span>
+                <span class="current" id="lesson-breadcrumb-text"></span>
+            </div>
+            <div class="lesson-nav">
+                <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">← <span>Prev</span></button>
+                <button class="nav-btn" id="next-btn" onclick="navigate(1)"><span>Next</span> →</button>
+            </div>
+        </div>
+        <div class="lesson-body" id="lesson-content"></div>
+    </div>
+
+    <script>
+        /* ══════════════════════════════════════════
+           DATA — ALL 18 PATTERNS
+        ══════════════════════════════════════════ */
+        const PATTERNS = [
+            {
+                id: 'sliding-window', num: '01', title: 'Sliding Window',
+                cat: 'Array & String', color: '#00e5ff', icon: '🪟', diff: 'm',
+                tags: ['Array', 'String', 'O(n)'],
+                tagline: 'A moving frame over data that avoids recomputing from scratch — turn O(n²) into O(n).',
+                concept: `The Sliding Window technique maintains a contiguous range (window) over an array or string. Instead of recomputing the entire window each step, you ADD the new right element and REMOVE the old left element — one operation per step instead of k operations.
+
+Two flavors exist: <b>Fixed-size</b> (window size k is given) and <b>Variable-size</b> (expand right until condition breaks, then shrink left).`,
+                when: ['Contiguous subarray or substring required', 'Max/min sum of size-k window', 'Longest substring with at most k distinct chars', 'Keywords: "subarray", "window", "consecutive"'],
+                time: 'O(n)', space: 'O(1) or O(k)',
+                examples: [
+                    {
+                        title: 'Max Sum Subarray of Size K',
+                        prob: 'Find the maximum sum of any contiguous subarray of size k.',
+                        input: 'arr = [2, 1, 5, 1, 3, 2],  k = 3',
+                        output: '9  (window [5, 1, 3])',
+                        steps: [
+                            { desc: '🪟 Build first window: sum [2,1,5] = 8. This is our first candidate for max.', arr: [2, 1, 5, 1, 3, 2], hi: [0, 1, 2], win: [], label: { 0: '', 1: '', 2: '' }, note: 'sum=8, max=8' },
+                            { desc: '➡️ Slide right: subtract arr[0]=2, add arr[3]=1 → sum=7. New window [1,5,1]. Not better than 8.', arr: [2, 1, 5, 1, 3, 2], hi: [], win: [1, 2, 3], label: {}, note: 'sum=7, max=8' },
+                            { desc: '➡️ Slide right: subtract arr[1]=1, add arr[4]=3 → sum=9. New window [5,1,3]. New max!', arr: [2, 1, 5, 1, 3, 2], hi: [2, 3, 4], win: [], label: { 2: '', 3: '', 4: '' }, note: 'sum=9, max=9 ✓' },
+                            { desc: '➡️ Slide right: subtract arr[2]=5, add arr[5]=2 → sum=6. Window [1,3,2]. Max stays 9.', arr: [2, 1, 5, 1, 3, 2], hi: [], win: [3, 4, 5], label: {}, note: 'sum=6, max=9' },
+                        ]
+                    },
+                    {
+                        title: 'Longest Substring with No Repeating Characters',
+                        prob: 'Find the length of the longest substring without repeating characters.',
+                        input: 's = "abcabcbb"',
+                        output: '3  (substring "abc")',
+                        steps: [
+                            { desc: 'Start with empty window. Expand right: add "a". No duplicate. Window = "a", length=1.', arr: ['a', 'b', 'c', 'a', 'b', 'c', 'b', 'b'], hi: [0], win: [], label: {}, note: 'window="a", len=1' },
+                            { desc: 'Add "b". No duplicate. Window = "ab", length=2.', arr: ['a', 'b', 'c', 'a', 'b', 'c', 'b', 'b'], hi: [0, 1], win: [], label: {}, note: 'window="ab", len=2' },
+                            { desc: 'Add "c". No duplicate. Window = "abc", length=3. MAX = 3.', arr: ['a', 'b', 'c', 'a', 'b', 'c', 'b', 'b'], hi: [0, 1, 2], win: [], label: {}, note: 'window="abc", len=3 ✓ MAX' },
+                            { desc: 'Add "a" — DUPLICATE! Shrink left until "a" removed. L moves to index 1. Window = "bca".', arr: ['a', 'b', 'c', 'a', 'b', 'c', 'b', 'b'], hi: [1, 2, 3], win: [], label: { 0: 'L was' }, note: 'window="bca", len=3' },
+                        ]
+                    },
+                    {
+                        title: 'Minimum Window Substring',
+                        prob: 'Find the smallest window in s that contains all chars of t.',
+                        input: 's = "ADOBECODEBANC",  t = "ABC"',
+                        output: '"BANC"  (length 4)',
+                        steps: [
+                            { desc: 'Expand right until we have all chars of t = {A,B,C}. First valid window: "ADOBEC" (contains A,B,C).', arr: ['A', 'D', 'O', 'B', 'E', 'C', 'O', 'D', 'E', 'B', 'A', 'N', 'C'], hi: [0, 1, 2, 3, 4, 5], win: [], label: {}, note: 'window="ADOBEC", len=6' },
+                            { desc: 'Try to shrink from left. Remove "A" — window no longer valid. Contract failed. Move right.', arr: ['A', 'D', 'O', 'B', 'E', 'C', 'O', 'D', 'E', 'B', 'A', 'N', 'C'], hi: [3, 4, 5, 6, 7, 8, 9, 10], win: [], label: {}, note: 'searching for better...' },
+                            { desc: 'New valid window found: "BANC". Contains B,A(at 10),N,C. Length=4 — better!', arr: ['A', 'D', 'O', 'B', 'E', 'C', 'O', 'D', 'E', 'B', 'A', 'N', 'C'], hi: [9, 10, 11, 12], win: [], label: {}, note: 'window="BANC", len=4 ✓ MIN' },
+                            { desc: 'Try shrinking "BANC": remove "B" → "ANC" missing B. Shrink fails. "BANC" is our answer!', arr: ['A', 'D', 'O', 'B', 'E', 'C', 'O', 'D', 'E', 'B', 'A', 'N', 'C'], hi: [9, 10, 11, 12], win: [], label: {}, note: 'Final answer: "BANC"' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Fixed Window — Max Sum of Size K</span>
+<span class="kw">int</span> <span class="fn">maxSumFixed</span>(<span class="kw">int</span>[] arr, <span class="kw">int</span> k) {
+    <span class="kw">int</span> sum = <span class="num">0</span>, max = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < k; i++) sum += arr[i]; <span class="cm">// first window</span>
+    max = sum;
+    <span class="kw">for</span> (<span class="kw">int</span> i = k; i < arr.length; i++) {
+        sum += arr[i] - arr[i - k]; <span class="cm">// slide: add right, remove left</span>
+        max = Math.<span class="fn">max</span>(max, sum);
+    }
+    <span class="kw">return</span> max;
+}
+
+<span class="cm">// Variable Window — Longest Substring ≤ K Distinct Chars</span>
+<span class="kw">int</span> <span class="fn">longestKDistinct</span>(String s, <span class="kw">int</span> k) {
+    Map&lt;Character, Integer&gt; freq = <span class="kw">new</span> HashMap&lt;&gt;();
+    <span class="kw">int</span> l = <span class="num">0</span>, max = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r < s.length(); r++) {
+        freq.<span class="fn">merge</span>(s.<span class="fn">charAt</span>(r), <span class="num">1</span>, Integer::sum); <span class="cm">// expand</span>
+        <span class="kw">while</span> (freq.<span class="fn">size</span>() > k) {                    <span class="cm">// shrink</span>
+            <span class="kw">char</span> c = s.<span class="fn">charAt</span>(l++);
+            freq.<span class="fn">merge</span>(c, -<span class="num">1</span>, Integer::sum);
+            <span class="kw">if</span> (freq.<span class="fn">get</span>(c) == <span class="num">0</span>) freq.<span class="fn">remove</span>(c);
+        }
+        max = Math.<span class="fn">max</span>(max, r - l + <span class="num">1</span>);
+    }
+    <span class="kw">return</span> max;
+}`,
+                problems: [
+                    { name: 'Maximum Average Subarray I', diff: 'e' }, { name: 'Longest Substring Without Repeating', diff: 'm' },
+                    { name: 'Fruits Into Baskets', diff: 'm' }, { name: 'Minimum Window Substring', diff: 'h' },
+                    { name: 'Permutation in String', diff: 'm' }, { name: 'Max Consecutive Ones III', diff: 'm' },
+                ]
+            },
+
+            {
+                id: 'two-pointers', num: '02', title: 'Two Pointers',
+                cat: 'Array & String', color: '#a78bfa', icon: '👆', diff: 'm',
+                tags: ['Array', 'Sorted', 'O(n)'],
+                tagline: 'Two indices converging or diverging — find pairs and process sequences in linear time.',
+                concept: `Two Pointers uses two indices that move through an array. They can move toward each other from both ends (opposite direction) or both move forward at different speeds (same direction). Works best on sorted arrays for pair/triplet problems, or to compare two sequences simultaneously.`,
+                when: ['Sorted array — find pair with target sum', 'Remove duplicates in-place', 'Palindrome validation', 'Compare two sorted arrays', 'Container with most water'],
+                time: 'O(n)', space: 'O(1)',
+                examples: [
+                    {
+                        title: 'Two Sum II — Sorted Array',
+                        prob: 'Given a sorted array, find two numbers that sum to target.',
+                        input: 'arr = [-3, -1, 1, 2, 3, 4],  target = 1',
+                        output: '[2, 4]  (indices, 1-based: 1+0=-nope... 1+0=nope... -1+2=1 ✓)',
+                        steps: [
+                            { desc: 'Place L at index 0, R at index 5. Sum = -3+4 = 1. Equal to target! Found immediately.', arr: [-3, -1, 1, 2, 3, 4], hi: [0, 5], win: [], label: { 0: 'L', 5: 'R' }, note: 'sum=-3+4=1 ✓ FOUND' },
+                            { desc: '(Another example) target=0. L=0,R=5: -3+4=1 > 0 → move R left.', arr: [-3, -1, 1, 2, 3, 4], hi: [0, 4], win: [], label: { 0: 'L', 4: 'R' }, note: 'sum=-3+3=0 ✓ FOUND' },
+                            { desc: '(target=3) L=0,R=5: -3+4=1 < 3 → move L right. L=1: -1+4=3 = target!', arr: [-3, -1, 1, 2, 3, 4], hi: [1, 5], win: [], label: { 1: 'L', 5: 'R' }, note: 'sum=-1+4=3 ✓ FOUND' },
+                            { desc: 'Key insight: if sum < target → move L right (increase sum). if sum > target → move R left (decrease sum).', arr: [-3, -1, 1, 2, 3, 4], hi: [1, 5], win: [], label: { 1: 'L→', 5: '←R' }, note: 'Always O(n), O(1) space' },
+                        ]
+                    },
+                    {
+                        title: '3Sum — All Triplets Summing to Zero',
+                        prob: 'Find all unique triplets in the array that sum to zero.',
+                        input: 'arr = [-4, -1, -1, 0, 1, 2]',
+                        output: '[[-1,-1,2], [-1,0,1]]',
+                        steps: [
+                            { desc: 'Sort the array. Fix first element (i=0, val=-4). Now run two-pointer on rest for sum=4.', arr: [-4, -1, -1, 0, 1, 2], hi: [0], win: [1, 5], label: { 0: 'i', 1: 'L', 5: 'R' }, note: 'target for L,R: 4' },
+                            { desc: 'Fix i=1, val=-1. Two-pointer: L=2, R=5. -1+2=1≠0. L+R=-1+2=1 > 0 → R--.', arr: [-4, -1, -1, 0, 1, 2], hi: [1], win: [2, 4], label: { 1: 'i', 2: 'L', 4: 'R' }, note: '-1+1=0 ✓' },
+                            { desc: 'i=1, L=2(-1), R=4(1): -1+(-1)+1= -1≠0. -1+0+1=0 → triplet [-1,0,1] found!', arr: [-4, -1, -1, 0, 1, 2], hi: [1, 3, 4], win: [], label: { 1: 'i', 3: 'L', 4: 'R' }, note: 'Triplet [-1,0,1] ✓' },
+                            { desc: 'i=1 again, L=2(-1), R=5(2): -1+(-1)+2=0 → triplet [-1,-1,2] found! Skip duplicates.', arr: [-4, -1, -1, 0, 1, 2], hi: [1, 2, 5], win: [], label: { 1: 'i', 2: 'L', 5: 'R' }, note: 'Triplet [-1,-1,2] ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Valid Palindrome',
+                        prob: 'Check if a string is a palindrome (only alphanumeric chars).',
+                        input: 's = "A man a plan a canal Panama"',
+                        output: 'true',
+                        steps: [
+                            { desc: 'Clean string: "amanaplanacanalpanama". L=0(a), R=19(a). a==a → both move inward.', arr: ['a', 'm', 'a', 'n', 'a', '…', 'a', 'n', 'a', 'm', 'a'], hi: [0, 10], win: [], label: { 0: 'L', 10: 'R' }, note: 'a==a ✓' },
+                            { desc: 'L=1(m), R=9(m). m==m → move inward.', arr: ['a', 'm', 'a', 'n', 'a', '…', 'a', 'n', 'a', 'm', 'a'], hi: [1, 9], win: [], label: { 1: 'L', 9: 'R' }, note: 'm==m ✓' },
+                            { desc: 'Continue inward. All characters match their mirror. L crosses R → done.', arr: ['a', 'm', 'a', 'n', 'a', '…', 'a', 'n', 'a', 'm', 'a'], hi: [4, 5, 6], win: [], label: { 4: 'L', 6: 'R' }, note: 'All matched ✓' },
+                            { desc: 'L >= R: every char matched its mirror → palindrome! O(n) time, O(1) space.', arr: ['a', 'm', 'a', 'n', 'a', '…', 'a', 'n', 'a', 'm', 'a'], hi: [5], win: [], label: { 5: 'L=R' }, note: 'isPalindrome = true ✓' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Two Sum II (Sorted Array)</span>
+<span class="kw">int</span>[] <span class="fn">twoSum</span>(<span class="kw">int</span>[] arr, <span class="kw">int</span> target) {
+    <span class="kw">int</span> l = <span class="num">0</span>, r = arr.length - <span class="num">1</span>;
+    <span class="kw">while</span> (l < r) {
+        <span class="kw">int</span> sum = arr[l] + arr[r];
+        <span class="kw">if</span> (sum == target) <span class="kw">return new int</span>[]{l + <span class="num">1</span>, r + <span class="num">1</span>};
+        <span class="kw">else if</span> (sum < target) l++;   <span class="cm">// need larger sum</span>
+        <span class="kw">else</span> r--;                      <span class="cm">// need smaller sum</span>
+    }
+    <span class="kw">return new int</span>[]{-<span class="num">1</span>, -<span class="num">1</span>};
+}
+
+<span class="cm">// 3Sum</span>
+List&lt;List&lt;Integer&gt;&gt; <span class="fn">threeSum</span>(<span class="kw">int</span>[] nums) {
+    Arrays.<span class="fn">sort</span>(nums);
+    List&lt;List&lt;Integer&gt;&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < nums.length - <span class="num">2</span>; i++) {
+        <span class="kw">if</span> (i > <span class="num">0</span> && nums[i] == nums[i-<span class="num">1</span>]) <span class="kw">continue</span>; <span class="cm">// skip dup</span>
+        <span class="kw">int</span> l = i + <span class="num">1</span>, r = nums.length - <span class="num">1</span>;
+        <span class="kw">while</span> (l < r) {
+            <span class="kw">int</span> sum = nums[i] + nums[l] + nums[r];
+            <span class="kw">if</span> (sum == <span class="num">0</span>) {
+                res.<span class="fn">add</span>(List.<span class="fn">of</span>(nums[i], nums[l++], nums[r--]));
+                <span class="kw">while</span> (l < r && nums[l] == nums[l-<span class="num">1</span>]) l++;
+            } <span class="kw">else if</span> (sum < <span class="num">0</span>) l++;
+            <span class="kw">else</span> r--;
+        }
+    }
+    <span class="kw">return</span> res;
+}`,
+                problems: [
+                    { name: 'Two Sum II', diff: 'm' }, { name: '3Sum', diff: 'm' }, { name: 'Container With Most Water', diff: 'm' },
+                    { name: 'Valid Palindrome', diff: 'e' }, { name: 'Trapping Rain Water', diff: 'h' }, { name: '4Sum', diff: 'm' },
+                ]
+            },
+
+            {
+                id: 'prefix-sum', num: '03', title: 'Prefix Sum',
+                cat: 'Array & String', color: '#34d399', icon: '∑', diff: 'm',
+                tags: ['Array', 'HashMap', 'O(1) query'],
+                tagline: 'Precompute cumulative sums for instant O(1) range queries — build once, answer many.',
+                concept: `Build a prefix array where prefix[i] = sum of arr[0..i]. Any range sum query [l,r] = prefix[r] - prefix[l-1] in O(1). Combined with a HashMap, this solves "count subarrays with sum = K" in O(n) instead of O(n²).`,
+                when: ['Multiple range sum queries on same array', 'Count subarrays with exact sum K', 'Check if subarray sum equals target', '2D matrix range sum queries'],
+                time: 'O(n) build, O(1) query', space: 'O(n)',
+                examples: [
+                    {
+                        title: 'Range Sum Query',
+                        prob: 'Answer multiple sum queries on array: sum(l, r).',
+                        input: 'arr = [3, 1, 4, 1, 5, 9, 2],  query(2, 5)',
+                        output: '19  (sum of indices 2-5: 4+1+5+9)',
+                        steps: [
+                            { desc: 'Build prefix array: prefix[i] = prefix[i-1] + arr[i]. prefix[0]=3, prefix[1]=4...', arr: [3, 1, 4, 1, 5, 9, 2], hi: [0], win: [], label: {}, note: 'prefix=[3,4,8,9,14,23,25]' },
+                            { desc: 'prefix[1]=3+1=4. prefix[2]=4+4=8. prefix[3]=8+1=9. prefix[4]=9+5=14.', arr: [3, 1, 4, 1, 5, 9, 2], hi: [0, 1, 2, 3, 4], win: [], label: {}, note: 'Prefix built in O(n)' },
+                            { desc: 'Now query(2,5): sum = prefix[5] - prefix[1] = 23 - 4 = 19. Just ONE subtraction!', arr: [3, 1, 4, 1, 5, 9, 2], hi: [2, 3, 4, 5], win: [], label: { 2: 'l', 5: 'r' }, note: 'sum = 23 - 4 = 19 ✓' },
+                            { desc: 'Without prefix: O(n) per query. With prefix: O(1) per query after O(n) build!', arr: [3, 1, 4, 1, 5, 9, 2], hi: [2, 3, 4, 5], win: [], label: {}, note: '10000 queries: O(n) vs O(n²)' },
+                        ]
+                    },
+                    {
+                        title: 'Subarray Sum Equals K',
+                        prob: 'Count the number of subarrays with sum = k.',
+                        input: 'arr = [1, 2, 3, 2, 1],  k = 3',
+                        output: '4  (subarrays: [1,2],[3],[2,1],[1,2] reversed)',
+                        steps: [
+                            { desc: 'Use HashMap: count of each prefix sum seen so far. Start: map={0:1} (empty prefix). Running sum=0.', arr: [1, 2, 3, 2, 1], hi: [], win: [], label: {}, note: 'map={0:1}, sum=0' },
+                            { desc: 'i=0: sum=1. Check map for sum-k=1-3=-2 → not found (0 subarrays). Add sum=1 to map.', arr: [1, 2, 3, 2, 1], hi: [0], win: [], label: {}, note: 'map={0:1,1:1}, count=0' },
+                            { desc: 'i=1: sum=3. Check map for sum-k=3-3=0 → found 1! count=1 (subarray [1,2]). Also i=2: sum=6, check for 3 → found 1 more (subarray [3]).', arr: [1, 2, 3, 2, 1], hi: [0, 1, 2], win: [], label: {}, note: 'count=2' },
+                            { desc: 'i=3: sum=8, check for 5 → not found. i=4: sum=9, check for 6 → found 1! (subarray [2,1]). Also prefix[1..4] = [2,3,2,1] sum=8... total count=4.', arr: [1, 2, 3, 2, 1], hi: [2, 3, 4], win: [], label: {}, note: 'Final count = 4 ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Product of Array Except Self',
+                        prob: 'Return array where output[i] = product of all elements except arr[i]. No division!',
+                        input: 'arr = [1, 2, 3, 4]',
+                        output: '[24, 12, 8, 6]',
+                        steps: [
+                            { desc: 'Left pass: left[i] = product of all elements to the LEFT of i. left=[1,1,2,6].', arr: [1, 2, 3, 4], hi: [0, 1, 2, 3], win: [], label: {}, note: 'left=[1,1,2,6]' },
+                            { desc: 'Right pass: right[i] = product of all elements to the RIGHT of i. right=[24,12,4,1].', arr: [1, 2, 3, 4], hi: [0, 1, 2, 3], win: [], label: {}, note: 'right=[24,12,4,1]' },
+                            { desc: 'Output[i] = left[i] * right[i]. output[0]=1*24=24, output[1]=1*12=12.', arr: [1, 2, 3, 4], hi: [0, 1], win: [], label: {}, note: 'output=[24,12,...]' },
+                            { desc: 'output[2]=2*4=8, output[3]=6*1=6. Done! Two O(n) passes, O(1) extra space.', arr: [1, 2, 3, 4], hi: [2, 3], win: [], label: {}, note: 'output=[24,12,8,6] ✓' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Build prefix sum array</span>
+<span class="kw">int</span>[] prefix = <span class="kw">new int</span>[n + <span class="num">1</span>];
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < n; i++)
+    prefix[i + <span class="num">1</span>] = prefix[i] + arr[i];
+
+<span class="cm">// Range query O(1)</span>
+<span class="kw">int</span> <span class="fn">rangeSum</span>(<span class="kw">int</span> l, <span class="kw">int</span> r) {
+    <span class="kw">return</span> prefix[r + <span class="num">1</span>] - prefix[l];
+}
+
+<span class="cm">// Count Subarrays with Sum = K</span>
+<span class="kw">int</span> <span class="fn">subarraySum</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+    Map&lt;Integer, Integer&gt; map = <span class="kw">new</span> HashMap&lt;&gt;();
+    map.<span class="fn">put</span>(<span class="num">0</span>, <span class="num">1</span>);       <span class="cm">// empty prefix</span>
+    <span class="kw">int</span> sum = <span class="num">0</span>, count = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> n : nums) {
+        sum += n;
+        count += map.<span class="fn">getOrDefault</span>(sum - k, <span class="num">0</span>);
+        map.<span class="fn">merge</span>(sum, <span class="num">1</span>, Integer::sum);
+    }
+    <span class="kw">return</span> count;
+}`,
+                problems: [
+                    { name: 'Range Sum Query - Immutable', diff: 'e' }, { name: 'Subarray Sum Equals K', diff: 'm' },
+                    { name: 'Product of Array Except Self', diff: 'm' }, { name: 'Count of Range Sum', diff: 'h' },
+                    { name: 'Continuous Subarray Sum', diff: 'm' }, { name: 'Path Sum III', diff: 'm' },
+                ]
+            },
+
+            {
+                id: 'fast-slow', num: '04', title: 'Fast & Slow Pointers',
+                cat: 'Linked List', color: '#f97316', icon: '🐇', diff: 'm',
+                tags: ['LinkedList', 'Floyd', 'Cycle'],
+                tagline: "Floyd's Tortoise & Hare — detect cycles and find midpoints using two-speed traversal.",
+                concept: `Two pointers move at different speeds: slow moves 1 step, fast moves 2 steps. In a cyclic sequence, they MUST meet. If fast reaches null, no cycle. After meeting, resetting slow to head and moving both at speed 1 reveals the cycle start.`,
+                when: ['Detect cycle in linked list', 'Find cycle start (Floyd\'s algorithm)', 'Find middle of linked list', 'Happy number / cyclic number detection'],
+                time: 'O(n)', space: 'O(1)',
+                examples: [
+                    {
+                        title: 'Linked List Cycle Detection',
+                        prob: 'Determine if a linked list has a cycle.',
+                        input: '1 → 2 → 3 → 4 → 5 → (back to 3)',
+                        output: 'true (cycle exists)',
+                        steps: [
+                            { desc: 'Start: slow=1, fast=1. Move: slow→2, fast→3.', arr: [1, 2, 3, 4, 5], hi: [1, 2], win: [], label: { 1: 'S', 2: 'F' }, note: 'slow=2, fast=3' },
+                            { desc: 'Move: slow→3, fast→5.', arr: [1, 2, 3, 4, 5], hi: [2, 4], win: [], label: { 2: 'S', 4: 'F' }, note: 'slow=3, fast=5' },
+                            { desc: 'Move: slow→4, fast→4 (5→back to 3→4). THEY MEET! Cycle detected!', arr: [1, 2, 3, 4, 5], hi: [3], win: [], label: { 3: 'S=F' }, note: 'Cycle detected! ✓' },
+                            { desc: 'Time O(n), Space O(1). No HashSet needed. In acyclic list, fast reaches null first.', arr: [1, 2, 3, 4, 5], hi: [3], win: [], label: {}, note: 'O(n) time, O(1) space ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Find Middle of Linked List',
+                        prob: 'Find the middle node. If even, return the second middle.',
+                        input: '1 → 2 → 3 → 4 → 5',
+                        output: 'Node with value 3',
+                        steps: [
+                            { desc: 'Start: slow=1, fast=1. Both at head.', arr: [1, 2, 3, 4, 5], hi: [0, 0], win: [], label: { 0: 'S,F' }, note: 'Both at index 0' },
+                            { desc: 'Step 1: slow→2(idx 1), fast→3(idx 2).', arr: [1, 2, 3, 4, 5], hi: [1, 2], win: [], label: { 1: 'S', 2: 'F' }, note: 'slow=2, fast=3' },
+                            { desc: 'Step 2: slow→3(idx 2), fast→5(idx 4).', arr: [1, 2, 3, 4, 5], hi: [2, 4], win: [], label: { 2: 'S', 4: 'F' }, note: 'slow=3, fast=5' },
+                            { desc: 'Fast.next = null. Stop! slow is at MIDDLE. When fast=end(null), slow=middle. ✓', arr: [1, 2, 3, 4, 5], hi: [2], win: [], label: { 2: 'MID ✓' }, note: 'Middle = 3 ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Happy Number',
+                        prob: 'A happy number eventually reaches 1. Detect if a number is happy.',
+                        input: 'n = 19',
+                        output: 'true  (19→82→68→100→1)',
+                        steps: [
+                            { desc: '19: 1²+9²=82. 82: 8²+2²=68. 68: 6²+8²=100.', arr: [19, 82, 68, 100, 1], hi: [0, 1, 2, 3], win: [], label: {}, note: 'sequence: 19→82→68→100→1' },
+                            { desc: '100: 1²+0²+0²=1. Reached 1! Happy number!', arr: [19, 82, 68, 100, 1], hi: [4], win: [], label: { 4: '!' }, note: 'Reached 1 ✓' },
+                            { desc: 'For unhappy numbers, sequence loops. Use fast/slow: if fast==1 → happy; if fast==slow → loop (not happy).', arr: [4, 16, 37, 58, 89, 145, 42, 20, 4], hi: [0, 8], win: [], label: { 0: '4→loop', 8: 'back to 4' }, note: '4 is NOT happy (loops)' },
+                            { desc: 'Fast/slow detect loops in O(1) space vs HashSet O(n). Same cycle detection trick!', arr: [4, 16, 37, 58, 89, 145, 42, 20, 4], hi: [7, 8], win: [], label: { 7: 'F', 8: 'loop' }, note: 'Cycle found → not happy' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Detect Cycle</span>
+<span class="kw">boolean</span> <span class="fn">hasCycle</span>(ListNode head) {
+    ListNode slow = head, fast = head;
+    <span class="kw">while</span> (fast != <span class="kw">null</span> && fast.next != <span class="kw">null</span>) {
+        slow = slow.next;
+        fast = fast.next.next;
+        <span class="kw">if</span> (slow == fast) <span class="kw">return true</span>;
+    }
+    <span class="kw">return false</span>;
+}
+
+<span class="cm">// Find Cycle Start (Floyd's)</span>
+ListNode <span class="fn">detectCycleStart</span>(ListNode head) {
+    ListNode slow = head, fast = head;
+    <span class="kw">while</span> (fast != <span class="kw">null</span> && fast.next != <span class="kw">null</span>) {
+        slow = slow.next;
+        fast = fast.next.next;
+        <span class="kw">if</span> (slow == fast) {
+            slow = head;                         <span class="cm">// reset slow</span>
+            <span class="kw">while</span> (slow != fast) {
+                slow = slow.next;
+                fast = fast.next;               <span class="cm">// both speed 1</span>
+            }
+            <span class="kw">return</span> slow;                       <span class="cm">// cycle start</span>
+        }
+    }
+    <span class="kw">return null</span>;
+}
+
+<span class="cm">// Find Middle</span>
+ListNode <span class="fn">middleNode</span>(ListNode head) {
+    ListNode slow = head, fast = head;
+    <span class="kw">while</span> (fast != <span class="kw">null</span> && fast.next != <span class="kw">null</span>) {
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    <span class="kw">return</span> slow;
+}`,
+                problems: [
+                    { name: 'Linked List Cycle', diff: 'e' }, { name: 'Linked List Cycle II', diff: 'm' },
+                    { name: 'Middle of the Linked List', diff: 'e' }, { name: 'Happy Number', diff: 'e' },
+                    { name: 'Palindrome Linked List', diff: 'e' }, { name: 'Reorder List', diff: 'm' },
+                ]
+            },
+
+            {
+                id: 'binary-search', num: '05', title: 'Binary Search',
+                cat: 'Array & Search', color: '#fbbf24', icon: '🔍', diff: 'm',
+                tags: ['Array', 'Sorted', 'O(log n)'],
+                tagline: 'Eliminate half the search space every step — and apply it to answer spaces, not just arrays.',
+                concept: `Binary search finds a target in sorted data in O(log n) by comparing the middle element. But the real power is "Search on Answer": when you can define a monotone condition (false…false→true…true), binary search finds the exact transition point in any domain.`,
+                when: ['Sorted array: find target or boundary', '"Minimum possible max" / "Maximum possible min"', 'Any condition that is monotonically true/false', 'Find first/last occurrence, peak element'],
+                time: 'O(log n)', space: 'O(1)',
+                examples: [
+                    {
+                        title: 'Classic Binary Search',
+                        prob: 'Find target in sorted array. Return index or -1.',
+                        input: 'arr = [1, 3, 5, 7, 9, 11, 13],  target = 7',
+                        output: '3',
+                        steps: [
+                            { desc: 'l=0, r=6. mid=3 (value 7). arr[mid]=7 = target. Found immediately!', arr: [1, 3, 5, 7, 9, 11, 13], hi: [3], win: [0, 6], label: { 0: 'l', 3: 'mid', 6: 'r' }, note: 'arr[3]=7=target ✓' },
+                            { desc: '(target=11) l=0,r=6, mid=3(val 7). 7 < 11 → l = mid+1 = 4. Eliminated left half!', arr: [1, 3, 5, 7, 9, 11, 13], hi: [], win: [4, 6], label: { 4: 'l', 5: 'mid', 6: 'r' }, note: 'l=4, search right half' },
+                            { desc: 'l=4,r=6, mid=5(val 11). 11=11 → found!', arr: [1, 3, 5, 7, 9, 11, 13], hi: [5], win: [4, 6], label: { 4: 'l', 5: 'mid=target', 6: 'r' }, note: 'arr[5]=11=target ✓' },
+                            { desc: 'Each step halves the search space: 7→4→2→1. O(log n) for any size!', arr: [1, 3, 5, 7, 9, 11, 13], hi: [5], win: [], label: {}, note: '7 → 4 → 2 → 1 steps. log₂(7)≈3' },
+                        ]
+                    },
+                    {
+                        title: 'Find Peak Element',
+                        prob: 'A peak is an element greater than its neighbors. Find any peak index.',
+                        input: 'arr = [1, 3, 5, 4, 2]',
+                        output: '2  (arr[2]=5 is a peak)',
+                        steps: [
+                            { desc: 'l=0, r=4, mid=2 (val=5). arr[mid]=5 > arr[mid+1]=4 → peak is on left side (including mid). Set r=mid=2.', arr: [1, 3, 5, 4, 2], hi: [2], win: [0, 2], label: { 0: 'l', 2: 'mid=r' }, note: 'arr[2]>arr[3] → peak ≤ mid' },
+                            { desc: 'l=0, r=2, mid=1 (val=3). arr[mid]=3 < arr[mid+1]=5 → peak is strictly on right. Set l=mid+1=2.', arr: [1, 3, 5, 4, 2], hi: [1, 2], win: [], label: { 1: 'mid', 2: 'l=r' }, note: 'arr[1]<arr[2] → peak > mid' },
+                            { desc: 'l=r=2. Loop ends. Return l=2 (arr[2]=5). Verified: 5>4 and 5>3. Peak found!', arr: [1, 3, 5, 4, 2], hi: [2], win: [], label: { 2: 'PEAK ✓' }, note: 'arr[2]=5 is peak ✓' },
+                            { desc: 'Key: if arr[mid] < arr[mid+1], there MUST be a peak on the right. This is the monotone condition!', arr: [1, 3, 5, 4, 2], hi: [2], win: [], label: {}, note: 'Guaranteed peak exists (boundaries are -∞)' },
+                        ]
+                    },
+                    {
+                        title: 'Koko Eating Bananas (Search on Answer)',
+                        prob: 'Find minimum eating speed k such that Koko finishes all bananas in h hours.',
+                        input: 'piles = [3, 6, 7, 11],  h = 8',
+                        output: '4',
+                        steps: [
+                            { desc: 'Answer range: k ∈ [1, max(piles)=11]. Binary search ON THE ANSWER, not the array!', arr: [3, 6, 7, 11], hi: [], win: [], label: {}, note: 'Search space: k ∈ [1, 11]' },
+                            { desc: 'lo=1, hi=11, mid=6. At speed 6: hours = ⌈3/6⌉+⌈6/6⌉+⌈7/6⌉+⌈11/6⌉ = 1+1+2+2 = 6 ≤ 8. Feasible → try lower. hi=6.', arr: [3, 6, 7, 11], hi: [1], win: [], label: {}, note: 'k=6: 6 hours ≤ 8 ✓ → try smaller' },
+                            { desc: 'lo=1, hi=6, mid=3. Speed=3: 1+2+3+4=10 > 8. Not feasible → lo=4.', arr: [3, 6, 7, 11], hi: [], win: [1, 2, 3], label: {}, note: 'k=3: 10 hours > 8 ✗ → try larger' },
+                            { desc: 'lo=4, hi=6, mid=5. Speed=5: 1+2+2+3=8 = 8 ≤ 8. Feasible → hi=5. lo=4=hi=4. Answer = 4!', arr: [3, 6, 7, 11], hi: [0, 1, 2, 3], win: [], label: {}, note: 'k=4: 1+2+2+3=8 ✓ Answer=4' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Classic Binary Search</span>
+<span class="kw">int</span> <span class="fn">binarySearch</span>(<span class="kw">int</span>[] arr, <span class="kw">int</span> target) {
+    <span class="kw">int</span> l = <span class="num">0</span>, r = arr.length - <span class="num">1</span>;
+    <span class="kw">while</span> (l <= r) {
+        <span class="kw">int</span> mid = l + (r - l) / <span class="num">2</span>;       <span class="cm">// avoid overflow!</span>
+        <span class="kw">if</span> (arr[mid] == target) <span class="kw">return</span> mid;
+        <span class="kw">else if</span> (arr[mid] < target) l = mid + <span class="num">1</span>;
+        <span class="kw">else</span> r = mid - <span class="num">1</span>;
+    }
+    <span class="kw">return</span> -<span class="num">1</span>;  <span class="cm">// l = insertion point</span>
+}
+
+<span class="cm">// Search on Answer Template</span>
+<span class="kw">int</span> lo = minPossible, hi = maxPossible;
+<span class="kw">while</span> (lo < hi) {
+    <span class="kw">int</span> mid = (lo + hi) / <span class="num">2</span>;
+    <span class="kw">if</span> (<span class="fn">feasible</span>(mid)) hi = mid;  <span class="cm">// try smaller</span>
+    <span class="kw">else</span> lo = mid + <span class="num">1</span>;           <span class="cm">// need larger</span>
+}
+<span class="kw">return</span> lo; <span class="cm">// minimum feasible answer</span>
+
+<span class="cm">// Find First True in boolean array [F,F,F,T,T,T]</span>
+<span class="kw">int</span> <span class="fn">firstTrue</span>(<span class="kw">int</span>[] arr) {
+    <span class="kw">int</span> l = <span class="num">0</span>, r = arr.length - <span class="num">1</span>;
+    <span class="kw">while</span> (l < r) {
+        <span class="kw">int</span> m = (l + r) / <span class="num">2</span>;
+        <span class="kw">if</span> (<span class="fn">condition</span>(m)) r = m;
+        <span class="kw">else</span> l = m + <span class="num">1</span>;
+    }
+    <span class="kw">return</span> l;
+}`,
+                problems: [
+                    { name: 'Binary Search', diff: 'e' }, { name: 'Find Peak Element', diff: 'm' },
+                    { name: 'Search in Rotated Sorted Array', diff: 'm' }, { name: 'Koko Eating Bananas', diff: 'm' },
+                    { name: 'Split Array Largest Sum', diff: 'h' }, { name: 'Median of Two Sorted Arrays', diff: 'h' },
+                ]
+            },
+
+            {
+                id: 'tree-bfs', num: '06', title: 'Tree BFS',
+                cat: 'Tree & Graph', color: '#10b981', icon: '🌊', diff: 'm',
+                tags: ['Tree', 'Queue', 'Level Order'],
+                tagline: 'Process level by level using a queue — perfect for shortest paths and anything level-related.',
+                concept: `BFS (Breadth-First Search) on trees processes all nodes at depth d before depth d+1. Use a queue: enqueue root, then repeatedly dequeue a node, process it, and enqueue its children. The key trick: record queue size BEFORE the loop to know current level size.`,
+                when: ['Level-order traversal', 'Minimum depth / shortest path in unweighted graph', 'Connect level-mates (zigzag, right view)', 'Multi-source BFS (rotten oranges, 01 matrix)'],
+                time: 'O(n)', space: 'O(w) — max width of tree',
+                examples: [
+                    {
+                        title: 'Binary Tree Level Order Traversal',
+                        prob: 'Return node values grouped by level.',
+                        input: 'Tree: 3 → [9,20] → [null,null,15,7]',
+                        output: '[[3],[9,20],[15,7]]',
+                        steps: [
+                            { desc: 'Enqueue root(3). Queue = [3]. Process level 0.', arr: [3, 9, 20, 15, 7], hi: [0], win: [], label: { 0: 'root' }, note: 'Queue=[3], L0 starts' },
+                            { desc: 'Dequeue 3, record val. Enqueue left(9) and right(20). Level 0 done = [3].', arr: [3, 9, 20, 15, 7], hi: [1, 2], win: [], label: { 1: 'enq', 2: 'enq' }, note: 'Queue=[9,20], L1 starts' },
+                            { desc: 'Level 1: size=2. Dequeue 9 (no children). Dequeue 20, enqueue 15 and 7. Level 1 = [9,20].', arr: [3, 9, 20, 15, 7], hi: [3, 4], win: [], label: { 3: 'enq', 4: 'enq' }, note: 'Queue=[15,7], L2 starts' },
+                            { desc: 'Level 2: size=2. Dequeue 15, dequeue 7. No children. Queue empty. Level 2 = [15,7]. Done!', arr: [3, 9, 20, 15, 7], hi: [3, 4], win: [], label: {}, note: 'Result=[[3],[9,20],[15,7]] ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Right Side View of Tree',
+                        prob: 'Imagine looking at a tree from the right. Return visible node values.',
+                        input: 'Tree: 1 → [2,3] → [null,5,null,4]',
+                        output: '[1, 3, 4]',
+                        steps: [
+                            { desc: 'BFS level by level. At each level, the LAST node dequeued is the rightmost visible one.', arr: [1, 2, 3, 5, 4], hi: [0], win: [], label: { 0: '→see' }, note: 'Level 0: see 1' },
+                            { desc: 'Level 1: process 2 and 3. Last = 3. Add 3 to result.', arr: [1, 2, 3, 5, 4], hi: [2], win: [], label: { 2: '→see' }, note: 'Level 1: see 3' },
+                            { desc: 'Level 2: 5 and 4. Last = 4. Add 4 to result.', arr: [1, 2, 3, 5, 4], hi: [4], win: [], label: { 4: '→see' }, note: 'Level 2: see 4' },
+                            { desc: 'Result = [1, 3, 4]. Just take the last element of each BFS level!', arr: [1, 2, 3, 5, 4], hi: [0, 2, 4], win: [], label: {}, note: 'Right view = [1,3,4] ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Rotten Oranges — Multi-Source BFS',
+                        prob: 'Find minimum minutes until all fresh oranges rot. Rotten spread to 4-neighbors per minute.',
+                        input: 'grid = [[2,1,1],[1,1,0],[0,1,1]]',
+                        output: '4',
+                        steps: [
+                            { desc: 'Start: enqueue ALL rotten oranges (value=2) simultaneously. Multi-source BFS!', arr: [2, 1, 1, 1, 1, 0, 0, 1, 1], hi: [0], win: [], label: { 0: 'rotten' }, note: 'Start BFS from all rotten at once' },
+                            { desc: 'Minute 1: spread from (0,0). Infect (0,1) and (1,0). Count fresh oranges decreases.', arr: [2, 2, 1, 2, 1, 0, 0, 1, 1], hi: [1, 3], win: [], label: { 1: 'min1', 3: 'min1' }, note: 'Minute 1: 2 more rotten' },
+                            { desc: 'Minute 2-4: wave continues spreading. Track minutes as BFS levels.', arr: [2, 2, 2, 2, 2, 0, 0, 2, 2], hi: [2, 4, 7, 8], win: [], label: {}, note: 'All reachable oranges rotted' },
+                            { desc: 'After BFS: if any fresh orange remains → return -1. Else return minute count = 4.', arr: [2, 2, 2, 2, 2, 0, 0, 2, 2], hi: [5], win: [], label: { 5: '0=wall' }, note: 'Answer = 4 ✓' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Level Order Traversal</span>
+List&lt;List&lt;Integer&gt;&gt; <span class="fn">levelOrder</span>(TreeNode root) {
+    List&lt;List&lt;Integer&gt;&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> res;
+    Queue&lt;TreeNode&gt; q = <span class="kw">new</span> LinkedList&lt;&gt;();
+    q.<span class="fn">offer</span>(root);
+    <span class="kw">while</span> (!q.<span class="fn">isEmpty</span>()) {
+        <span class="kw">int</span> size = q.<span class="fn">size</span>();  <span class="cm">// current level count!</span>
+        List&lt;Integer&gt; level = <span class="kw">new</span> ArrayList&lt;&gt;();
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < size; i++) {
+            TreeNode node = q.<span class="fn">poll</span>();
+            level.<span class="fn">add</span>(node.val);
+            <span class="kw">if</span> (node.left != <span class="kw">null</span>) q.<span class="fn">offer</span>(node.left);
+            <span class="kw">if</span> (node.right != <span class="kw">null</span>) q.<span class="fn">offer</span>(node.right);
+        }
+        res.<span class="fn">add</span>(level);
+    }
+    <span class="kw">return</span> res;
+}`,
+                problems: [
+                    { name: 'Binary Tree Level Order', diff: 'm' }, { name: 'Right Side View', diff: 'm' },
+                    { name: 'Zigzag Level Order', diff: 'm' }, { name: 'Rotten Oranges', diff: 'm' },
+                    { name: '01 Matrix', diff: 'm' }, { name: 'Word Ladder', diff: 'h' },
+                ]
+            },
+
+            {
+                id: 'tree-dfs', num: '07', title: 'Tree DFS',
+                cat: 'Tree & Graph', color: '#8b5cf6', icon: '🌲', diff: 'm',
+                tags: ['Tree', 'Recursion', 'Stack'],
+                tagline: 'Go deep before wide — three traversal orders power a hundred tree problems.',
+                concept: `DFS on trees explores as deep as possible before backtracking. Three orders: Pre-order (root→L→R, great for copying/serializing), In-order (L→root→R, gives sorted BST), Post-order (L→R→root, great for bottom-up computation like height, subtree sums).`,
+                when: ['Path sum from root to leaf', 'Max/min depth of tree', 'Lowest Common Ancestor', 'Validate BST, serialize/deserialize tree', 'Any bottom-up calculation (diameter, height)'],
+                time: 'O(n)', space: 'O(h) — tree height',
+                examples: [
+                    {
+                        title: 'Path Sum II — All Root-to-Leaf Paths',
+                        prob: 'Find all root-to-leaf paths where sum = target.',
+                        input: 'Tree: 5 → [4,8] → [11,[13,4]] → [7,2,[5,1]],  target = 22',
+                        output: '[[5,4,11,2], [5,8,4,5]]',
+                        steps: [
+                            { desc: 'DFS with backtracking. At each node: add to path, subtract from remaining. If leaf and remaining=0 → found a path!', arr: [5, 4, 8, 11, 13, 4, 7, 2, 5, 1], hi: [0], win: [], label: { 0: 'root:5' }, note: 'remaining=22-5=17' },
+                            { desc: 'Go left to 4. remaining=17-4=13. Go left to 11. remaining=13-11=2.', arr: [5, 4, 8, 11, 13, 4, 7, 2, 5, 1], hi: [1, 3], win: [], label: { 1: '4', 3: '11' }, note: 'remaining=2' },
+                            { desc: 'At 11: go left to 7 (leaf). 2-7=-5≠0. Go right to 2 (leaf). 2-2=0! PATH FOUND: [5,4,11,2] ✓', arr: [5, 4, 8, 11, 13, 4, 7, 2, 5, 1], hi: [7], win: [], label: { 7: '2=leaf!' }, note: 'Path [5,4,11,2] found ✓' },
+                            { desc: 'Backtrack to root, go right subtree. Eventually find [5,8,4,5]. The "backtrack" step restores state.', arr: [5, 4, 8, 11, 13, 4, 7, 2, 5, 1], hi: [2, 5, 8], win: [], label: { 2: '8', 5: '4', 8: '5' }, note: 'Path [5,8,4,5] found ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Maximum Depth of Binary Tree',
+                        prob: 'Find the height/maximum depth of a binary tree.',
+                        input: 'Tree: 3 → [9,20] → [null,null,15,7]',
+                        output: '3',
+                        steps: [
+                            { desc: 'Post-order: solve left subtree depth, right subtree depth, then combine at current node.', arr: [3, 9, 20, 15, 7], hi: [1, 2], win: [], label: { 1: 'left', 2: 'right' }, note: 'Recurse down first' },
+                            { desc: 'Node 9: left=null(0), right=null(0). Depth = 1+max(0,0) = 1.', arr: [3, 9, 20, 15, 7], hi: [1], win: [], label: { 1: 'depth=1' }, note: 'depth(9)=1' },
+                            { desc: 'Node 20: depth(15)=1, depth(7)=1. Depth(20)=1+max(1,1)=2.', arr: [3, 9, 20, 15, 7], hi: [2, 3, 4], win: [], label: { 2: 'depth=2' }, note: 'depth(20)=2' },
+                            { desc: 'Root 3: depth=1+max(depth(9),depth(20))=1+max(1,2)=3. Done!', arr: [3, 9, 20, 15, 7], hi: [0], win: [], label: { 0: 'depth=3 ✓' }, note: 'max depth = 3 ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Lowest Common Ancestor (LCA)',
+                        prob: 'Find the LCA of two nodes p and q in a BST.',
+                        input: 'BST: 6→[2,8]→[0,4,7,9]→[3,5],  p=2, q=8',
+                        output: '6 (root is LCA)',
+                        steps: [
+                            { desc: 'BST property: if both p,q < node → go left. If both > node → go right. Else → current node is LCA!', arr: [6, 2, 8, 0, 4, 7, 9, 3, 5], hi: [0], win: [], label: { 0: 'root=6' }, note: 'p=2, q=8' },
+                            { desc: 'At 6: p=2 < 6 AND q=8 > 6 → they split here! 6 is the LCA.', arr: [6, 2, 8, 0, 4, 7, 9, 3, 5], hi: [0], win: [], label: { 0: 'LCA ✓' }, note: 'LCA = 6 ✓' },
+                            { desc: '(Another example) p=0, q=4. At root 6: both < 6 → go left to 2.', arr: [6, 2, 8, 0, 4, 7, 9, 3, 5], hi: [1], win: [], label: { 1: 'check' }, note: 'p=0,q=4: both < 2? No' },
+                            { desc: 'At 2: p=0 < 2 AND q=4 > 2 → split at 2! LCA = 2.', arr: [6, 2, 8, 0, 4, 7, 9, 3, 5], hi: [1], win: [], label: { 1: 'LCA ✓' }, note: 'LCA(0,4) = 2 ✓' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Max Depth (Post-order)</span>
+<span class="kw">int</span> <span class="fn">maxDepth</span>(TreeNode root) {
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> <span class="num">0</span>;
+    <span class="kw">return</span> <span class="num">1</span> + Math.<span class="fn">max</span>(<span class="fn">maxDepth</span>(root.left),
+                           <span class="fn">maxDepth</span>(root.right));
+}
+
+<span class="cm">// Path Sum II (Backtracking)</span>
+<span class="kw">void</span> <span class="fn">dfs</span>(TreeNode node, <span class="kw">int</span> remain, List&lt;Integer&gt; path,
+         List&lt;List&lt;Integer&gt;&gt; res) {
+    <span class="kw">if</span> (node == <span class="kw">null</span>) <span class="kw">return</span>;
+    path.<span class="fn">add</span>(node.val);
+    <span class="kw">if</span> (node.left == <span class="kw">null</span> && node.right == <span class="kw">null</span>
+        && remain == node.val)
+        res.<span class="fn">add</span>(<span class="kw">new</span> ArrayList&lt;&gt;(path));
+    <span class="fn">dfs</span>(node.left,  remain - node.val, path, res);
+    <span class="fn">dfs</span>(node.right, remain - node.val, path, res);
+    path.<span class="fn">remove</span>(path.<span class="fn">size</span>() - <span class="num">1</span>); <span class="cm">// backtrack!</span>
+}
+
+<span class="cm">// LCA in BST</span>
+TreeNode <span class="fn">lowestCommonAncestor</span>(TreeNode root, TreeNode p, TreeNode q) {
+    <span class="kw">if</span> (p.val < root.val && q.val < root.val) <span class="kw">return</span> <span class="fn">lowestCommonAncestor</span>(root.left, p, q);
+    <span class="kw">if</span> (p.val > root.val && q.val > root.val) <span class="kw">return</span> <span class="fn">lowestCommonAncestor</span>(root.right, p, q);
+    <span class="kw">return</span> root;
+}`,
+                problems: [
+                    { name: 'Maximum Depth of Binary Tree', diff: 'e' }, { name: 'Path Sum II', diff: 'm' },
+                    { name: 'LCA of BST', diff: 'm' }, { name: 'Validate BST', diff: 'm' },
+                    { name: 'Binary Tree Max Path Sum', diff: 'h' }, { name: 'Diameter of Binary Tree', diff: 'e' },
+                ]
+            },
+
+            {
+                id: 'merge-intervals', num: '08', title: 'Merge Intervals',
+                cat: 'Intervals', color: '#f472b6', icon: '📊', diff: 'm',
+                tags: ['Intervals', 'Sort', 'Greedy'],
+                tagline: 'Sort by start, merge overlapping pairs greedily — intervals become friends.',
+                concept: `Sort intervals by start time. Iterate and check: if current interval's start ≤ last merged interval's end → they overlap, merge by updating the end to max of both ends. Otherwise, push the current interval as a new entry.`,
+                when: ['Overlapping intervals (meeting rooms, calendar)', 'Insert a new interval into sorted list', 'Minimum number of meeting rooms needed', 'Employee free time, task scheduling'],
+                time: 'O(n log n)', space: 'O(n)',
+                examples: [
+                    {
+                        title: 'Merge Intervals',
+                        prob: 'Merge all overlapping intervals.',
+                        input: '[[1,3],[2,6],[8,10],[15,18]]',
+                        output: '[[1,6],[8,10],[15,18]]',
+                        steps: [
+                            { desc: 'Sort by start (already sorted). Start with current=[1,3]. Next=[2,6]: start=2 ≤ end=3 → OVERLAP! Merge: end=max(3,6)=6. Current=[1,6].', arr: [1, 3, 2, 6, 8, 10, 15, 18], hi: [0, 1, 2, 3], win: [], label: {}, note: '[1,3]+[2,6] → [1,6]' },
+                            { desc: 'Next=[8,10]: start=8 > end=6 → NO overlap. Save [1,6], current=[8,10].', arr: [1, 3, 2, 6, 8, 10, 15, 18], hi: [4, 5], win: [], label: {}, note: '[8,10] no overlap → save [1,6]' },
+                            { desc: 'Next=[15,18]: start=15 > end=10 → NO overlap. Save [8,10], current=[15,18].', arr: [1, 3, 2, 6, 8, 10, 15, 18], hi: [6, 7], win: [], label: {}, note: '[15,18] no overlap → save [8,10]' },
+                            { desc: 'End of list. Save last interval [15,18]. Result: [[1,6],[8,10],[15,18]] ✓', arr: [1, 3, 2, 6, 8, 10, 15, 18], hi: [6, 7], win: [], label: {}, note: 'Result: [[1,6],[8,10],[15,18]] ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Meeting Rooms II — Min Rooms Needed',
+                        prob: 'Find the minimum number of conference rooms required.',
+                        input: 'meetings = [[0,30],[5,10],[15,20]]',
+                        output: '2',
+                        steps: [
+                            { desc: 'Use min-heap of end times. Sort meetings by start. Heap tracks when rooms free up.', arr: [0, 30, 5, 10, 15, 20], hi: [0, 1], win: [], label: {}, note: 'Meeting [0,30] starts. heap=[30]' },
+                            { desc: 'Meeting [5,10] starts. Heap top=30 > 5 → room not free. Allocate new room. heap=[10,30].', arr: [0, 30, 5, 10, 15, 20], hi: [2, 3], win: [], label: {}, note: 'rooms=2, heap=[10,30]' },
+                            { desc: 'Meeting [15,20] starts. Heap top=10 ≤ 15 → room freed! Remove 10, add 20. heap=[20,30].', arr: [0, 30, 5, 10, 15, 20], hi: [4, 5], win: [], label: {}, note: 'reuse room! heap=[20,30]' },
+                            { desc: 'Heap size = 2 = max rooms used at any time. Answer = 2. This is "minimum platforms" problem!', arr: [0, 30, 5, 10, 15, 20], hi: [0, 1, 4, 5], win: [], label: {}, note: 'Min rooms = heap.size() = 2 ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Insert Interval',
+                        prob: 'Insert newInterval into sorted non-overlapping intervals.',
+                        input: 'intervals=[[1,3],[6,9]], newInterval=[2,5]',
+                        output: '[[1,5],[6,9]]',
+                        steps: [
+                            { desc: 'Phase 1: add all intervals that end BEFORE new interval starts. [1,3]: end=3 but 3≥2(start of new)→skip.', arr: [1, 3, 6, 9, 2, 5], hi: [0, 1], win: [], label: {}, note: 'Phase1: nothing added' },
+                            { desc: 'Phase 2: merge all overlapping. [1,3] overlaps [2,5] (3≥2). Merge: [min(1,2), max(3,5)]=[1,5].', arr: [1, 3, 6, 9, 2, 5], hi: [0, 1, 4, 5], win: [], label: {}, note: 'merged=[1,5]' },
+                            { desc: '[6,9]: start=6 > merged.end=5 → no overlap. Add merged [1,5] to result.', arr: [1, 3, 6, 9, 2, 5], hi: [2, 3], win: [], label: {}, note: 'Add [1,5], then [6,9]' },
+                            { desc: 'Result: [[1,5],[6,9]] ✓. Three phases: before, overlap/merge, after.', arr: [1, 3, 6, 9, 2, 5], hi: [], win: [], label: {}, note: '[[1,5],[6,9]] ✓' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Merge Intervals</span>
+<span class="kw">int</span>[][] <span class="fn">merge</span>(<span class="kw">int</span>[][] intervals) {
+    Arrays.<span class="fn">sort</span>(intervals, (a, b) -> a[<span class="num">0</span>] - b[<span class="num">0</span>]);
+    List&lt;<span class="kw">int</span>[]&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">int</span>[] cur = intervals[<span class="num">0</span>];
+    <span class="kw">for</span> (<span class="kw">int</span>[] iv : intervals) {
+        <span class="kw">if</span> (iv[<span class="num">0</span>] <= cur[<span class="num">1</span>])               <span class="cm">// overlap</span>
+            cur[<span class="num">1</span>] = Math.<span class="fn">max</span>(cur[<span class="num">1</span>], iv[<span class="num">1</span>]);
+        <span class="kw">else</span> { res.<span class="fn">add</span>(cur); cur = iv; }    <span class="cm">// no overlap</span>
+    }
+    res.<span class="fn">add</span>(cur);
+    <span class="kw">return</span> res.<span class="fn">toArray</span>(<span class="kw">new int</span>[<span class="num">0</span>][]);
+}
+
+<span class="cm">// Meeting Rooms II</span>
+<span class="kw">int</span> <span class="fn">minMeetingRooms</span>(<span class="kw">int</span>[][] intervals) {
+    Arrays.<span class="fn">sort</span>(intervals, (a, b) -> a[<span class="num">0</span>] - b[<span class="num">0</span>]);
+    PriorityQueue&lt;Integer&gt; heap = <span class="kw">new</span> PriorityQueue&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span>[] m : intervals) {
+        <span class="kw">if</span> (!heap.<span class="fn">isEmpty</span>() && heap.<span class="fn">peek</span>() <= m[<span class="num">0</span>])
+            heap.<span class="fn">poll</span>();   <span class="cm">// reuse room</span>
+        heap.<span class="fn">offer</span>(m[<span class="num">1</span>]);  <span class="cm">// add end time</span>
+    }
+    <span class="kw">return</span> heap.<span class="fn">size</span>();
+}`,
+                problems: [
+                    { name: 'Merge Intervals', diff: 'm' }, { name: 'Insert Interval', diff: 'm' },
+                    { name: 'Meeting Rooms', diff: 'e' }, { name: 'Meeting Rooms II', diff: 'm' },
+                    { name: 'Employee Free Time', diff: 'h' }, { name: 'Non-overlapping Intervals', diff: 'm' },
+                ]
+            },
+
+            {
+                id: 'top-k', num: '09', title: 'Top K Elements',
+                cat: 'Heap', color: '#fb923c', icon: '🏆', diff: 'm',
+                tags: ['Heap', 'PriorityQueue', 'O(n log k)'],
+                tagline: 'A min-heap of size K magically tracks the K largest elements in a stream.',
+                concept: `Maintain a min-heap of size exactly K. For each new element: add it to the heap. If heap exceeds K, remove the minimum. Result: the heap contains exactly the K largest elements! Flip logic (max-heap) for K smallest. Runs in O(n log k) — much better than sorting O(n log n) when k is small.`,
+                when: ['K largest / smallest elements', 'K most frequent elements', 'Kth largest in stream', 'Closest K points to origin'],
+                time: 'O(n log k)', space: 'O(k)',
+                examples: [
+                    {
+                        title: 'Kth Largest Element in Array',
+                        prob: 'Find the kth largest element (not kth distinct).',
+                        input: 'arr = [3, 2, 1, 5, 6, 4],  k = 2',
+                        output: '5',
+                        steps: [
+                            { desc: 'Use min-heap of size k=2. Add 3: heap=[3]. Add 2: heap=[2,3]. Add 1: heap=[1,2,3]? → size>k! Remove min(1). heap=[2,3].', arr: [3, 2, 1, 5, 6, 4], hi: [0, 1, 2], win: [], label: {}, note: 'heap=[2,3]' },
+                            { desc: 'Add 5: heap=[2,3,5] → size=3>2! Remove min(2). heap=[3,5].', arr: [3, 2, 1, 5, 6, 4], hi: [3], win: [], label: { 3: 'add 5' }, note: 'heap=[3,5]' },
+                            { desc: 'Add 6: heap=[3,5,6] → remove min(3). heap=[5,6]. Add 4: heap=[4,5,6] → remove min(4). heap=[5,6].', arr: [3, 2, 1, 5, 6, 4], hi: [4, 5], win: [], label: { 4: 'add 6', 5: 'add 4' }, note: 'heap=[5,6]' },
+                            { desc: 'Heap top = min of [5,6] = 5 = the 2nd largest! heap.peek() is always the Kth largest.', arr: [3, 2, 1, 5, 6, 4], hi: [3, 4], win: [], label: {}, note: 'heap.peek() = 5 = 2nd largest ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Top K Frequent Elements',
+                        prob: 'Return the k most frequent elements.',
+                        input: 'arr = [1, 1, 1, 2, 2, 3],  k = 2',
+                        output: '[1, 2]',
+                        steps: [
+                            { desc: 'Step 1: count frequencies with HashMap. freq={1:3, 2:2, 3:1}.', arr: [1, 1, 1, 2, 2, 3], hi: [0, 1, 2, 3, 4, 5], win: [], label: {}, note: 'freq={1:3, 2:2, 3:1}' },
+                            { desc: 'Step 2: min-heap by frequency, size k. Add (1,3): heap=[(1,3)]. Add (2,2): heap=[(2,2),(1,3)].', arr: [1, 2, 3], hi: [0, 1], win: [], label: { 0: 'freq=3', 1: 'freq=2' }, note: 'heap=[(2,2),(1,3)]' },
+                            { desc: 'Add (3,1): heap size=3>k=2! Remove min-freq (3,1). heap=[(2,2),(1,3)].', arr: [1, 2, 3], hi: [0, 1, 2], win: [], label: { 2: 'removed(freq=1)' }, note: 'heap=[(2,2),(1,3)]' },
+                            { desc: 'Extract keys from heap: [2, 1]. These are the 2 most frequent elements! Answer: [1, 2] ✓', arr: [1, 2], hi: [0, 1], win: [], label: { 0: 'freq=3', 1: 'freq=2' }, note: 'Top K frequent = [1,2] ✓' },
+                        ]
+                    },
+                    {
+                        title: 'K Closest Points to Origin',
+                        prob: 'Find k closest points to origin (0,0).',
+                        input: 'points=[[1,3],[-2,2],[5,8],[0,1]],  k=2',
+                        output: '[[-2,2],[0,1]]',
+                        steps: [
+                            { desc: 'Distance formula: d = x²+y² (skip sqrt for comparison). d([1,3])=10, d([-2,2])=8, d([5,8])=89, d([0,1])=1.', arr: [10, 8, 89, 1], hi: [0, 1, 2, 3], win: [], label: { 0: 'd=10', 1: 'd=8', 2: 'd=89', 3: 'd=1' }, note: 'distances computed' },
+                            { desc: 'Max-heap of size k=2 (we want k smallest, so use MAX-heap to track and remove the largest).', arr: [10, 8, 89, 1], hi: [0, 1], win: [], label: {}, note: 'heap=[10,8] (max-heap)' },
+                            { desc: 'Add d=89: heap=[10,8,89]→size>k! Remove max(89). heap=[10,8]. Add d=1: heap=[10,8,1]→remove max(10). heap=[8,1].', arr: [10, 8, 89, 1], hi: [1, 3], win: [], label: {}, note: 'heap=[8,1]' },
+                            { desc: 'Heap has distances [8,1] → points [-2,2] and [0,1]. These are 2 closest! ✓', arr: [10, 8, 89, 1], hi: [1, 3], win: [], label: { 1: 'closest', 3: 'closest' }, note: 'Answer=[[-2,2],[0,1]] ✓' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Kth Largest Element</span>
+<span class="kw">int</span> <span class="fn">findKthLargest</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+    PriorityQueue&lt;Integer&gt; minH = <span class="kw">new</span> PriorityQueue&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> n : nums) {
+        minH.<span class="fn">offer</span>(n);
+        <span class="kw">if</span> (minH.<span class="fn">size</span>() > k) minH.<span class="fn">poll</span>(); <span class="cm">// remove min</span>
+    }
+    <span class="kw">return</span> minH.<span class="fn">peek</span>();  <span class="cm">// kth largest</span>
+}
+
+<span class="cm">// Top K Frequent Elements</span>
+<span class="kw">int</span>[] <span class="fn">topKFrequent</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+    Map&lt;Integer, Integer&gt; freq = <span class="kw">new</span> HashMap&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> n : nums) freq.<span class="fn">merge</span>(n, <span class="num">1</span>, Integer::sum);
+    PriorityQueue&lt;Map.Entry&lt;Integer,Integer&gt;&gt; pq =
+        <span class="kw">new</span> PriorityQueue&lt;&gt;((a, b) -> a.getValue() - b.getValue());
+    <span class="kw">for</span> (<span class="kw">var</span> e : freq.<span class="fn">entrySet</span>()) {
+        pq.<span class="fn">offer</span>(e);
+        <span class="kw">if</span> (pq.<span class="fn">size</span>() > k) pq.<span class="fn">poll</span>();
+    }
+    <span class="kw">return</span> pq.<span class="fn">stream</span>().<span class="fn">mapToInt</span>(Map.Entry::getKey).<span class="fn">toArray</span>();
+}`,
+                problems: [
+                    { name: 'Kth Largest Element in Array', diff: 'm' }, { name: 'Top K Frequent Elements', diff: 'm' },
+                    { name: 'K Closest Points to Origin', diff: 'm' }, { name: 'Sort Characters by Frequency', diff: 'm' },
+                    { name: 'Find Median from Data Stream', diff: 'h' }, { name: 'Ugly Number II', diff: 'm' },
+                ]
+            },
+
+            {
+                id: 'subsets', num: '10', title: 'Subsets / Backtracking',
+                cat: 'Recursion', color: '#e879f9', icon: '🌿', diff: 'm',
+                tags: ['Recursion', 'Backtracking', 'DFS'],
+                tagline: 'Choose, explore, un-choose — draw the decision tree and the code writes itself.',
+                concept: `Backtracking builds solutions incrementally. At each step, make a choice (include/exclude element, place a queen, etc.), recurse with that choice, then UNDO (backtrack) to try other choices. The key: path.remove(last) restores state. Think of it as DFS on a decision tree.`,
+                when: ['Generate all subsets or power set', 'All permutations / combinations', 'N-Queens, Sudoku, Word Search', 'Palindrome partitioning, combination sum'],
+                time: 'Subsets O(2ⁿ), Permutations O(n!)', space: 'O(n) recursion stack',
+                examples: [
+                    {
+                        title: 'Generate All Subsets (Power Set)',
+                        prob: 'Return all possible subsets of the array.',
+                        input: 'nums = [1, 2, 3]',
+                        output: '[[], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3]]',
+                        steps: [
+                            { desc: 'Decision tree: for each element, we have 2 choices: INCLUDE or EXCLUDE. Start with empty set [].', arr: [1, 2, 3], hi: [], win: [], label: {}, note: '2³=8 total subsets' },
+                            { desc: 'Include 1 → recurse. Subsets starting with [1]: [1],[1,2],[1,3],[1,2,3].', arr: [1, 2, 3], hi: [0], win: [], label: { 0: 'include' }, note: 'path=[1]' },
+                            { desc: 'From [1]: include 2 → [1,2]. From [1,2]: include 3 → [1,2,3] (leaf). Backtrack: exclude 3 → [1,2] is a subset.', arr: [1, 2, 3], hi: [0, 1, 2], win: [], label: {}, note: '[1,2,3] and [1,2] found ✓' },
+                            { desc: 'Backtrack all the way. Exclude 1 → recurse: subsets [],[2],[3],[2,3]. Total = 8 subsets ✓', arr: [1, 2, 3], hi: [1, 2], win: [], label: {}, note: 'All 8 subsets generated ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Combination Sum — Reuse Allowed',
+                        prob: 'Find all combinations that sum to target. Elements can be reused.',
+                        input: 'candidates = [2, 3, 6, 7],  target = 7',
+                        output: '[[2,2,3], [7]]',
+                        steps: [
+                            { desc: 'DFS: try each candidate from current index. Allow same index again (reuse). If sum=target → add to result.', arr: [2, 3, 6, 7], hi: [0], win: [], label: { 0: 'start with 2' }, note: 'path=[2], rem=5' },
+                            { desc: 'path=[2,2]: rem=3. Add 2 again: rem=1. Add 2: rem=-1 < 0 → backtrack. Try 3: rem=0 → FOUND [2,2,3]!', arr: [2, 3, 6, 7], hi: [0, 0, 1], win: [], label: {}, note: '[2,2,3] found ✓' },
+                            { desc: 'Backtrack to start. Try 7: rem=7-7=0 → FOUND [7]!', arr: [2, 3, 6, 7], hi: [3], win: [], label: { 3: '7=target' }, note: '[7] found ✓' },
+                            { desc: 'The "start from i, not i+1" allows reuse. The "remain < 0" prunes impossible paths.', arr: [2, 3, 6, 7], hi: [0, 3], win: [], label: {}, note: 'Result: [[2,2,3],[7]] ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Permutations',
+                        prob: 'Generate all permutations of the array.',
+                        input: 'nums = [1, 2, 3]',
+                        output: '6 permutations: [1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]',
+                        steps: [
+                            { desc: 'At each position, try every unused element. Use a "used" boolean array to track.', arr: [1, 2, 3], hi: [0], win: [], label: { 0: 'first pos' }, note: 'Choose 1 first. path=[1]' },
+                            { desc: 'Position 2: try unused (2 and 3). Choose 2: path=[1,2]. Position 3: only 3 left. path=[1,2,3] → SAVE!', arr: [1, 2, 3], hi: [0, 1, 2], win: [], label: {}, note: '[1,2,3] saved ✓' },
+                            { desc: 'Backtrack: un-use 3 and 2. Try 3 at position 2: path=[1,3]. Choose 2: path=[1,3,2] → SAVE!', arr: [1, 2, 3], hi: [0, 2, 1], win: [], label: {}, note: '[1,3,2] saved ✓' },
+                            { desc: 'Continue: fix 2 first → [2,1,3],[2,3,1]. Fix 3 first → [3,1,2],[3,2,1]. Total = 3! = 6 ✓', arr: [1, 2, 3], hi: [0, 1, 2], win: [], label: {}, note: 'All 6 permutations ✓' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Subsets</span>
+<span class="kw">void</span> <span class="fn">backtrack</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> start, List&lt;Integer&gt; path,
+               List&lt;List&lt;Integer&gt;&gt; res) {
+    res.<span class="fn">add</span>(<span class="kw">new</span> ArrayList&lt;&gt;(path));   <span class="cm">// add current subset</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i = start; i < nums.length; i++) {
+        path.<span class="fn">add</span>(nums[i]);              <span class="cm">// choose</span>
+        <span class="fn">backtrack</span>(nums, i + <span class="num">1</span>, path, res); <span class="cm">// explore</span>
+        path.<span class="fn">remove</span>(path.<span class="fn">size</span>() - <span class="num">1</span>); <span class="cm">// un-choose (backtrack)</span>
+    }
+}
+
+<span class="cm">// Permutations</span>
+<span class="kw">void</span> <span class="fn">permute</span>(<span class="kw">int</span>[] nums, <span class="kw">boolean</span>[] used, List&lt;Integer&gt; path,
+             List&lt;List&lt;Integer&gt;&gt; res) {
+    <span class="kw">if</span> (path.<span class="fn">size</span>() == nums.length) { res.<span class="fn">add</span>(<span class="kw">new</span> ArrayList&lt;&gt;(path)); <span class="kw">return</span>; }
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < nums.length; i++) {
+        <span class="kw">if</span> (used[i]) <span class="kw">continue</span>;
+        used[i] = <span class="kw">true</span>;  path.<span class="fn">add</span>(nums[i]);
+        <span class="fn">permute</span>(nums, used, path, res);
+        used[i] = <span class="kw">false</span>; path.<span class="fn">remove</span>(path.<span class="fn">size</span>() - <span class="num">1</span>);
+    }
+}`,
+                problems: [
+                    { name: 'Subsets', diff: 'm' }, { name: 'Subsets II', diff: 'm' }, { name: 'Permutations', diff: 'm' },
+                    { name: 'Combination Sum', diff: 'm' }, { name: 'Palindrome Partitioning', diff: 'm' },
+                    { name: 'N-Queens', diff: 'h' }, { name: 'Word Search', diff: 'm' },
+                ]
+            },
+
+            {
+                id: 'dp', num: '11', title: 'Dynamic Programming',
+                cat: 'Recursion & DP', color: '#6ee7b7', icon: '📐', diff: 'h',
+                tags: ['DP', 'Memoization', 'Tabulation'],
+                tagline: 'Break into overlapping subproblems, cache results — optimal solution from optimal subproblems.',
+                concept: `DP applies when a problem has: (1) Overlapping subproblems — same subproblem is solved multiple times, and (2) Optimal substructure — optimal solution is built from optimal sub-solutions. Approach: define dp[i] meaning clearly, find recurrence, fill bottom-up or memoize top-down.`,
+                when: ['Count ways / minimum cost / maximum value', 'Subsequence, substring, partition problems', 'Keywords: "how many ways", "minimum steps", "maximum profit"', 'Choices at each step with consequences later'],
+                time: 'Usually O(n²) or O(n·W)', space: 'O(n) to O(n²)',
+                examples: [
+                    {
+                        title: 'Climbing Stairs (1D DP)',
+                        prob: 'Count ways to climb n stairs, taking 1 or 2 steps at a time.',
+                        input: 'n = 5',
+                        output: '8 ways',
+                        steps: [
+                            { desc: 'dp[i] = number of ways to reach stair i. Base: dp[1]=1, dp[2]=2.', arr: [0, 1, 2, 3, 4, 5], hi: [1, 2], win: [], label: { 1: 'dp=1', 2: 'dp=2' }, note: 'dp[1]=1, dp[2]=2' },
+                            { desc: 'Recurrence: dp[i] = dp[i-1] + dp[i-2]. To reach i: come from i-1 (1 step) or i-2 (2 steps).', arr: [0, 1, 2, 3, 4, 5], hi: [3], win: [], label: { 3: 'dp[3]=dp[2]+dp[1]=3' }, note: 'dp[3]=2+1=3' },
+                            { desc: 'dp[4]=dp[3]+dp[2]=3+2=5. dp[5]=dp[4]+dp[3]=5+3=8.', arr: [0, 1, 2, 3, 4, 5], hi: [4, 5], win: [], label: { 4: 'dp=5', 5: 'dp=8' }, note: 'dp[4]=5, dp[5]=8' },
+                            { desc: 'This is Fibonacci! dp = [0,1,2,3,5,8]. Answer = dp[5] = 8. Can optimize to O(1) space!', arr: [0, 1, 2, 3, 5, 8], hi: [5], win: [], label: { 5: 'answer=8 ✓' }, note: 'Fibonacci! Answer=8 ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Coin Change (Unbounded Knapsack)',
+                        prob: 'Minimum coins to make amount. Coins can be reused.',
+                        input: 'coins = [1, 3, 4],  amount = 6',
+                        output: '2 coins (3+3)',
+                        steps: [
+                            { desc: 'dp[i] = min coins to make amount i. dp[0]=0 (base). dp[i]=∞ initially.', arr: [0, 1, 2, 3, 4, 5, 6], hi: [0], win: [], label: { 0: 'dp=0' }, note: 'dp=[0,∞,∞,∞,∞,∞,∞]' },
+                            { desc: 'For each amount i: try each coin c. If i≥c: dp[i] = min(dp[i], dp[i-c]+1).', arr: [0, 1, 2, 3, 4, 5, 6], hi: [1, 2, 3], win: [], label: { 1: 'dp=1', 2: 'dp=2', 3: 'dp=1' }, note: 'dp[3]=dp[0]+1=1 (coin 3!)' },
+                            { desc: 'dp[4]=1 (coin 4!). dp[5]=min(dp[4]+1, dp[2]+1)=2. dp[6]=min(dp[5]+1, dp[3]+1)=2.', arr: [0, 1, 2, 3, 4, 5, 6], hi: [4, 5, 6], win: [], label: { 4: 'dp=1', 5: 'dp=2', 6: 'dp=2' }, note: 'dp[6]=2 ✓' },
+                            { desc: 'Answer = dp[6] = 2. The coins: 3+3=6. Try all coins at each step = "unbounded knapsack".', arr: [0, 1, 2, 3, 4, 5, 6], hi: [6], win: [], label: { 6: '2 coins ✓' }, note: 'Min coins = 2 (3+3) ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Longest Increasing Subsequence (LIS)',
+                        prob: 'Find length of longest strictly increasing subsequence.',
+                        input: 'arr = [10, 9, 2, 5, 3, 7, 101, 18]',
+                        output: '4  ([2,3,7,101] or [2,5,7,101])',
+                        steps: [
+                            { desc: 'dp[i] = LIS ending at index i. Initialize all dp[i]=1 (each element is LIS of length 1).', arr: [10, 9, 2, 5, 3, 7, 101, 18], hi: [0, 1, 2, 3, 4, 5, 6, 7], win: [], label: {}, note: 'dp=[1,1,1,1,1,1,1,1]' },
+                            { desc: 'For i=3 (val=5): check all j<3 where arr[j]<5. arr[2]=2<5 → dp[3]=max(dp[3],dp[2]+1)=2.', arr: [10, 9, 2, 5, 3, 7, 101, 18], hi: [2, 3], win: [], label: { 3: 'dp=2' }, note: 'dp[3]=2 (sequence: 2,5)' },
+                            { desc: 'For i=5 (val=7): check j=2(2<7,dp=3), j=3(5<7,dp=2), j=4(3<7). dp[5]=dp[2]+1 wait→ dp[4]=2, dp[5]=3.', arr: [10, 9, 2, 5, 3, 7, 101, 18], hi: [2, 4, 5], win: [], label: { 5: 'dp=3' }, note: 'dp[5]=3 (2,3,7 or 2,5,7)' },
+                            { desc: 'dp[6](101): all previous extend to 101. dp[6]=dp[5]+1=4. Answer=max(dp)=4 ✓', arr: [10, 9, 2, 5, 3, 7, 101, 18], hi: [5, 6], win: [], label: { 6: 'dp=4 ✓' }, note: 'LIS = 4 ✓' },
+                        ]
+                    }
+                ],
+                code: `<span class="cm">// Coin Change — Bottom-Up Tabulation</span>
+<span class="kw">int</span> <span class="fn">coinChange</span>(<span class="kw">int</span>[] coins, <span class="kw">int</span> amount) {
+    <span class="kw">int</span>[] dp = <span class="kw">new int</span>[amount + <span class="num">1</span>];
+    Arrays.<span class="fn">fill</span>(dp, amount + <span class="num">1</span>);  <span class="cm">// infinity</span>
+    dp[<span class="num">0</span>] = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i <= amount; i++)
+        <span class="kw">for</span> (<span class="kw">int</span> c : coins)
+            <span class="kw">if</span> (c <= i) dp[i] = Math.<span class="fn">min</span>(dp[i], dp[i - c] + <span class="num">1</span>);
+    <span class="kw">return</span> dp[amount] > amount ? -<span class="num">1</span> : dp[amount];
+}
+
+<span class="cm">// LIS — O(n²)</span>
+<span class="kw">int</span> <span class="fn">lengthOfLIS</span>(<span class="kw">int</span>[] nums) {
+    <span class="kw">int</span>[] dp = <span class="kw">new int</span>[nums.length];
+    Arrays.<span class="fn">fill</span>(dp, <span class="num">1</span>);
+    <span class="kw">int</span> max = <span class="num">1</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i < nums.length; i++) {
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j < i; j++)
+            <span class="kw">if</span> (nums[j] < nums[i])
+                dp[i] = Math.<span class="fn">max</span>(dp[i], dp[j] + <span class="num">1</span>);
+        max = Math.<span class="fn">max</span>(max, dp[i]);
+    }
+    <span class="kw">return</span> max;
+}
+
+<span class="cm">// Climbing Stairs (Space Optimized)</span>
+<span class="kw">int</span> <span class="fn">climbStairs</span>(<span class="kw">int</span> n) {
+    <span class="kw">int</span> a = <span class="num">1</span>, b = <span class="num">1</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">2</span>; i <= n; i++) { <span class="kw">int</span> c = a + b; a = b; b = c; }
+    <span class="kw">return</span> b;
+}`,
+                problems: [
+                    { name: 'Climbing Stairs', diff: 'e' }, { name: 'Coin Change', diff: 'm' }, { name: 'LIS', diff: 'm' },
+                    { name: 'House Robber', diff: 'm' }, { name: 'Unique Paths', diff: 'm' },
+                    { name: 'Edit Distance', diff: 'm' }, { name: 'Burst Balloons', diff: 'h' },
+                ]
+            },
+
+            {
+                id: 'union-find', num: '12', title: 'Union Find',
+                cat: 'Graph', color: '#60a5fa', icon: '🔗', diff: 'm',
+                tags: ['Graph', 'Disjoint Set', 'O(α(n))'],
+                tagline: "Dynamically track connected components — union merges them, find identifies the root.",
+                concept: `Disjoint Set Union (DSU) efficiently answers: "Are these two elements in the same group?" Union(x,y) merges groups. Find(x) returns the group representative. With path compression and union by rank, both operations are nearly O(1) amortized — O(α(n)), the inverse Ackermann function.`,
+                when: ['Number of connected components', 'Detect cycle in undirected graph', 'Kruskal MST, network connectivity', 'Dynamic union-find queries'],
+                time: 'O(α(n)) ≈ O(1) amortized', space: 'O(n)',
+                examples: [
+                    {
+                        title: 'Number of Connected Components',
+                        prob: 'Count connected components in undirected graph.',
+                        input: 'n=5, edges=[[0,1],[1,2],[3,4]]',
+                        output: '2 components',
+                        steps: [
+                            { desc: 'Initialize: each node is its own parent. parent=[0,1,2,3,4]. Components=5.', arr: [0, 1, 2, 3, 4], hi: [0, 1, 2, 3, 4], win: [], label: { 0: 'p=0', 1: 'p=1', 2: 'p=2', 3: 'p=3', 4: 'p=4' }, note: '5 components initially' },
+                            { desc: 'Union(0,1): find(0)=0, find(1)=1. Different → merge. parent[1]=0. Components=4.', arr: [0, 1, 2, 3, 4], hi: [0, 1], win: [], label: { 0: 'p=0', 1: 'p→0' }, note: '4 components' },
+                            { desc: 'Union(1,2): find(1)→find(0)=0. find(2)=2. Merge: parent[2]=0. Components=3.', arr: [0, 1, 2, 3, 4], hi: [0, 1, 2], win: [], label: { 0: 'root', 1: '→0', 2: '→0' }, note: '3 components, group {0,1,2}' },
+                            { desc: 'Union(3,4): find(3)=3, find(4)=4. Merge: parent[4]=3. Components=2. Answer=2 ✓', arr: [0, 1, 2, 3, 4], hi: [3, 4], win: [], label: { 3: 'root', 4: '→3' }, note: '2 components: {0,1,2},{3,4} ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Detect Cycle in Undirected Graph',
+                        prob: 'Detect if adding an edge creates a cycle.',
+                        input: 'n=3, edges=[[0,1],[1,2],[2,0]]',
+                        output: 'true (cycle exists)',
+                        steps: [
+                            { desc: 'For each edge, check if both endpoints are in the SAME component before union.', arr: [0, 1, 2], hi: [0, 1, 2], win: [], label: { 0: 'p=0', 1: 'p=1', 2: 'p=2' }, note: '3 separate components' },
+                            { desc: 'Edge [0,1]: find(0)=0, find(1)=1. Different → no cycle. Union. parent=[0,0,2].', arr: [0, 1, 2], hi: [0, 1], win: [], label: { 0: 'root', 1: '→0' }, note: 'No cycle yet' },
+                            { desc: 'Edge [1,2]: find(1)→find(0)=0, find(2)=2. Different → no cycle. Union. parent=[0,0,0].', arr: [0, 1, 2], hi: [0, 1, 2], win: [], label: { 0: 'root', 1: '→0', 2: '→0' }, note: 'No cycle yet' },
+                            { desc: 'Edge [2,0]: find(2)=0, find(0)=0. SAME component! Adding this edge would create a cycle! Return true.', arr: [0, 1, 2], hi: [0, 2], win: [], label: { 0: 'root', 2: 'same root!' }, note: 'CYCLE DETECTED ✓' },
+                        ]
+                    },
+                    {
+                        title: 'Path Compression Demo',
+                        prob: 'Understand path compression optimization.',
+                        input: 'Union chain: 1→2→3→4→5',
+                        output: 'After find(5): all point directly to root',
+                        steps: [
+                            { desc: 'Without compression: find(5) traverses 5→4→3→2→1. Each find is O(depth).', arr: [1, 2, 3, 4, 5], hi: [4, 3, 2, 1, 0], win: [], label: { 4: 'p→4', 3: 'p→3', 2: 'p→2', 1: 'p→1', 0: 'root' }, note: 'Without compression: O(n) per find' },
+                            { desc: 'Path compression: on the way back from find, point all nodes directly to root.', arr: [1, 2, 3, 4, 5], hi: [0, 1, 2, 3, 4], win: [], label: { 0: 'root' }, note: 'All point directly to root!' },
+                            { desc: 'After find(5) with compression: parent=[0,0,0,0,0]. Next find(5): O(1)!', arr: [1, 2, 3, 4, 5], hi: [0, 1, 2, 3, 4], win: [], label: { 1: '→0', 2: '→0', 3: '→0', 4: '→0' }, note: 'O(1) future finds ✓' },
+                            { desc: 'Combined with union by rank: the "inverse Ackermann" O(α(n)) ≈ constant for all practical n.', arr: [1, 2, 3, 4, 5], hi: [0], win: [], label: { 0: 'root of all' }, note: 'Effectively O(1) amortized ✓' },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">class</span> UnionFind {
+    <span class="kw">int</span>[] parent, rank;
+    <span class="kw">int</span> components;
+
+    UnionFind(<span class="kw">int</span> n) {
+        parent = <span class="kw">new int</span>[n]; rank = <span class="kw">new int</span>[n];
+        components = n;
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < n; i++) parent[i] = i;
+    }
+
+    <span class="kw">int</span> <span class="fn">find</span>(<span class="kw">int</span> x) {             <span class="cm">// path compression</span>
+        <span class="kw">if</span> (parent[x] != x)
+            parent[x] = <span class="fn">find</span>(parent[x]);
+        <span class="kw">return</span> parent[x];
+    }
+
+    <span class="kw">boolean</span> <span class="fn">union</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) { <span class="cm">// union by rank</span>
+        <span class="kw">int</span> px = <span class="fn">find</span>(x), py = <span class="fn">find</span>(y);
+        <span class="kw">if</span> (px == py) <span class="kw">return false</span>;  <span class="cm">// same component!</span>
+        <span class="kw">if</span> (rank[px] < rank[py]) parent[px] = py;
+        <span class="kw">else if</span> (rank[px] > rank[py]) parent[py] = px;
+        <span class="kw">else</span> { parent[py] = px; rank[px]++; }
+        components--;
+        <span class="kw">return true</span>;
+    }
+}`,
+                problems: [
+                    { name: 'Number of Provinces', diff: 'm' }, { name: 'Redundant Connection', diff: 'm' },
+                    { name: 'Accounts Merge', diff: 'm' }, { name: 'Number of Islands II', diff: 'h' },
+                    { name: 'Making a Large Island', diff: 'h' }, { name: 'Longest Consecutive Sequence', diff: 'm' },
+                ]
+            },
+        ];
+
+        /* ══════════════════════════════════════════
+           RENDER HOME
+        ══════════════════════════════════════════ */
+        const CATEGORIES = {
+            'Array & String': { patterns: ['sliding-window', 'two-pointers', 'prefix-sum'], label: 'Array & String' },
+            'Array & Search': { patterns: ['binary-search'], label: 'Binary Search' },
+            'Linked List': { patterns: ['fast-slow'], label: 'Linked List' },
+            'Tree & Graph': { patterns: ['tree-bfs', 'tree-dfs', 'union-find'], label: 'Tree & Graph' },
+            'Intervals': { patterns: ['merge-intervals'], label: 'Intervals' },
+            'Heap': { patterns: ['top-k'], label: 'Heap & Priority Queue' },
+            'Recursion': { patterns: ['subsets'], label: 'Recursion & Backtracking' },
+            'Recursion & DP': { patterns: ['dp'], label: 'Dynamic Programming' },
+        };
+
+        function renderHome() {
+            const container = document.getElementById('cards-container');
+            const catMap = {};
+            PATTERNS.forEach(p => {
+                if (!catMap[p.cat]) catMap[p.cat] = [];
+                catMap[p.cat].push(p);
+            });
+            let html = '';
+            Object.entries(catMap).forEach(([cat, patterns]) => {
+                html += `<div class="cat-section"><div class="cat-label">${cat}</div><div class="patterns-grid">`;
+                patterns.forEach((p, i) => {
+                    html += `
+        <div class="pat-card" style="--c:${p.color};animation-delay:${i * 0.07}s" onclick="openLesson('${p.id}')">
+          <div class="pat-card-top">
+            <span class="pat-num">${p.num}</span>
+            <span class="pat-difficulty diff-${p.diff}">${p.diff === 'e' ? 'Easy' : p.diff === 'm' ? 'Medium' : 'Hard'}</span>
+          </div>
+          <div class="pat-icon">${p.icon}</div>
+          <h3>${p.title}</h3>
+          <p>${p.tagline}</p>
+          <div class="pat-card-footer">
+            ${p.tags.map(t => `<span class="pat-tag">${t}</span>`).join('')}
+          </div>
+          <span class="pat-arrow">→</span>
+        </div>`;
+                });
+                html += `</div></div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        /* ══════════════════════════════════════════
+           RENDER LESSON
+        ══════════════════════════════════════════ */
+        let currentIdx = 0;
+        let exSteps = {};   // {patId_exIdx: currentStep}
+
+        function openLesson(id) {
+            const idx = PATTERNS.findIndex(p => p.id === id);
+            currentIdx = idx;
+            renderLesson(PATTERNS[idx]);
+            document.getElementById('lesson').classList.add('show');
+            document.getElementById('lesson').scrollTop = 0;
+            updateNavBtns();
+        }
+
+        function goHome() {
+            document.getElementById('lesson').classList.remove('show');
+        }
+
+        function navigate(dir) {
+            const newIdx = currentIdx + dir;
+            if (newIdx < 0 || newIdx >= PATTERNS.length) return;
+            currentIdx = newIdx;
+            renderLesson(PATTERNS[currentIdx]);
+            document.getElementById('lesson').scrollTop = 0;
+            updateNavBtns();
+        }
+
+        function updateNavBtns() {
+            document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('next-btn').disabled = currentIdx === PATTERNS.length - 1;
+        }
+
+        function renderLesson(p) {
+            document.getElementById('lesson-breadcrumb-text').textContent = p.title;
+            document.querySelector('.progress-bar').style.cssText = `--c:${p.color}; width:${((currentIdx + 1) / PATTERNS.length) * 100}%`;
+
+            let html = `
+    <div class="lesson-header">
+      <div class="lesson-cat-badge" style="--c:${p.color}">${p.cat}</div>
+      <div class="lesson-title"><span class="num">${p.num}</span>${p.title}</div>
+      <div class="lesson-tagline">${p.tagline}</div>
+    </div>
+    <div class="complexity-row" style="--c:${p.color}">
+      <div class="cx"><div class="cx-label">Time</div><div class="cx-val">${p.time}</div></div>
+      <div class="cx-divider"></div>
+      <div class="cx"><div class="cx-label">Space</div><div class="cx-val">${p.space}</div></div>
+      <div class="cx-divider"></div>
+      <div class="cx"><div class="cx-label">Category</div><div class="cx-val" style="color:#94a3b8">${p.cat}</div></div>
+    </div>
+
+    <div class="concept-block" style="--c:${p.color}">
+      <div class="section-header" style="--c:${p.color}">
+        <span class="section-num">concept</span>
+        <h2>What is it?</h2>
+      </div>
+      <div class="concept-text">${p.concept}</div>
+      <div class="when-grid">
+        ${p.when.map(w => `<div class="when-item"><div class="when-dot" style="background:${p.color}"></div>${w}</div>`).join('')}
+      </div>
+    </div>
+
+    <div class="examples-section">
+      <div class="section-header" style="--c:${p.color}">
+        <span class="section-num" style="background:${p.color}">examples</span>
+        <h2>Step-by-Step Examples</h2>
+      </div>
+      <div class="example-tabs">
+        ${p.examples.map((ex, i) => `<button class="ex-tab ${i === 0 ? 'active' : ''}" style="${i === 0 ? `--c:${p.color}` : ''}" onclick="switchEx(this,'${p.id}',${i},'${p.color}')" data-idx="${i}">Ex ${i + 1}: ${ex.title}</button>`).join('')}
+      </div>
+      ${p.examples.map((ex, i) => `
+        <div class="example-panel ${i === 0 ? 'active' : ''}" id="exp_${p.id}_${i}">
+          <div class="ex-problem" style="--c:${p.color}">
+            <div class="q-label">Problem</div>
+            <div class="q-text">${ex.prob}</div>
+            <div class="q-io">Input: ${ex.input}</div>
+          </div>
+          <div class="stepper" id="stepper_${p.id}_${i}" style="--c:${p.color}">
+            <div class="stepper-header">
+              <div class="stepper-title">Trace Through</div>
+              <div class="stepper-counter">Step <span class="step-counter-num" id="sc_${p.id}_${i}">1</span> / ${ex.steps.length}</div>
+            </div>
+            <div class="stepper-viz" id="viz_${p.id}_${i}"></div>
+            <div class="stepper-desc" id="desc_${p.id}_${i}"></div>
+            <div class="stepper-controls">
+              <button class="step-btn" id="prev_${p.id}_${i}" onclick="stepEx('${p.id}',${i},-1,'${p.color}')" style="--c:${p.color}">← Prev</button>
+              <button class="step-btn" id="next_${p.id}_${i}" onclick="stepEx('${p.id}',${i},1,'${p.color}')" style="--c:${p.color}">Next →</button>
+              <div class="step-dots">
+                ${ex.steps.map((_, si) => `<div class="step-dot ${si === 0 ? 'active' : ''}" id="dot_${p.id}_${i}_${si}" style="--c:${p.color}"></div>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="result-box">
+            <span class="result-label">Answer</span>
+            <span class="result-val">${ex.output}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="code-section">
+      <div class="section-header" style="--c:${p.color}">
+        <span class="section-num" style="background:${p.color}">code</span>
+        <h2>Java Template</h2>
+      </div>
+      <div class="code-box">
+        <div class="code-header">
+          <span class="code-lang">Java</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>${p.code}</pre>
+      </div>
+    </div>
+
+    <div class="problems-section">
+      <div class="section-header" style="--c:${p.color}">
+        <span class="section-num" style="background:${p.color}">practice</span>
+        <h2>LeetCode Problems</h2>
+      </div>
+      <div class="prob-grid">
+        ${p.problems.map(prob => `
+          <div class="prob-item">
+            <span class="prob-diff ${prob.diff}">${prob.diff === 'e' ? 'E' : prob.diff === 'm' ? 'M' : 'H'}</span>
+            ${prob.name}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+            document.getElementById('lesson-content').innerHTML = html;
+            // Init all steppers
+            p.examples.forEach((ex, i) => {
+                const key = `${p.id}_${i}`;
+                exSteps[key] = 0;
+                renderStep(p.id, i, ex, 0, p.color);
+            });
+        }
+
+        function renderStep(pid, eidx, ex, stepIdx, color) {
+            const step = ex.steps[stepIdx];
+            const key = `${pid}_${eidx}`;
+
+            // Render viz
+            const vizEl = document.getElementById(`viz_${pid}_${eidx}`);
+            if (vizEl) {
+                let cellsHtml = '<div class="arr-viz">';
+                step.arr.forEach((val, i) => {
+                    let cls = 'arr-cell';
+                    if (step.hi && step.hi.includes(i)) cls += ' active';
+                    else if (step.win && step.win.length === 2 && i >= step.win[0] && i <= step.win[1]) cls += ' window';
+                    else if (step.win && step.win.length > 2 && step.win.includes(i)) cls += ' window';
+                    const lbl = step.label && step.label[i] ? `<span class="arr-label">${step.label[i]}</span>` : '';
+                    cellsHtml += `<div class="${cls}">${val}${lbl}</div>`;
+                });
+                cellsHtml += `<div style="margin-left:auto;font-family:var(--mono);font-size:11px;color:${color};padding:4px 12px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid var(--border)">${step.note}</div>`;
+                cellsHtml += '</div>';
+                vizEl.innerHTML = cellsHtml;
+            }
+
+            // Render desc
+            const descEl = document.getElementById(`desc_${pid}_${eidx}`);
+            if (descEl) descEl.innerHTML = step.desc;
+
+            // Counter
+            const scEl = document.getElementById(`sc_${pid}_${eidx}`);
+            if (scEl) scEl.textContent = stepIdx + 1;
+
+            // Dots
+            ex.steps.forEach((_, si) => {
+                const dot = document.getElementById(`dot_${pid}_${eidx}_${si}`);
+                if (dot) dot.classList.toggle('active', si === stepIdx);
+            });
+
+            // Buttons
+            const prevBtn = document.getElementById(`prev_${pid}_${eidx}`);
+            const nextBtn = document.getElementById(`next_${pid}_${eidx}`);
+            if (prevBtn) prevBtn.disabled = stepIdx === 0;
+            if (nextBtn) nextBtn.disabled = stepIdx === ex.steps.length - 1;
+        }
+
+        function stepEx(pid, eidx, dir, color) {
+            const key = `${pid}_${eidx}`;
+            const p = PATTERNS.find(x => x.id === pid);
+            const ex = p.examples[eidx];
+            const newStep = Math.max(0, Math.min(ex.steps.length - 1, exSteps[key] + dir));
+            exSteps[key] = newStep;
+            renderStep(pid, eidx, ex, newStep, color);
+        }
+
+        function switchEx(btn, pid, idx, color) {
+            // tabs
+            btn.closest('.examples-section').querySelectorAll('.ex-tab').forEach(t => {
+                t.classList.remove('active');
+                t.style.removeProperty('--c');
+            });
+            btn.classList.add('active');
+            btn.style.setProperty('--c', color);
+            // panels
+            btn.closest('.examples-section').querySelectorAll('.example-panel').forEach((p, i) => {
+                p.classList.toggle('active', i === idx);
+            });
+        }
+
+        function copyCode(btn) {
+            const code = btn.closest('.code-box').querySelector('pre').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 1500);
+            });
+        }
+
+        // Scroll progress in lesson
+        document.getElementById('lesson').addEventListener('scroll', function () {
+            const el = this;
+            const pct = el.scrollTop / (el.scrollHeight - el.clientHeight) * 100;
+            document.querySelector('.progress-bar').style.width = pct + '%';
+        });
+
+        renderHome();
+    </script>
+</body>
+
+</html>
