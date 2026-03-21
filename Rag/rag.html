@@ -1,0 +1,2798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAG Patterns — Learn by Doing</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #06080f;
+            --surface: #0c0f1a;
+            --card: #10141f;
+            --border: #1a2035;
+            --border2: #2a3350;
+            --text: #e8eaf6;
+            --muted: #5a6380;
+            --muted2: #8892b0;
+            --mono: 'Space Mono', monospace;
+            --display: 'Plus Jakarta Sans', sans-serif;
+            --body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--body);
+            min-height: 100vh;
+            overflow-x: hidden
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.08), transparent), linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 100% 100%, 48px 48px, 48px 48px;
+            pointer-events: none;
+            z-index: 0
+        }
+
+        /* ═══ HOME ═══ */
+        #home {
+            position: relative;
+            z-index: 1;
+            padding: 48px 24px 100px;
+            max-width: 1160px;
+            margin: 0 auto
+        }
+
+        .home-hero {
+            text-align: center;
+            margin-bottom: 64px;
+            padding-top: 16px
+        }
+
+        .eyebrow {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: #818cf8;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            opacity: 0;
+            animation: fadeUp .6s ease .1s forwards
+        }
+
+        .home-hero h1 {
+            font-size: clamp(34px, 6vw, 68px);
+            font-weight: 800;
+            line-height: 1.08;
+            margin-bottom: 18px;
+            opacity: 0;
+            animation: fadeUp .6s ease .2s forwards
+        }
+
+        .grad {
+            background: linear-gradient(135deg, #818cf8 0%, #38bdf8 40%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .home-hero p {
+            font-size: 16px;
+            color: var(--muted2);
+            max-width: 540px;
+            margin: 0 auto 32px;
+            line-height: 1.75;
+            opacity: 0;
+            animation: fadeUp .6s ease .3s forwards
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeUp .6s ease .4s forwards
+        }
+
+        .stat-pill {
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--muted2)
+        }
+
+        .stat-pill span {
+            color: #818cf8;
+            font-weight: 700
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* CATEGORY */
+        .cat-section {
+            margin-bottom: 40px
+        }
+
+        .cat-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .cat-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border)
+        }
+
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+            gap: 14px
+        }
+
+        /* PATTERN CARD */
+        .pat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: border-color .2s, transform .2s, box-shadow .2s;
+            opacity: 0;
+            animation: fadeUp .5s ease forwards
+        }
+
+        .pat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--c, #818cf8);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .3s ease
+        }
+
+        .pat-card:hover {
+            border-color: var(--border2);
+            transform: translateY(-3px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, .5)
+        }
+
+        .pat-card:hover::before {
+            transform: scaleX(1)
+        }
+
+        .pat-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px
+        }
+
+        .pat-num {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted)
+        }
+
+        .pat-difficulty {
+            font-family: var(--mono);
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700
+        }
+
+        .diff-b {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38bdf8
+        }
+
+        .diff-i {
+            background: rgba(129, 140, 248, 0.12);
+            color: #818cf8
+        }
+
+        .diff-a {
+            background: rgba(251, 113, 133, 0.12);
+            color: #fb7185
+        }
+
+        .pat-icon {
+            font-size: 28px;
+            margin-bottom: 10px
+        }
+
+        .pat-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px
+        }
+
+        .pat-card p {
+            font-size: 12px;
+            color: var(--muted2);
+            line-height: 1.6
+        }
+
+        .pat-card-footer {
+            display: flex;
+            gap: 6px;
+            margin-top: 14px;
+            flex-wrap: wrap
+        }
+
+        .pat-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--muted2);
+            font-family: var(--mono)
+        }
+
+        .pat-arrow {
+            position: absolute;
+            bottom: 18px;
+            right: 18px;
+            font-size: 18px;
+            color: var(--muted);
+            opacity: 0;
+            transition: opacity .2s, color .2s
+        }
+
+        .pat-card:hover .pat-arrow {
+            opacity: 1;
+            color: var(--c, #818cf8)
+        }
+
+        /* ═══ LESSON ═══ */
+        #lesson {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 100;
+            overflow-y: auto
+        }
+
+        #lesson.show {
+            display: block
+        }
+
+        .lesson-topbar {
+            position: sticky;
+            top: 0;
+            background: rgba(6, 8, 15, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 10
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted2);
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: var(--body);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .15s
+        }
+
+        .back-btn:hover {
+            border-color: var(--border2);
+            color: var(--text)
+        }
+
+        .lesson-breadcrumb {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1
+        }
+
+        .lesson-breadcrumb .current {
+            color: var(--c, #818cf8)
+        }
+
+        .lesson-nav {
+            display: flex;
+            gap: 8px;
+            margin-left: auto
+        }
+
+        .nav-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted2);
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: var(--body);
+            transition: all .15s
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            border-color: var(--border2);
+            color: var(--text)
+        }
+
+        .nav-btn:disabled {
+            opacity: .3;
+            cursor: not-allowed
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: var(--c, #818cf8);
+            transition: width .3s ease;
+            z-index: 999
+        }
+
+        .lesson-body {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 40px 24px 80px
+        }
+
+        .lesson-header {
+            margin-bottom: 32px
+        }
+
+        .lesson-cat-badge {
+            font-family: var(--mono);
+            font-size: 10px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--c, #818cf8);
+            color: var(--c, #818cf8);
+            background: rgba(129, 140, 248, 0.06);
+            display: inline-block;
+            margin-bottom: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase
+        }
+
+        .lesson-title {
+            font-size: clamp(26px, 5vw, 46px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 10px
+        }
+
+        .lesson-title .num {
+            color: var(--c, #818cf8);
+            opacity: .35;
+            margin-right: 8px
+        }
+
+        .lesson-tagline {
+            font-size: 15px;
+            color: var(--muted2);
+            line-height: 1.75;
+            max-width: 620px
+        }
+
+        /* COMPLEXITY */
+        .complexity-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 16px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 28px
+        }
+
+        .cx {
+            display: flex;
+            flex-direction: column;
+            gap: 3px
+        }
+
+        .cx-label {
+            font-family: var(--mono);
+            font-size: 9px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px
+        }
+
+        .cx-val {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--c, #818cf8)
+        }
+
+        .cx-divider {
+            width: 1px;
+            background: var(--border);
+            margin: 0 4px
+        }
+
+        /* CONCEPT */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700
+        }
+
+        .section-num {
+            font-family: var(--mono);
+            font-size: 10px;
+            background: var(--c, #818cf8);
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 4px
+        }
+
+        .concept-block {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 28px
+        }
+
+        .concept-text {
+            font-size: 14px;
+            color: var(--muted2);
+            line-height: 1.9;
+            margin-bottom: 16px
+        }
+
+        .concept-text b {
+            color: var(--text)
+        }
+
+        .when-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px
+        }
+
+        @media(max-width:600px) {
+            .when-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .when-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: var(--muted2)
+        }
+
+        .when-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--c, #818cf8);
+            flex-shrink: 0;
+            margin-top: 4px
+        }
+
+        /* PIPELINE VIZ */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            flex-wrap: wrap;
+            margin: 16px 0;
+            row-gap: 10px
+        }
+
+        .pipe-node {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted2);
+            white-space: nowrap;
+            transition: all .3s
+        }
+
+        .pipe-node.active {
+            border-color: var(--c, #818cf8);
+            color: var(--c, #818cf8);
+            background: rgba(129, 140, 248, 0.08);
+            transform: translateY(-2px)
+        }
+
+        .pipe-arrow {
+            color: var(--muted);
+            font-size: 14px;
+            padding: 0 6px;
+            flex-shrink: 0
+        }
+
+        /* EXAMPLE TABS */
+        .examples-section {
+            margin-bottom: 28px
+        }
+
+        .example-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap
+        }
+
+        .ex-tab {
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 6px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .15s
+        }
+
+        .ex-tab.active {
+            border-color: var(--c, #818cf8);
+            color: var(--c, #818cf8);
+            background: rgba(129, 140, 248, 0.06)
+        }
+
+        .example-panel {
+            display: none
+        }
+
+        .example-panel.active {
+            display: block
+        }
+
+        .ex-problem {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--c, #818cf8);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 16px;
+            margin-bottom: 20px
+        }
+
+        .ex-problem .q-label {
+            font-family: var(--mono);
+            font-size: 9px;
+            color: var(--c, #818cf8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px
+        }
+
+        .ex-problem .q-text {
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.6
+        }
+
+        .ex-problem .q-io {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted2);
+            margin-top: 8px
+        }
+
+        /* STEPPER */
+        .stepper {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 16px
+        }
+
+        .stepper-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .stepper-title {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px
+        }
+
+        .stepper-counter {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .step-counter-num {
+            color: var(--c, #818cf8);
+            font-weight: 700
+        }
+
+        .stepper-viz {
+            padding: 20px 18px;
+            min-height: 110px
+        }
+
+        .stepper-desc {
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--muted2);
+            line-height: 1.65
+        }
+
+        .stepper-controls {
+            padding: 12px 18px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .step-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            padding: 7px 18px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: var(--body);
+            transition: all .15s;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .step-btn:hover:not(:disabled) {
+            border-color: var(--c, #818cf8);
+            color: var(--c, #818cf8)
+        }
+
+        .step-btn:disabled {
+            opacity: .3;
+            cursor: not-allowed
+        }
+
+        .step-dots {
+            display: flex;
+            gap: 6px;
+            margin-left: auto
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: background .2s
+        }
+
+        .step-dot.active {
+            background: var(--c, #818cf8)
+        }
+
+        /* VIZ COMPONENTS */
+        .doc-viz {
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .doc-block {
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: var(--mono);
+            font-size: 11px;
+            transition: all .3s;
+            border: 1px solid var(--border);
+            color: var(--muted2);
+            background: var(--surface)
+        }
+
+        .doc-block.active {
+            border-color: var(--c, #818cf8);
+            color: var(--c, #818cf8);
+            background: rgba(129, 140, 248, 0.07);
+            transform: translateX(4px)
+        }
+
+        .doc-block.done {
+            border-color: rgba(52, 211, 153, 0.4);
+            color: #34d399;
+            background: rgba(52, 211, 153, 0.06)
+        }
+
+        .doc-block.warn {
+            border-color: rgba(251, 191, 36, 0.4);
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.06)
+        }
+
+        .doc-block.bad {
+            border-color: rgba(251, 113, 133, 0.4);
+            color: #fb7185;
+            background: rgba(251, 113, 133, 0.06)
+        }
+
+        .chunk-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: flex-start
+        }
+
+        .chunk {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted2);
+            max-width: 160px;
+            line-height: 1.5;
+            transition: all .3s;
+            background: var(--surface)
+        }
+
+        .chunk.active {
+            border-color: var(--c, #818cf8);
+            color: var(--c, #818cf8);
+            background: rgba(129, 140, 248, 0.08)
+        }
+
+        .chunk.overlap {
+            border-color: rgba(251, 191, 36, 0.5);
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.06)
+        }
+
+        .embed-row {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        .embed-cell {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+            font-size: 8px;
+            font-weight: 700;
+            transition: all .3s
+        }
+
+        .score-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            transition: all .3s
+        }
+
+        .score-item.active {
+            border-color: var(--c, #818cf8);
+            background: rgba(129, 140, 248, 0.06)
+        }
+
+        .score-item.top {
+            border-color: rgba(52, 211, 153, 0.5);
+            background: rgba(52, 211, 153, 0.06)
+        }
+
+        .score-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--c, #818cf8);
+            transition: width .4s ease;
+            min-width: 4px
+        }
+
+        .score-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted2);
+            flex: 1
+        }
+
+        .score-val {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--c, #818cf8);
+            width: 40px;
+            text-align: right
+        }
+
+        .info-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px
+        }
+
+        .info-badge {
+            font-family: var(--mono);
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--muted2)
+        }
+
+        .info-badge span {
+            color: var(--c, #818cf8)
+        }
+
+        .result-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: rgba(52, 211, 153, 0.06);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            border-radius: 8px;
+            margin-top: 12px
+        }
+
+        .result-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: #34d399;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            margin-top: 2px
+        }
+
+        .result-val {
+            font-size: 13px;
+            color: #34d399;
+            line-height: 1.6
+        }
+
+        /* CODE */
+        .code-section {
+            margin-bottom: 28px
+        }
+
+        .code-box {
+            background: #050710;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02)
+        }
+
+        .code-lang {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            font-size: 11px;
+            padding: 3px 10px;
+            cursor: pointer;
+            font-family: var(--mono);
+            transition: all .15s
+        }
+
+        .copy-btn:hover {
+            border-color: var(--border2);
+            color: var(--text)
+        }
+
+        pre {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            padding: 18px;
+            overflow-x: auto;
+            line-height: 1.85;
+            color: #cdd6f4
+        }
+
+        .kw {
+            color: #c792ea
+        }
+
+        .fn {
+            color: #82aaff
+        }
+
+        .cm {
+            color: #3d4166;
+            font-style: italic
+        }
+
+        .num {
+            color: #f78c6c
+        }
+
+        .str {
+            color: #c3e88d
+        }
+
+        .cls {
+            color: #ffcb6b
+        }
+
+        .dec {
+            color: #89ddff
+        }
+
+        /* PROBLEMS */
+        .problems-section {
+            margin-bottom: 28px
+        }
+
+        .prob-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .prob-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted2);
+            transition: border-color .15s
+        }
+
+        .prob-item:hover {
+            border-color: var(--border2)
+        }
+
+        .prob-diff {
+            font-family: var(--mono);
+            font-size: 9px;
+            font-weight: 700
+        }
+
+        .prob-diff.b {
+            color: #38bdf8
+        }
+
+        .prob-diff.i {
+            color: #818cf8
+        }
+
+        .prob-diff.a {
+            color: #fb7185
+        }
+
+        @media(max-width:600px) {
+            .lesson-body {
+                padding: 24px 14px 60px
+            }
+
+            .lesson-nav .nav-btn span {
+                display: none
+            }
+
+            .chunk-row {
+                flex-direction: column
+            }
+
+            .pipeline {
+                gap: 4px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HOME -->
+    <div id="home">
+        <div class="home-hero">
+            <div class="eyebrow">// Retrieval-Augmented Generation — Complete Guide</div>
+            <h1>Master <span class="grad">RAG</span><br />From Zero to Production</h1>
+            <p>Every concept you need — from chunking to agentic RAG. Step-by-step diagrams, real code, and visual
+                walkthroughs.</p>
+            <div class="stats-row">
+                <div class="stat-pill"><span>12</span> Topics</div>
+                <div class="stat-pill"><span>36+</span> Examples</div>
+                <div class="stat-pill"><span>Python</span> Code</div>
+                <div class="stat-pill"><span>LangChain</span> Ready</div>
+            </div>
+        </div>
+        <div id="cards-container"></div>
+    </div>
+
+    <!-- LESSON -->
+    <div id="lesson">
+        <div class="progress-bar" id="progress-bar"></div>
+        <div class="lesson-topbar">
+            <button class="back-btn" onclick="goHome()">← Back</button>
+            <div class="lesson-breadcrumb">RAG Guide <span style="opacity:.3">›</span> <span class="current"
+                    id="lesson-breadcrumb-text"></span></div>
+            <div class="lesson-nav">
+                <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">← <span>Prev</span></button>
+                <button class="nav-btn" id="next-btn" onclick="navigate(1)"><span>Next</span> →</button>
+            </div>
+        </div>
+        <div class="lesson-body" id="lesson-content"></div>
+    </div>
+
+    <script>
+        /* ════════════════════════════════════════
+           RAG PATTERNS DATA
+        ════════════════════════════════════════ */
+        const PATTERNS = [
+
+            /* ─── 01 RAG OVERVIEW ─── */
+            {
+                id: 'rag-overview', num: '01', title: 'RAG Overview',
+                cat: 'Foundations', color: '#818cf8', icon: '🧠', diff: 'b',
+                tags: ['LLM', 'Pipeline', 'Architecture'],
+                tagline: 'Giving LLMs a memory they can look up — retrieve relevant context before generating answers.',
+                concept: `<b>Retrieval-Augmented Generation (RAG)</b> solves a core LLM problem: models have a fixed knowledge cutoff and can hallucinate facts. RAG connects an LLM to an external knowledge base at query time.<br><br>
+The pipeline has 2 phases: <b>Indexing</b> (offline: load → chunk → embed → store) and <b>Querying</b> (online: embed query → retrieve → augment prompt → generate). The LLM only generates; it doesn't need to memorize facts.`,
+                when: ['LLM needs access to private/custom documents', 'Reducing hallucinations with factual grounding', 'Building Q&A over large document collections', 'Knowledge base must stay up to date without retraining'],
+                keypoints: ['Components: Loader, Chunker, Embedder, VectorStore, Retriever, LLM', 'Indexing is offline (build once). Querying is online (real-time)', 'RAG does NOT update model weights — knowledge is in the vector store', 'Context window limit determines how much retrieved text fits in prompt'],
+                examples: [
+                    {
+                        title: 'End-to-End RAG Pipeline',
+                        prob: 'Trace a user question through the full RAG pipeline.',
+                        input: 'User asks: "What is our refund policy?"',
+                        output: 'Grounded answer from retrieved policy document chunks',
+                        steps: [
+                            {
+                                desc: '📄 Step 1 — LOAD: Load raw documents (PDFs, docs, web pages) using a document loader. Each document becomes a string of text + metadata.',
+                                viz: 'pipeline', nodes: ['Load Docs', '→', 'Chunk', '→', 'Embed', '→', 'VectorStore', '→', 'Retrieve', '→', 'Prompt', '→', 'LLM'], active: 0,
+                                info: ['Source: company_policy.pdf', 'Loader: PyPDFLoader', 'Output: 42 pages of raw text']
+                            },
+                            {
+                                desc: '✂️ Step 2 — CHUNK: Split documents into smaller pieces (chunks) that fit in the embedding model context. Overlap between chunks preserves context at boundaries.',
+                                viz: 'pipeline', nodes: ['Load Docs', '→', 'Chunk', '→', 'Embed', '→', 'VectorStore', '→', 'Retrieve', '→', 'Prompt', '→', 'LLM'], active: 2,
+                                info: ['chunk_size: 512 tokens', 'chunk_overlap: 50 tokens', '42 pages → 180 chunks']
+                            },
+                            {
+                                desc: '🔢 Step 3 — EMBED: Convert each chunk to a dense vector using an embedding model. Similar text → similar vectors. Store (chunk, vector) pairs in a vector database.',
+                                viz: 'pipeline', nodes: ['Load Docs', '→', 'Chunk', '→', 'Embed', '→', 'VectorStore', '→', 'Retrieve', '→', 'Prompt', '→', 'LLM'], active: 4,
+                                info: ['Model: text-embedding-3-small', 'Dimensions: 1536', '180 chunks → 180 vectors stored']
+                            },
+                            {
+                                desc: '🔍 Step 4 — RETRIEVE: User query is embedded. Find the top-K most similar chunk vectors (cosine similarity). These chunks become the context.',
+                                viz: 'pipeline', nodes: ['Load Docs', '→', 'Chunk', '→', 'Embed', '→', 'VectorStore', '→', 'Retrieve', '→', 'Prompt', '→', 'LLM'], active: 6,
+                                info: ['Query embedded → 1536-dim vector', 'Top-3 chunks retrieved', 'Similarity: 0.91, 0.87, 0.82']
+                            },
+                            {
+                                desc: '💬 Step 5 — GENERATE: Retrieved chunks + user question are stuffed into the LLM prompt. The LLM generates a grounded answer, citing only information from retrieved context.',
+                                viz: 'pipeline', nodes: ['Load Docs', '→', 'Chunk', '→', 'Embed', '→', 'VectorStore', '→', 'Retrieve', '→', 'Prompt', '→', 'LLM'], active: 12,
+                                info: ['Prompt = system + context + question', 'LLM: GPT-4 / Claude / Gemini', 'Response cites retrieved chunks ✓']
+                            },
+                        ]
+                    },
+                    {
+                        title: 'RAG vs Fine-tuning — When to Use Which',
+                        prob: 'Understand when RAG is better than fine-tuning.',
+                        input: 'You have 10,000 company documents. When to use RAG vs fine-tuning?',
+                        output: 'Use RAG for dynamic knowledge, fine-tuning for style/behavior',
+                        steps: [
+                            {
+                                desc: '🔄 RAG: Knowledge lives in a vector store — update docs without touching the model. Perfect for frequently changing information.',
+                                viz: 'scores', items: [{ label: 'Dynamic knowledge updates', val: 0.95, pct: 95 }, { label: 'Private/custom documents', val: 0.90, pct: 90 }, { label: 'Fact-grounding / citations', val: 0.92, pct: 92 }, { label: 'Specific writing style/tone', val: 0.30, pct: 30 }], title: 'RAG Strengths'
+                            },
+                            {
+                                desc: '🎯 Fine-tuning: Bakes knowledge INTO model weights. Better for consistent tone, domain-specific reasoning style, or very short inputs with no retrieval budget.',
+                                viz: 'scores', items: [{ label: 'Writing style/behavior', val: 0.95, pct: 95 }, { label: 'Domain reasoning patterns', val: 0.88, pct: 88 }, { label: 'Fast inference (no retrieval)', val: 0.80, pct: 80 }, { label: 'Real-time doc updates', val: 0.20, pct: 20 }], title: 'Fine-tuning Strengths'
+                            },
+                            {
+                                desc: '✅ RAG wins when: docs change frequently, you need citations, private data, or you cannot afford retraining costs.',
+                                viz: 'docs', items: [{ label: '✅ Use RAG', note: 'Company policy changes monthly', cls: 'done' }, { label: '✅ Use RAG', note: 'Legal documents with citations needed', cls: 'done' }, { label: '🎯 Fine-tune', note: 'Customer service tone consistency', cls: 'warn' }, { label: '⚡ Both!', note: 'Legal reasoning style + current case docs', cls: 'active' }]
+                            },
+                            {
+                                desc: '🔥 Production reality: Combine both! Fine-tune the LLM for domain style, then use RAG to supply current facts. Best of both worlds.',
+                                viz: 'docs', items: [{ label: 'Architecture: RAG + Fine-tune', note: 'Style from fine-tune + Facts from RAG = Best results', cls: 'done' }, { label: 'Cost comparison', note: 'RAG: cheap to update | Fine-tune: $$$ per run', cls: 'active' }, { label: 'Latency', note: 'RAG adds retrieval time (~100-500ms)', cls: 'warn' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Context Window & Token Budget',
+                        prob: 'How does the LLM context window constrain RAG design?',
+                        input: 'GPT-4 context = 128K tokens. Query + chunks + answer must all fit.',
+                        output: 'Token-aware chunk sizing and retrieval count strategy',
+                        steps: [
+                            {
+                                desc: '📏 Token budget = total context window. Must allocate to: system prompt, retrieved chunks, user query, and room for the LLM response.',
+                                viz: 'docs', items: [{ label: 'System Prompt', note: '~500 tokens (instructions, persona)', cls: 'warn' }, { label: 'Retrieved Chunks (K×chunk_size)', note: '3 × 512 = ~1536 tokens', cls: 'active' }, { label: 'User Query', note: '~50-200 tokens', cls: 'done' }, { label: 'Response Reserve', note: '~1000-2000 tokens for answer', cls: 'done' }]
+                            },
+                            {
+                                desc: '⚖️ Trade-off: larger chunks → fewer can fit → less recall. Smaller chunks → more fit → but each has less context. chunk_size=512, K=5 is a safe default.',
+                                viz: 'scores', items: [{ label: 'chunk_size=256, K=10 (more recall)', val: 0.75, pct: 75 }, { label: 'chunk_size=512, K=5 (balanced)', val: 0.90, pct: 90 }, { label: 'chunk_size=1024, K=3 (less recall)', val: 0.60, pct: 60 }], title: 'Retrieval Quality vs Token Budget'
+                            },
+                            {
+                                desc: '🎯 For 128K context models (GPT-4, Claude 3): you can afford larger K or bigger chunks. For 4K models (GPT-3.5): be very conservative with your budget.',
+                                viz: 'docs', items: [{ label: 'GPT-3.5 (4K)', note: 'K=2, chunk=256 — very tight', cls: 'warn' }, { label: 'GPT-4 (128K)', note: 'K=10, chunk=1024 — generous', cls: 'done' }, { label: 'Claude 3 (200K)', note: 'K=20+ — almost unlimited RAG', cls: 'done' }]
+                            },
+                            {
+                                desc: '💡 Pro tip: Always reserve 20% of context for the response. Track token usage programmatically. Use tiktoken to count before sending.',
+                                viz: 'docs', items: [{ label: 'Token counting', note: 'Use tiktoken.encoding_for_model()', cls: 'active' }, { label: 'Budget formula', note: 'max_chunks = (ctx_window × 0.7 - sys_prompt) / chunk_size', cls: 'done' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> langchain.document_loaders <span class="kw">import</span> PyPDFLoader
+<span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> RecursiveCharacterTextSplitter
+<span class="kw">from</span> langchain.embeddings <span class="kw">import</span> OpenAIEmbeddings
+<span class="kw">from</span> langchain.vectorstores <span class="kw">import</span> Chroma
+<span class="kw">from</span> langchain.chat_models <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain.chains <span class="kw">import</span> RetrievalQA
+
+<span class="cm"># ── INDEXING PHASE (offline) ──────────────────</span>
+loader = <span class="cls">PyPDFLoader</span>(<span class="str">"company_policy.pdf"</span>)
+documents = loader.<span class="fn">load</span>()                   <span class="cm"># list of Document objects</span>
+
+splitter = <span class="cls">RecursiveCharacterTextSplitter</span>(
+    chunk_size=<span class="num">512</span>,
+    chunk_overlap=<span class="num">50</span>,                        <span class="cm"># overlap for boundary context</span>
+)
+chunks = splitter.<span class="fn">split_documents</span>(documents) <span class="cm"># 42 pages → 180 chunks</span>
+
+embeddings = <span class="cls">OpenAIEmbeddings</span>()
+vectorstore = Chroma.<span class="fn">from_documents</span>(chunks, embeddings)
+
+<span class="cm"># ── QUERYING PHASE (online) ───────────────────</span>
+retriever = vectorstore.<span class="fn">as_retriever</span>(search_kwargs={<span class="str">"k"</span>: <span class="num">3</span>})
+llm = <span class="cls">ChatOpenAI</span>(model=<span class="str">"gpt-4o"</span>, temperature=<span class="num">0</span>)
+
+chain = <span class="cls">RetrievalQA</span>.<span class="fn">from_chain_type</span>(llm=llm, retriever=retriever)
+answer = chain.<span class="fn">invoke</span>(<span class="str">"What is our refund policy?"</span>)`,
+                problems: [
+                    { name: 'Build a PDF Q&A chatbot', diff: 'b' }, { name: 'Add metadata filtering to retrieval', diff: 'i' },
+                    { name: 'Multi-document RAG with source tracking', diff: 'i' }, { name: 'RAG with streaming responses', diff: 'i' },
+                    { name: 'Evaluate RAG with RAGAS', diff: 'a' }, { name: 'Productionize RAG with async retrieval', diff: 'a' },
+                ]
+            },
+
+            /* ─── 02 CHUNKING ─── */
+            {
+                id: 'chunking', num: '02', title: 'Text Chunking',
+                cat: 'Indexing', color: '#38bdf8', icon: '✂️', diff: 'i',
+                tags: ['Chunking', 'Splitter', 'Overlap'],
+                tagline: 'Split documents wisely — chunk size and strategy dramatically impact retrieval quality.',
+                concept: `<b>Chunking</b> breaks documents into smaller pieces before embedding. The challenge: chunks must be small enough for the embedding model, but large enough to contain complete ideas. A poorly chunked document will produce poor retrievals regardless of how good your embedder is.<br><br>
+<b>Strategies</b>: Fixed-size (simple), Recursive character (respects structure), Sentence-based (semantic boundaries), Semantic chunking (embed-then-split), and Agentic chunking (LLM decides boundaries).`,
+                when: ['Default: use RecursiveCharacterTextSplitter', 'Code files: use Language-aware splitter', 'Well-structured docs: split by markdown headers', 'Best quality needed: semantic chunking'],
+                keypoints: ['chunk_overlap preserves context at boundaries (typically 10-15% of chunk_size)', 'chunk_size=512 tokens is a good starting default', 'Test your chunker: print 5 random chunks and read them — do they make sense alone?', 'Metadata (source, page, section) should be attached to each chunk'],
+                examples: [
+                    {
+                        title: 'Fixed vs Recursive Chunking',
+                        prob: 'Compare fixed-size splitting vs recursive splitting on a structured document.',
+                        input: '"# Introduction\\nRAG is great.\\n\\n# Details\\nChunking matters..." (markdown doc)',
+                        output: 'Recursive splitting respects section boundaries better',
+                        steps: [
+                            {
+                                desc: '📄 Input document has natural structure: headers, paragraphs, sentences. Fixed-size splitting blindly cuts at character count, often mid-sentence.',
+                                viz: 'chunks', chunks: [{ text: '# Intro\nRAG is great for building QA sy', cls: 'bad' }, { text: 'stems over large doc collections.\n# Det', cls: 'bad' }, { text: 'ails\nChunking matters because...', cls: 'bad' }], note: 'Fixed-size: cuts mid-sentence ❌'
+                            },
+                            {
+                                desc: '🔄 Recursive splitter tries \\n\\n (paragraphs) first, then \\n (lines), then spaces. Respects natural document structure.',
+                                viz: 'chunks', chunks: [{ text: '# Introduction\nRAG is great for building QA systems.', cls: 'active' }, { text: '# Details\nChunking matters because embedding quality depends on context.', cls: 'active' }], note: 'Recursive: respects paragraphs ✓'
+                            },
+                            {
+                                desc: '🔗 Overlap: chunk_overlap=50 means last 50 chars of chunk N appear at start of chunk N+1. Prevents losing context at boundaries.',
+                                viz: 'chunks', chunks: [{ text: '...embedding quality depends on context boundary.', cls: 'active' }, { text: 'context boundary. The best chunk size...', cls: 'overlap' }, { text: 'The best chunk size depends on your embedding model.', cls: 'active' }], note: 'Overlap preserves boundary context ✓'
+                            },
+                            {
+                                desc: '📊 Rule of thumb: chunk_size=512 works for most embedding models. For sentence-transformers (max 256-512 tokens), stay under that limit.',
+                                viz: 'docs', items: [{ label: 'chunk_size=128', note: 'Very granular, lots of chunks, low coherence', cls: 'warn' }, { label: 'chunk_size=512', note: 'Good balance — recommended default', cls: 'done' }, { label: 'chunk_size=2048', note: 'Large context, fewer chunks, may dilute retrieval', cls: 'warn' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Semantic Chunking',
+                        prob: 'Split document based on semantic shifts, not character count.',
+                        input: 'Long document with topic transitions',
+                        output: 'Chunks that each contain one coherent topic',
+                        steps: [
+                            {
+                                desc: '🧠 Semantic chunking: embed every sentence, then find points where cosine similarity DROPS sharply between adjacent sentences. That drop = topic boundary.',
+                                viz: 'scores', items: [{ label: 'Sent 1-2: RAG introduction', val: 0.94, pct: 94 }, { label: 'Sent 2-3: still RAG (same topic)', val: 0.91, pct: 91 }, { label: 'Sent 3-4: ⬇️ topic shift to databases', val: 0.41, pct: 41 }, { label: 'Sent 4-5: databases (same topic)', val: 0.88, pct: 88 }], title: 'Sentence-to-Sentence Similarity'
+                            },
+                            {
+                                desc: '✂️ Split at similarity drops below threshold (e.g., 0.5). Sentences 1-3 become chunk 1, sentences 4+ become chunk 2.',
+                                viz: 'chunks', chunks: [{ text: 'Chunk 1: RAG intro sentences 1-3 (topic: RAG basics)', cls: 'done' }, { text: '[SPLIT POINT — similarity dropped to 0.41]', cls: 'bad' }, { text: 'Chunk 2: Database sentences 4-N (topic: vector DBs)', cls: 'done' }], note: 'Semantic split at topic boundary ✓'
+                            },
+                            {
+                                desc: '⚖️ Tradeoff: semantic chunking gives better retrieval quality but is ~10x slower to index (requires embedding every sentence). Use for high-value, slower-changing docs.',
+                                viz: 'scores', items: [{ label: 'Fixed chunking: index speed', val: 0.95, pct: 95 }, { label: 'Semantic chunking: index speed', val: 0.20, pct: 20 }, { label: 'Fixed chunking: retrieval quality', val: 0.65, pct: 65 }, { label: 'Semantic chunking: retrieval quality', val: 0.88, pct: 88 }], title: 'Speed vs Quality Tradeoff'
+                            },
+                            {
+                                desc: '💡 LangChain\'s SemanticChunker automatically computes breakpoints. The breakpoint_threshold_type can be "percentile", "standard_deviation", or "interquartile".',
+                                viz: 'docs', items: [{ label: 'SemanticChunker(embeddings)', note: 'Auto-detects topic boundaries using embedding similarity', cls: 'active' }, { label: 'breakpoint_threshold_type', note: '"percentile" (default) | "std_dev" | "gradient"', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Metadata-Aware Chunking',
+                        prob: 'Attach rich metadata to each chunk for better filtering and attribution.',
+                        input: '100-page legal document with sections, dates, clause numbers',
+                        output: 'Chunks with metadata: source, page, section, clause_id',
+                        steps: [
+                            {
+                                desc: '📋 Every chunk should carry metadata: where it came from (file, page, URL), what section it belongs to, and any domain-specific tags.',
+                                viz: 'docs', items: [{ label: 'Chunk: "Termination clause 12.3..."', note: 'metadata={source:"contract.pdf", page:34, section:"Termination", clause:"12.3"}', cls: 'active' }, { label: 'Chunk: "Payment terms 5.1..."', note: 'metadata={source:"contract.pdf", page:12, section:"Payment", clause:"5.1"}', cls: 'done' }]
+                            },
+                            {
+                                desc: '🔍 Metadata enables filtered retrieval: "retrieve only from Section 5" or "only from docs after 2024". Without metadata, you retrieve from everything.',
+                                viz: 'scores', items: [{ label: 'No filter: all 500 chunks searched', val: 0.60, pct: 60 }, { label: 'With section filter: 30 chunks', val: 0.90, pct: 90 }, { label: 'With date+section filter: 8 chunks', val: 0.95, pct: 95 }], title: 'Retrieval Precision with Metadata Filters'
+                            },
+                            {
+                                desc: '🏷️ Use ParentDocumentRetriever: store small child chunks for retrieval, but return the full parent document as context. Best of both worlds!',
+                                viz: 'docs', items: [{ label: 'Index: small chunks (128 tokens)', note: 'Fine-grained retrieval accuracy', cls: 'done' }, { label: 'Retrieve: full parent doc returned', note: 'Full context for LLM answer generation', cls: 'active' }, { label: 'Result', note: 'Precise retrieval + rich context', cls: 'done' }]
+                            },
+                            {
+                                desc: '✅ Always test metadata filtering. Print retrieved chunks with their metadata. Verify source attribution in responses points to correct documents.',
+                                viz: 'docs', items: [{ label: 'Answer: "Per Section 12.3 of contract.pdf (page 34)..."', note: 'Clear attribution from metadata ✓', cls: 'done' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> (
+    RecursiveCharacterTextSplitter,
+    MarkdownHeaderTextSplitter,
+)
+<span class="kw">from</span> langchain_experimental.text_splitter <span class="kw">import</span> SemanticChunker
+<span class="kw">from</span> langchain.embeddings <span class="kw">import</span> OpenAIEmbeddings
+
+<span class="cm"># ── 1. Recursive (recommended default) ───────</span>
+splitter = <span class="cls">RecursiveCharacterTextSplitter</span>(
+    chunk_size=<span class="num">512</span>,
+    chunk_overlap=<span class="num">50</span>,
+    separators=[<span class="str">"\n\n"</span>, <span class="str">"\n"</span>, <span class="str">" "</span>, <span class="str">""</span>],  <span class="cm"># priority order</span>
+)
+chunks = splitter.<span class="fn">split_documents</span>(docs)
+
+<span class="cm"># ── 2. Markdown-aware (split on headers) ─────</span>
+headers = [(<span class="str">"#"</span>, <span class="str">"H1"</span>), (<span class="str">"##"</span>, <span class="str">"H2"</span>), (<span class="str">"###"</span>, <span class="str">"H3"</span>)]
+md_splitter = <span class="cls">MarkdownHeaderTextSplitter</span>(headers_to_split_on=headers)
+md_chunks = md_splitter.<span class="fn">split_text</span>(markdown_text)
+<span class="cm"># → each chunk has metadata["H1"], metadata["H2"]</span>
+
+<span class="cm"># ── 3. Semantic chunking ─────────────────────</span>
+semantic_splitter = <span class="cls">SemanticChunker</span>(
+    <span class="cls">OpenAIEmbeddings</span>(),
+    breakpoint_threshold_type=<span class="str">"percentile"</span>,
+    breakpoint_threshold_amount=<span class="num">90</span>,  <span class="cm"># top 10% drops = boundary</span>
+)
+semantic_chunks = semantic_splitter.<span class="fn">split_documents</span>(docs)
+
+<span class="cm"># ── 4. Add custom metadata ───────────────────</span>
+<span class="kw">for</span> chunk <span class="kw">in</span> chunks:
+    chunk.metadata[<span class="str">"ingested_at"</span>] = <span class="str">"2024-12-01"</span>
+    chunk.metadata[<span class="str">"doc_type"</span>] = <span class="str">"legal"</span>`,
+                problems: [
+                    { name: 'Compare chunking strategies on your docs', diff: 'b' }, { name: 'Build metadata-filtered retriever', diff: 'i' },
+                    { name: 'Parent-child document retriever', diff: 'i' }, { name: 'Implement semantic chunking pipeline', diff: 'a' },
+                ]
+            },
+
+            /* ─── 03 EMBEDDINGS ─── */
+            {
+                id: 'embeddings', num: '03', title: 'Embeddings',
+                cat: 'Indexing', color: '#34d399', icon: '🔢', diff: 'b',
+                tags: ['Vectors', 'Semantic', 'Similarity'],
+                tagline: 'Translate text into numbers that capture meaning — similar text lands close together in vector space.',
+                concept: `<b>Embeddings</b> are dense numerical vectors that encode the semantic meaning of text. An embedding model maps text → a fixed-size vector (e.g., 1536 dimensions). The key property: <b>semantically similar texts produce geometrically close vectors</b>. "dog" and "canine" are close; "dog" and "invoice" are far.<br><br>
+Similarity is measured with <b>cosine similarity</b> (angle between vectors) or dot product. Retrieval = find the K vectors closest to the query vector.`,
+                when: ['Indexing: embed all document chunks (offline)', 'Querying: embed user query, find nearest chunks', 'Bi-encoder for fast ANN retrieval', 'Cross-encoder (re-ranker) for precise re-scoring'],
+                keypoints: ['Query and document must use the SAME embedding model', 'Larger dimensions ≠ always better (cost vs quality tradeoff)', 'Normalize vectors before cosine similarity', 'OpenAI text-embedding-3-small: best cost/quality for most use cases'],
+                examples: [
+                    {
+                        title: 'What Are Embeddings?',
+                        prob: 'Understand how text becomes a vector and why similar texts are close.',
+                        input: '"refund policy", "return policy", "invoice payment"',
+                        output: 'First two are close (cosine~0.94), last is far (~0.41)',
+                        steps: [
+                            {
+                                desc: '📝 "refund policy" → embedding model → 1536-dimensional vector. Each dimension captures some aspect of meaning (though not interpretable directly).',
+                                viz: 'embed', words: ['refund', 'policy'], vecs: [[0.8, 0.6, -0.2, 0.7, 0.1, -0.4, 0.9, 0.3]], note: '1536 dims, shown as 8 for clarity'
+                            },
+                            {
+                                desc: '📝 "return policy" → similar vector. Because "refund" and "return" are semantically related, vectors land close in the embedding space.',
+                                viz: 'embed', words: ['refund policy', 'return policy'], vecs: [[0.8, 0.6, -0.2, 0.7, 0.1, -0.4, 0.9, 0.3], [0.75, 0.62, -0.18, 0.68, 0.12, -0.38, 0.87, 0.31]], note: 'Cosine similarity ≈ 0.94 (very close!)'
+                            },
+                            {
+                                desc: '📝 "invoice payment" → very different vector. Even though it\'s a financial topic, the semantic meaning diverges from "refund policy".',
+                                viz: 'embed', words: ['refund policy', 'invoice payment'], vecs: [[0.8, 0.6, -0.2, 0.7, 0.1, -0.4, 0.9, 0.3], [0.1, -0.3, 0.8, -0.2, 0.7, 0.5, -0.1, 0.6]], note: 'Cosine similarity ≈ 0.41 (far apart!)'
+                            },
+                            {
+                                desc: '🔍 Retrieval: embed query → find K nearest document vectors → these are the most semantically relevant chunks. This is why RAG works across paraphrases!',
+                                viz: 'scores', items: [{ label: '"return policy" (semantically same)', val: 0.94, pct: 94 }, { label: '"money-back guarantee" (synonym)', val: 0.87, pct: 87 }, { label: '"invoice payment" (different topic)', val: 0.41, pct: 41 }, { label: '"weather forecast" (unrelated)', val: 0.08, pct: 8 }], title: 'Cosine Similarity to Query: "refund policy"'
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Choosing an Embedding Model',
+                        prob: 'Compare popular embedding models for RAG.',
+                        input: 'Need to embed 100K document chunks for a production RAG system.',
+                        output: 'text-embedding-3-small wins on cost/quality; BGE for local deployment',
+                        steps: [
+                            {
+                                desc: '🏆 OpenAI text-embedding-3-small: 1536 dims, excellent quality, $0.02/1M tokens. Best default for most production RAG systems.',
+                                viz: 'scores', items: [{ label: 'MTEB Score (quality)', val: 0.62, pct: 62 }, { label: 'Cost efficiency (relative)', val: 0.95, pct: 95 }, { label: 'Inference speed', val: 0.90, pct: 90 }], title: 'text-embedding-3-small'
+                            },
+                            {
+                                desc: '🔥 OpenAI text-embedding-3-large: 3072 dims, higher quality, 5x cost. Use only when quality is critical and budget allows.',
+                                viz: 'scores', items: [{ label: 'MTEB Score (quality)', val: 0.65, pct: 65 }, { label: 'Cost efficiency (relative)', val: 0.30, pct: 30 }, { label: 'Inference speed', val: 0.75, pct: 75 }], title: 'text-embedding-3-large'
+                            },
+                            {
+                                desc: '🏠 BGE-M3 / E5-large (open-source): run locally, no API costs, multilingual, 768 dims. Great for privacy-sensitive or high-volume use cases.',
+                                viz: 'scores', items: [{ label: 'MTEB Score (quality)', val: 0.63, pct: 63 }, { label: 'Cost (local = free)', val: 1.0, pct: 100 }, { label: 'Setup complexity', val: 0.40, pct: 40 }], title: 'BGE-M3 (open source, local)'
+                            },
+                            {
+                                desc: '⚠️ Critical rule: NEVER mix embedding models! If you index with model A, you MUST query with model A. Different models have incompatible vector spaces.',
+                                viz: 'docs', items: [{ label: '✅ Consistent model', note: 'Index with text-embedding-3-small → Query with text-embedding-3-small', cls: 'done' }, { label: '❌ Mixed models', note: 'Index with Ada-002 → Query with text-embedding-3-small = WRONG results', cls: 'bad' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Cosine Similarity vs Dot Product',
+                        prob: 'Understand which similarity metric to use and when.',
+                        input: 'Two vectors: A=[0.6,0.8,0], B=[0.8,0.6,0]',
+                        output: 'Cosine similarity = 0.96, Dot product depends on magnitude',
+                        steps: [
+                            {
+                                desc: '📐 Cosine similarity = dot(A,B) / (|A| × |B|). Measures the ANGLE between vectors, ignoring magnitude. Values in [-1, 1]. 1 = identical direction.',
+                                viz: 'embed', words: ['A: "refund"', 'B: "return"'], vecs: [[0.6, 0.8, 0.0, 0.0], [0.8, 0.6, 0.0, 0.0]], note: 'cosine(A,B) = 0.96 — very similar!'
+                            },
+                            {
+                                desc: '📏 Dot product = A·B (no normalization). Faster but sensitive to vector magnitude. If all vectors are normalized (unit vectors), dot product = cosine similarity.',
+                                viz: 'docs', items: [{ label: 'Normalized vectors (L2 norm=1)', note: 'dot product ≡ cosine similarity — use dot product for speed!', cls: 'done' }, { label: 'Unnormalized vectors', note: 'Dot product biased toward longer vectors — misleading', cls: 'warn' }]
+                            },
+                            {
+                                desc: '🔧 In practice: normalize embeddings at index time (most vector DBs do this automatically). Then use dot product for fast ANN search.',
+                                viz: 'scores', items: [{ label: 'Cosine similarity (safe default)', val: 0.90, pct: 90 }, { label: 'Dot product (normalized = same)', val: 0.90, pct: 90 }, { label: 'Euclidean distance (L2)', val: 0.70, pct: 70 }], title: 'Metric Quality for RAG Retrieval'
+                            },
+                            {
+                                desc: '💡 Vector DBs like FAISS, Pinecone, Chroma all support cosine similarity natively. Just set metric="cosine" and they handle normalization automatically.',
+                                viz: 'docs', items: [{ label: 'FAISS: IndexFlatIP (inner product)', note: 'Normalize vectors first for cosine behavior', cls: 'active' }, { label: 'Chroma: collection_metadata={"hnsw:space":"cosine"}', note: 'Automatic cosine similarity', cls: 'done' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> langchain.embeddings <span class="kw">import</span> OpenAIEmbeddings
+<span class="kw">from</span> langchain.embeddings <span class="kw">import</span> HuggingFaceEmbeddings
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># ── OpenAI embeddings ─────────────────────────</span>
+embedder = <span class="cls">OpenAIEmbeddings</span>(model=<span class="str">"text-embedding-3-small"</span>)
+vec = embedder.<span class="fn">embed_query</span>(<span class="str">"What is the refund policy?"</span>)
+<span class="cm"># vec: list of 1536 floats</span>
+
+<span class="cm"># ── Local HuggingFace (free!) ─────────────────</span>
+local_embedder = <span class="cls">HuggingFaceEmbeddings</span>(
+    model_name=<span class="str">"BAAI/bge-m3"</span>,
+    model_kwargs={<span class="str">'device'</span>: <span class="str">'cuda'</span>},      <span class="cm"># or 'cpu'</span>
+    encode_kwargs={<span class="str">'normalize_embeddings'</span>: <span class="kw">True</span>}
+)
+
+<span class="cm"># ── Manual cosine similarity ─────────────────</span>
+<span class="kw">def</span> <span class="fn">cosine_sim</span>(a, b):
+    a, b = np.<span class="fn">array</span>(a), np.<span class="fn">array</span>(b)
+    <span class="kw">return</span> np.<span class="fn">dot</span>(a, b) / (np.<span class="fn">linalg</span>.<span class="fn">norm</span>(a) * np.<span class="fn">linalg</span>.<span class="fn">norm</span>(b))
+
+v1 = embedder.<span class="fn">embed_query</span>(<span class="str">"refund policy"</span>)
+v2 = embedder.<span class="fn">embed_query</span>(<span class="str">"return policy"</span>)
+<span class="fn">print</span>(<span class="fn">cosine_sim</span>(v1, v2))  <span class="cm"># ~0.94</span>`,
+                problems: [
+                    { name: 'Compare embedding models on your domain data', diff: 'b' }, { name: 'Build embedding cache to reduce API costs', diff: 'i' },
+                    { name: 'Multilingual embeddings with BGE-M3', diff: 'i' }, { name: 'Fine-tune embedding model on domain data', diff: 'a' },
+                ]
+            },
+
+            /* ─── 04 VECTOR STORES ─── */
+            {
+                id: 'vector-stores', num: '04', title: 'Vector Stores',
+                cat: 'Indexing', color: '#f59e0b', icon: '🗄️', diff: 'b',
+                tags: ['FAISS', 'Chroma', 'Pinecone', 'ANN'],
+                tagline: 'The database for embeddings — store millions of vectors, query the nearest in milliseconds.',
+                concept: `A <b>vector store</b> (vector database) stores embeddings and supports fast <b>Approximate Nearest Neighbor (ANN)</b> search. When you embed a query, the vector store finds the K most similar stored vectors in O(log n) or better — without comparing against every single vector.<br><br>
+<b>Local options</b>: FAISS (in-memory, blazing fast), Chroma (persistent, easy). <b>Cloud options</b>: Pinecone, Weaviate, Qdrant (managed, scalable, filtering). Choose based on: scale, persistence needs, metadata filtering, and budget.`,
+                when: ['Development/testing: use Chroma (persistent) or FAISS (fast)', 'Production small-scale: Chroma or FAISS with periodic rebuild', 'Production large-scale: Pinecone, Qdrant, or Weaviate', 'Need advanced filtering + hybrid search: Qdrant or Weaviate'],
+                keypoints: ['HNSW index: best ANN quality/speed tradeoff for most cases', 'Always persist your vector store — rebuilding is expensive', 'Metadata filtering runs BEFORE vector search (reduces search space)', 'Embedding consistency: must use same model for index and query'],
+                examples: [
+                    {
+                        title: 'FAISS vs Chroma vs Pinecone',
+                        prob: 'Choose the right vector store for your use case.',
+                        input: '50K document chunks, need filtering by date and source',
+                        output: 'Qdrant or Chroma with metadata filter for this use case',
+                        steps: [
+                            {
+                                desc: '⚡ FAISS: Facebook\'s in-memory ANN library. Blazing fast (milliseconds for 10M vectors), but no persistence, no metadata filtering. Best for prototyping or batch jobs.',
+                                viz: 'scores', items: [{ label: 'Query speed', val: 0.99, pct: 99 }, { label: 'Persistence (needs manual save)', val: 0.40, pct: 40 }, { label: 'Metadata filtering', val: 0.20, pct: 20 }, { label: 'Setup ease', val: 0.70, pct: 70 }], title: 'FAISS'
+                            },
+                            {
+                                desc: '🟢 Chroma: Easy to use, persistent by default, supports metadata filtering. Perfect for development and small-to-medium production use. Runs locally.',
+                                viz: 'scores', items: [{ label: 'Query speed', val: 0.80, pct: 80 }, { label: 'Persistence', val: 0.95, pct: 95 }, { label: 'Metadata filtering', val: 0.85, pct: 85 }, { label: 'Setup ease', val: 0.98, pct: 98 }], title: 'Chroma (local)'
+                            },
+                            {
+                                desc: '☁️ Pinecone: Managed cloud vector DB. Scales to billions of vectors, global replication, built-in filtering. Pay-per-use. Best for large-scale production.',
+                                viz: 'scores', items: [{ label: 'Scale (billions of vectors)', val: 1.0, pct: 100 }, { label: 'Query speed (managed)', val: 0.95, pct: 95 }, { label: 'Metadata filtering', val: 0.90, pct: 90 }, { label: 'Cost at low scale', val: 0.30, pct: 30 }], title: 'Pinecone (managed cloud)'
+                            },
+                            {
+                                desc: '🦔 Qdrant: Open-source, self-hosted or cloud. Best metadata filtering (payload filtering), supports hybrid search (dense + sparse). Great all-rounder for production.',
+                                viz: 'scores', items: [{ label: 'Hybrid search support', val: 1.0, pct: 100 }, { label: 'Payload (metadata) filtering', val: 1.0, pct: 100 }, { label: 'Self-host option', val: 1.0, pct: 100 }, { label: 'Query speed', val: 0.92, pct: 92 }], title: 'Qdrant (recommended for production)'
+                            },
+                        ]
+                    },
+                    {
+                        title: 'HNSW Index Explained',
+                        prob: 'How does vector search work fast at scale?',
+                        input: 'Query vector. 1M stored document vectors.',
+                        output: 'Top-5 most similar vectors found in ~1ms (not 1 second)',
+                        steps: [
+                            {
+                                desc: '🐢 Brute force: compare query to ALL 1M vectors → guaranteed exact result, but O(n·d) = 1M × 1536 = 1.5B operations. Too slow for real-time!',
+                                viz: 'docs', items: [{ label: 'Brute force: 1M × 1536 dims', note: '~500ms per query at 1M vectors — unacceptable', cls: 'bad' }, { label: 'Need ANN (Approximate Nearest Neighbor)', note: 'Trade tiny accuracy loss for 100x speedup', cls: 'active' }]
+                            },
+                            {
+                                desc: '🌐 HNSW (Hierarchical Navigable Small World): builds a graph where each node connects to its nearest neighbors. Search navigates this graph layer by layer.',
+                                viz: 'docs', items: [{ label: 'Layer 2 (coarse): few nodes, long edges', note: 'Entry point — quickly navigate to right region', cls: 'active' }, { label: 'Layer 1 (medium): more nodes', note: 'Zoom into the right neighborhood', cls: 'done' }, { label: 'Layer 0 (fine): all nodes, short edges', note: 'Precise search in small local region', cls: 'done' }]
+                            },
+                            {
+                                desc: '⚡ HNSW query: start at top layer, greedily navigate toward query, descend layers. Result: sub-logarithmic O(log n) time. 1M vectors in ~1ms!',
+                                viz: 'scores', items: [{ label: 'HNSW: 1M vectors', val: 0.99, pct: 99 }, { label: 'IVF-Flat: 1M vectors', val: 0.90, pct: 90 }, { label: 'Brute force: 1M vectors', val: 0.10, pct: 10 }], title: 'Query Speed (relative, higher=faster)'
+                            },
+                            {
+                                desc: '🎛️ Tune HNSW: ef_construction (build quality, higher=better/slower index), ef (query quality, higher=better/slower search), M (connections per node, 16-64).',
+                                viz: 'docs', items: [{ label: 'ef_construction=200, M=16', note: 'Good default — balanced build quality vs speed', cls: 'done' }, { label: 'ef=50 at query time', note: 'Higher ef = better recall at cost of speed', cls: 'active' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Metadata Filtering in Action',
+                        prob: 'Use metadata filters to retrieve from specific document subsets.',
+                        input: 'Query: "sales targets" — only from Q4 2024 reports',
+                        output: 'Filtered retrieval: only chunks from Q4-2024 docs',
+                        steps: [
+                            {
+                                desc: '📂 Without filter: retrieve from ALL indexed chunks — may return Q1, Q2, Q3, Q4 results mixed together, confusing the LLM.',
+                                viz: 'scores', items: [{ label: 'Q1 2024 report chunk (sales)', val: 0.81, pct: 81 }, { label: 'Q3 2024 report chunk (targets)', val: 0.85, pct: 85 }, { label: 'Q4 2024 report chunk (targets)', val: 0.89, pct: 89 }, { label: 'HR policy chunk (unrelated)', val: 0.42, pct: 42 }], title: 'Without Filter (all docs)'
+                            },
+                            {
+                                desc: '🎯 With filter: pre-filter to quarter="Q4" AND year=2024 before ANN search. Vector search only runs on the filtered subset.',
+                                viz: 'scores', items: [{ label: 'Q4 2024: "Q4 sales targets exceeded"', val: 0.91, pct: 91 }, { label: 'Q4 2024: "Revenue target: $2.4M"', val: 0.87, pct: 87 }, { label: 'Q4 2024: "Sales team performance"', val: 0.83, pct: 83 }], title: 'With Metadata Filter (Q4 2024 only)'
+                            },
+                            {
+                                desc: '⚡ Pre-filtering reduces vector search space, improving both speed and precision. Key: add metadata at index time, filter at query time.',
+                                viz: 'docs', items: [{ label: 'Index time: add metadata', note: 'chunk.metadata = {quarter:"Q4", year:2024, dept:"sales"}', cls: 'active' }, { label: 'Query time: filter then search', note: 'retriever.search(query, filter={quarter:"Q4", year:2024})', cls: 'done' }]
+                            },
+                            {
+                                desc: '💡 Self-query retriever: LLM automatically extracts filters from natural language! "Show me Q4 2024 sales data" → LLM extracts {quarter:Q4, year:2024} automatically.',
+                                viz: 'docs', items: [{ label: 'User: "What were Q4 2024 sales targets?"', note: '', cls: 'active' }, { label: 'LLM extracts filter: {year:2024, quarter:"Q4", topic:"sales"}', note: 'Self-query retriever does this automatically', cls: 'done' }, { label: 'Filtered retrieval returns precise results', note: '', cls: 'done' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> langchain.vectorstores <span class="kw">import</span> Chroma, FAISS
+<span class="kw">from</span> langchain_qdrant <span class="kw">import</span> Qdrant
+<span class="kw">import</span> qdrant_client
+
+<span class="cm"># ── Chroma (local, persistent) ────────────────</span>
+vectorstore = <span class="cls">Chroma</span>.<span class="fn">from_documents</span>(
+    documents=chunks,
+    embedding=embedder,
+    persist_directory=<span class="str">"./chroma_db"</span>,
+    collection_metadata={<span class="str">"hnsw:space"</span>: <span class="str">"cosine"</span>}
+)
+<span class="cm"># Reload later:</span>
+vectorstore = <span class="cls">Chroma</span>(persist_directory=<span class="str">"./chroma_db"</span>, embedding_function=embedder)
+
+<span class="cm"># ── Metadata filtering ────────────────────────</span>
+retriever = vectorstore.<span class="fn">as_retriever</span>(
+    search_kwargs={
+        <span class="str">"k"</span>: <span class="num">5</span>,
+        <span class="str">"filter"</span>: {<span class="str">"quarter"</span>: <span class="str">"Q4"</span>, <span class="str">"year"</span>: <span class="num">2024</span>}
+    }
+)
+
+<span class="cm"># ── FAISS (in-memory, fast) ───────────────────</span>
+faiss_store = <span class="cls">FAISS</span>.<span class="fn">from_documents</span>(chunks, embedder)
+faiss_store.<span class="fn">save_local</span>(<span class="str">"./faiss_index"</span>)      <span class="cm"># persist manually</span>
+faiss_store = <span class="cls">FAISS</span>.<span class="fn">load_local</span>(<span class="str">"./faiss_index"</span>, embedder)
+
+<span class="cm"># ── Qdrant (production recommended) ──────────</span>
+client = qdrant_client.<span class="cls">QdrantClient</span>(url=<span class="str">"http://localhost:6333"</span>)
+qdrant = <span class="cls">Qdrant</span>.<span class="fn">from_documents</span>(chunks, embedder,
+    collection_name=<span class="str">"my_docs"</span>, url=<span class="str">"http://localhost:6333"</span>)`,
+                problems: [
+                    { name: 'Set up Chroma for local RAG project', diff: 'b' }, { name: 'Deploy Qdrant with Docker', diff: 'i' },
+                    { name: 'Implement self-query retriever with LangChain', diff: 'i' }, { name: 'Benchmark FAISS vs Qdrant at 1M vectors', diff: 'a' },
+                ]
+            },
+
+            /* ─── 05 RETRIEVAL ─── */
+            {
+                id: 'retrieval', num: '05', title: 'Dense vs Sparse Retrieval',
+                cat: 'Retrieval', color: '#a78bfa', icon: '🔎', diff: 'i',
+                tags: ['BM25', 'Dense', 'Semantic Search'],
+                tagline: 'Two ways to find relevant chunks — semantic similarity or keyword matching — both are powerful.',
+                concept: `<b>Dense retrieval</b> uses neural embeddings — great for semantic/paraphrase matching. <b>Sparse retrieval</b> (BM25/TF-IDF) uses keyword frequency — great for exact term matching and rare proper nouns.<br><br>
+Dense excels at: "What does the document say about cancellations?" even if the doc uses "terminations". Sparse excels at: "GPT-4o-mini pricing" — rare exact terms that embeddings may not handle well.`,
+                when: ['Dense: semantic/conceptual questions, paraphrases', 'Sparse (BM25): exact keyword matches, proper nouns, codes', 'Hybrid: combine both for best of both worlds (recommended)', 'Re-ranking on top of either for final precision boost'],
+                keypoints: ['BM25 is term-frequency based — no embeddings needed', 'Dense retrieval uses ANN in vector space', 'Hybrid = BM25 + Dense, fused with Reciprocal Rank Fusion (RRF)', 'Neither is always better — test both on your domain'],
+                examples: [
+                    {
+                        title: 'Dense Retrieval — Semantic Search',
+                        prob: 'Find chunks about "employee leave policy" even if the doc says "vacation time off rules".',
+                        input: 'Query: "How many vacation days do I get?"',
+                        output: 'Retrieves "Annual Leave Policy: 20 days PTO..." despite different wording',
+                        steps: [
+                            {
+                                desc: '🔢 Embed query: "How many vacation days do I get?" → 1536-dim vector Q.',
+                                viz: 'embed', words: ['vacation days'], vecs: [[0.6, 0.8, 0.3, -0.2, 0.7, 0.1, 0.5, 0.4]], note: 'Query vector Q (1536 dims)'
+                            },
+                            {
+                                desc: '🗄️ Compare Q against all stored chunk vectors using cosine similarity. The chunk "Annual Leave Policy: 20 days PTO per year" has high similarity even though zero keyword overlap!',
+                                viz: 'scores', items: [{ label: '"Annual Leave Policy: 20 days PTO"', val: 0.87, pct: 87 }, { label: '"Time-off & Absence Rules"', val: 0.82, pct: 82 }, { label: '"Payroll and Compensation"', val: 0.45, pct: 45 }, { label: '"Office Equipment Policy"', val: 0.12, pct: 12 }], title: 'Dense Retrieval Scores'
+                            },
+                            {
+                                desc: '✅ Dense wins at paraphrasing! "vacation days" and "annual leave PTO" land close in embedding space. Dense handles conceptual similarity perfectly.',
+                                viz: 'docs', items: [{ label: 'Query: "vacation days"', note: '', cls: 'active' }, { label: 'Retrieved: "Annual Leave Policy" ✓', note: 'Dense caught semantic similarity', cls: 'done' }, { label: 'BM25 would miss this', note: '"vacation" and "days" are not in doc — sparse fails', cls: 'bad' }]
+                            },
+                            {
+                                desc: '⚠️ Dense weakness: rare or highly specific terms. "GPT-4o-mini" → if rarely seen in training, embedding is weak. Dense may retrieve unrelated AI chunks instead.',
+                                viz: 'docs', items: [{ label: 'Query: "GPT-4o-mini pricing"', note: '', cls: 'active' }, { label: 'Dense retrieval: generic AI pricing chunks', note: '❌ Wrong — missed exact model name', cls: 'bad' }, { label: 'BM25: exact "GPT-4o-mini" match', note: '✓ Sparse handles rare exact terms', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Sparse Retrieval — BM25',
+                        prob: 'Find chunks containing rare exact terms like product codes or names.',
+                        input: 'Query: "SK-102 defect report 2024"',
+                        output: 'BM25 retrieves the exact product defect report chunk',
+                        steps: [
+                            {
+                                desc: '📊 BM25 (Best Match 25): scores based on term frequency (TF) and inverse document frequency (IDF). Terms rare across corpus get high IDF → high weight.',
+                                viz: 'docs', items: [{ label: 'Term "defect": appears in 20/100 docs', note: 'IDF = log(100/20) = 0.70 — moderate weight', cls: 'warn' }, { label: 'Term "SK-102": appears in 1/100 docs', note: 'IDF = log(100/1) = 2.0 — HIGH weight ← rare = important', cls: 'done' }, { label: 'Term "the": appears in 100/100 docs', note: 'IDF ≈ 0 — stopword, ignored', cls: 'bad' }]
+                            },
+                            {
+                                desc: '🎯 Query "SK-102 defect report 2024": BM25 heavily weights "SK-102" (very rare term). Finds the exact chunk containing that product code.',
+                                viz: 'scores', items: [{ label: '"SK-102 defect: crack in component" ← exact match', val: 0.95, pct: 95 }, { label: '"Product defect analysis 2024"', val: 0.60, pct: 60 }, { label: '"SK-103 production report"', val: 0.30, pct: 30 }, { label: '"General quality guidelines"', val: 0.15, pct: 15 }], title: 'BM25 Scores — "SK-102 defect report 2024"'
+                            },
+                            {
+                                desc: '✅ BM25 wins at exact match! "SK-102" is a rare string that embeddings may not handle. BM25 nails it because it works purely on character-level term matching.',
+                                viz: 'docs', items: [{ label: 'BM25 strength: exact terms, codes, names', note: 'Product codes, person names, model numbers, acronyms', cls: 'done' }, { label: 'BM25 weakness: paraphrases', note: '"vacation days" ≠ "annual leave" for BM25', cls: 'bad' }]
+                            },
+                            {
+                                desc: '💡 BM25 has no vector operations — just inverted index lookups. Extremely fast, zero GPU needed. LangChain\'s BM25Retriever uses rank_bm25 library.',
+                                viz: 'docs', items: [{ label: 'BM25 retriever', note: 'No embeddings, no GPU — just fast inverted index', cls: 'active' }, { label: 'Initialize from documents', note: 'BM25Retriever.from_documents(chunks)', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Reciprocal Rank Fusion (RRF) — Combining Rankings',
+                        prob: 'Merge dense and sparse retrieval results into one ranked list.',
+                        input: 'Dense top-5 results + BM25 top-5 results (partially overlapping)',
+                        output: 'RRF-merged list that boosts docs appearing in both rankings',
+                        steps: [
+                            {
+                                desc: '📋 Dense returns: [D1, D3, D5, D2, D4]. BM25 returns: [D3, D1, D6, D7, D2]. How to merge these two ranked lists fairly?',
+                                viz: 'docs', items: [{ label: 'Dense ranking', note: '#1:D1  #2:D3  #3:D5  #4:D2  #5:D4', cls: 'active' }, { label: 'BM25 ranking', note: '#1:D3  #2:D1  #3:D6  #4:D7  #5:D2', cls: 'done' }]
+                            },
+                            {
+                                desc: '🧮 RRF formula: score(d) = Σ 1/(k + rank_i). k=60 is standard. For each doc, sum up the RRF scores from each retriever.',
+                                viz: 'docs', items: [{ label: 'D1: Dense rank 1 + BM25 rank 2', note: 'RRF = 1/(60+1) + 1/(60+2) = 0.0164+0.0161 = 0.0325', cls: 'active' }, { label: 'D3: Dense rank 2 + BM25 rank 1', note: 'RRF = 1/(60+2) + 1/(60+1) = 0.0161+0.0164 = 0.0325', cls: 'active' }, { label: 'D6: only in BM25 rank 3', note: 'RRF = 0 + 1/(60+3) = 0.0159', cls: 'done' }]
+                            },
+                            {
+                                desc: '🏆 Final merged ranking sorted by RRF score: [D1, D3, D2, D6, D5, D7]. Docs appearing in BOTH rankers get boosted — captures semantic AND keyword signals.',
+                                viz: 'scores', items: [{ label: 'D1 (Dense#1 + BM25#2)', val: 0.0325, pct: 98 }, { label: 'D3 (Dense#2 + BM25#1)', val: 0.0325, pct: 98 }, { label: 'D2 (Dense#4 + BM25#5)', val: 0.0318, pct: 96 }, { label: 'D6 (BM25 only #3)', val: 0.0159, pct: 48 }], title: 'RRF Merged Scores'
+                            },
+                            {
+                                desc: '✅ RRF is parameter-free (k=60 always works well), handles different score scales naturally, and consistently outperforms individual retrievers. Always use hybrid!',
+                                viz: 'docs', items: [{ label: 'EnsembleRetriever in LangChain', note: 'Automatically applies RRF to combine multiple retrievers', cls: 'done' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> langchain.retrievers <span class="kw">import</span> BM25Retriever, EnsembleRetriever
+
+<span class="cm"># ── Dense retriever ───────────────────────────</span>
+dense_retriever = vectorstore.<span class="fn">as_retriever</span>(
+    search_type=<span class="str">"similarity"</span>,
+    search_kwargs={<span class="str">"k"</span>: <span class="num">5</span>}
+)
+
+<span class="cm"># ── Sparse BM25 retriever ─────────────────────</span>
+bm25_retriever = <span class="cls">BM25Retriever</span>.<span class="fn">from_documents</span>(chunks)
+bm25_retriever.k = <span class="num">5</span>
+
+<span class="cm"># ── Hybrid: Ensemble with RRF ─────────────────</span>
+ensemble_retriever = <span class="cls">EnsembleRetriever</span>(
+    retrievers=[bm25_retriever, dense_retriever],
+    weights=[<span class="num">0.5</span>, <span class="num">0.5</span>]  <span class="cm"># equal weight — tune for your domain</span>
+)
+
+docs = ensemble_retriever.<span class="fn">invoke</span>(<span class="str">"SK-102 defect report"</span>)
+<span class="cm"># Returns merged, deduplicated, RRF-ranked results</span>
+
+<span class="cm"># ── MMR — Maximum Marginal Relevance ─────────</span>
+<span class="cm"># Avoids returning redundant chunks</span>
+mmr_retriever = vectorstore.<span class="fn">as_retriever</span>(
+    search_type=<span class="str">"mmr"</span>,
+    search_kwargs={<span class="str">"k"</span>: <span class="num">5</span>, <span class="str">"fetch_k"</span>: <span class="num">20</span>, <span class="str">"lambda_mult"</span>: <span class="num">0.7</span>}
+)`,
+                problems: [
+                    { name: 'Build hybrid retriever on your docs', diff: 'i' }, { name: 'Compare dense vs BM25 on edge cases', diff: 'i' },
+                    { name: 'Tune RRF weights per query type', diff: 'a' }, { name: 'MMR for diverse retrieval results', diff: 'i' },
+                ]
+            },
+
+            /* ─── 06 RE-RANKING ─── */
+            {
+                id: 'reranking', num: '06', title: 'Re-ranking',
+                cat: 'Retrieval', color: '#fb7185', icon: '🏅', diff: 'i',
+                tags: ['Cross-encoder', 'Cohere', 'Precision'],
+                tagline: 'A second pass of precision — re-score retrieved chunks with a more powerful (but slower) model.',
+                concept: `<b>Re-ranking</b> is a two-stage retrieval strategy. Stage 1: fast ANN retrieval fetches top-50 candidates (high recall, lower precision). Stage 2: a cross-encoder re-ranks these 50 with a more precise model, returning the true top-5.<br><br>
+<b>Bi-encoder</b> (embeddings): fast, embeds query and doc independently. <b>Cross-encoder</b> (re-ranker): slower, sees query AND doc together, much higher precision. Use both: bi-encoder for recall, cross-encoder for precision.`,
+                when: ['After initial retrieval — always try re-ranking first before complex changes', 'When top-3 retrieved chunks are not precise enough', 'Cohere Rerank: easiest cloud option, production-ready', 'BGE-Reranker / ms-marco: best open-source options'],
+                keypoints: ['Re-rank top-20 to 50 candidates, keep top-3 to 5', 'Cross-encoder reads query+doc together — more accurate but O(k) model calls', 'Cohere Rerank API: one line of code, significant quality boost', 'Always fetch_k > final_k: fetch 20, re-rank, return 3'],
+                examples: [
+                    {
+                        title: 'Bi-encoder vs Cross-encoder',
+                        prob: 'Understand why re-ranking improves precision over initial retrieval.',
+                        input: 'Query: "termination notice period" — initial retrieval returns 10 chunks',
+                        output: 'Re-ranker correctly promotes the "30-day notice clause" chunk to #1',
+                        steps: [
+                            {
+                                desc: '🔢 Bi-encoder (initial retrieval): query and document embedded SEPARATELY, then cosine similarity computed. Fast but less precise — query context not seen during doc encoding.',
+                                viz: 'scores', items: [{ label: '#1: "Employee termination process" (0.81)', val: 0.81, pct: 81 }, { label: '#2: "Contract notice clause: 30 days" (0.79)', val: 0.79, pct: 79 }, { label: '#3: "HR termination checklist" (0.77)', val: 0.77, pct: 77 }, { label: '#4: "Resignation and exit procedures" (0.75)', val: 0.75, pct: 75 }], title: 'Bi-encoder Initial Ranking'
+                            },
+                            {
+                                desc: '🧠 Cross-encoder (re-ranker): sees query AND document TOGETHER. "termination notice PERIOD" → understands "period" is key. Looks at both texts jointly → much more precise score.',
+                                viz: 'docs', items: [{ label: 'Input to cross-encoder:', note: '[CLS] termination notice period [SEP] Contract notice clause: 30 days [SEP]', cls: 'active' }, { label: 'Output: single relevance score', note: '0.94 — this is the RIGHT chunk, promoted to #1', cls: 'done' }]
+                            },
+                            {
+                                desc: '📊 After re-ranking: cross-encoder correctly promotes "Contract notice clause: 30 days" to #1 because it specifically addresses "period" (duration). Bi-encoder missed this nuance.',
+                                viz: 'scores', items: [{ label: '#1: "Contract notice clause: 30 days" ← promoted!', val: 0.94, pct: 94 }, { label: '#2: "Employee termination process"', val: 0.71, pct: 71 }, { label: '#3: "Resignation and exit procedures"', val: 0.62, pct: 62 }, { label: '#4: "HR termination checklist"', val: 0.55, pct: 55 }], title: 'After Cross-encoder Re-ranking'
+                            },
+                            {
+                                desc: '💡 Two-stage pipeline: Step 1 = bi-encoder, get top-50 (high recall). Step 2 = cross-encoder, re-rank top-50, keep top-3 (high precision). Cost: 50 cross-encoder calls vs 1M bi-encoder comparisons.',
+                                viz: 'docs', items: [{ label: 'Stage 1: ANN retrieval, top-50, ~5ms', note: 'Bi-encoder — fast, O(1) ANN search', cls: 'active' }, { label: 'Stage 2: Re-rank top-50, keep top-3, ~100ms', note: 'Cross-encoder — slow but precise', cls: 'done' }, { label: 'Result: recall of top-50 + precision of top-3', note: 'Best of both worlds ✓', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Cohere Rerank API',
+                        prob: 'Use Cohere Rerank to improve RAG results in one line.',
+                        input: '10 retrieved chunks about "data retention policy"',
+                        output: 'Top-3 most relevant chunks after Cohere re-ranking',
+                        steps: [
+                            {
+                                desc: '☁️ Cohere Rerank: send query + list of candidate documents to Cohere API. Returns relevance scores and re-ranked order. Best ROI improvement for RAG.',
+                                viz: 'docs', items: [{ label: 'Input: query + 10 candidate chunks', note: 'POST /v1/rerank with model="rerank-english-v3.0"', cls: 'active' }, { label: 'Output: relevance_scores=[0.92, 0.87, 0.81, 0.45, ...]', note: 'Sorted by relevance — top 3 are your final context', cls: 'done' }]
+                            },
+                            {
+                                desc: '📈 Typical quality improvement: RAG without re-ranking: 65% answer accuracy. With Cohere rerank: 78% answer accuracy. +13% from one API call.',
+                                viz: 'scores', items: [{ label: 'Without re-ranking', val: 0.65, pct: 65 }, { label: 'With Cohere rerank', val: 0.78, pct: 78 }, { label: 'With BGE-reranker (local)', val: 0.76, pct: 76 }], title: 'Answer Quality (typical improvement)'
+                            },
+                            {
+                                desc: '🏠 BGE-Reranker (local, free): "BAAI/bge-reranker-v2-m3" — multilingual, open-source, runs locally. Comparable to Cohere, no API cost.',
+                                viz: 'docs', items: [{ label: 'Cohere Rerank: 1 API call, $0.001/1K queries', note: 'Easiest setup, production-ready', cls: 'done' }, { label: 'BGE-Reranker: local, free, needs GPU', note: 'Best for privacy/high volume use cases', cls: 'active' }]
+                            },
+                            {
+                                desc: '⚠️ Don\'t over-fetch: fetching 100 candidates and re-ranking all 100 is wasteful. Fetch 20-50, re-rank, keep 3-5. More is not always better — it increases latency and cost.',
+                                viz: 'docs', items: [{ label: 'Fetch 20, re-rank 20, keep 5 ← optimal', note: '~150ms total retrieval latency', cls: 'done' }, { label: 'Fetch 100, re-rank 100, keep 5 ← wasteful', note: '~500ms, diminishing returns', cls: 'bad' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Contextual Compression',
+                        prob: 'Extract only the relevant sentences from retrieved chunks.',
+                        input: 'Retrieved 512-token chunk — only 2 sentences are actually relevant',
+                        output: 'Compressed output: just the 2 relevant sentences sent to LLM',
+                        steps: [
+                            {
+                                desc: '🗜️ Problem: retrieved chunks contain context around the relevant part. Sending the full chunk wastes context window and may distract the LLM.',
+                                viz: 'docs', items: [{ label: 'Full 512-token chunk retrieved:', note: '"General overview of HR policies. [RELEVANT: Termination requires 30-day notice.] Additional info about benefits and payroll..."', cls: 'warn' }, { label: 'Only 1 sentence is actually relevant', note: 'Other 480 tokens are noise in the prompt', cls: 'bad' }]
+                            },
+                            {
+                                desc: '🔧 ContextualCompressionRetriever: wraps any retriever. After retrieval, passes each chunk through an LLM or extractor to compress it down to just the relevant parts.',
+                                viz: 'docs', items: [{ label: 'LLMChainExtractor', note: 'Uses LLM to extract only relevant sentences from each chunk', cls: 'active' }, { label: 'EmbeddingsFilter', note: 'Drops chunks below similarity threshold after retrieval', cls: 'done' }, { label: 'LLMChainFilter', note: 'LLM decides to keep or drop each chunk entirely', cls: 'active' }]
+                            },
+                            {
+                                desc: '📊 Result: instead of 3 × 512 = 1536 tokens in prompt, you get 3 × ~80 = 240 tokens. Smaller, more focused context → better LLM answers.',
+                                viz: 'scores', items: [{ label: 'Without compression: 1536 tokens', val: 0.65, pct: 65 }, { label: 'With compression: ~240 tokens', val: 0.85, pct: 85 }], title: 'Answer Quality (compression effect)'
+                            },
+                            {
+                                desc: '⚠️ Compression adds LLM calls (latency + cost). Use EmbeddingsFilter for fast/cheap compression, LLMChainExtractor for highest quality when latency allows.',
+                                viz: 'docs', items: [{ label: 'EmbeddingsFilter: fast, cheap', note: 'Drop chunks with similarity < 0.76 — no LLM call', cls: 'done' }, { label: 'LLMChainExtractor: slow, expensive', note: 'LLM reads each chunk — best quality but 3x more LLM calls', cls: 'warn' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> langchain.retrievers <span class="kw">import</span> ContextualCompressionRetriever
+<span class="kw">from</span> langchain.retrievers.document_compressors <span class="kw">import</span> (
+    CohereRerank, LLMChainExtractor, EmbeddingsFilter
+)
+
+<span class="cm"># ── Cohere Rerank (cloud, easiest) ────────────</span>
+compressor = <span class="cls">CohereRerank</span>(
+    cohere_api_key=<span class="str">"your-key"</span>,
+    model=<span class="str">"rerank-english-v3.0"</span>,
+    top_n=<span class="num">3</span>,
+)
+compression_retriever = <span class="cls">ContextualCompressionRetriever</span>(
+    base_compressor=compressor,
+    base_retriever=vectorstore.<span class="fn">as_retriever</span>(search_kwargs={<span class="str">"k"</span>: <span class="num">20</span>})
+)
+docs = compression_retriever.<span class="fn">invoke</span>(<span class="str">"termination notice period"</span>)
+
+<span class="cm"># ── BGE Reranker (local, free) ────────────────</span>
+<span class="kw">from</span> langchain.retrievers.document_compressors <span class="kw">import</span> CrossEncoderReranker
+<span class="kw">from</span> langchain.cross_encoders <span class="kw">import</span> HuggingFaceCrossEncoder
+
+model = <span class="cls">HuggingFaceCrossEncoder</span>(model_name=<span class="str">"BAAI/bge-reranker-v2-m3"</span>)
+reranker = <span class="cls">CrossEncoderReranker</span>(model=model, top_n=<span class="num">3</span>)
+
+<span class="cm"># ── Embeddings Filter (fast, cheap) ───────────</span>
+embeddings_filter = <span class="cls">EmbeddingsFilter</span>(
+    embeddings=embedder,
+    similarity_threshold=<span class="num">0.76</span>
+)`,
+                problems: [
+                    { name: 'Add Cohere rerank to existing RAG pipeline', diff: 'i' }, { name: 'Compare answer quality before/after rerank', diff: 'i' },
+                    { name: 'Build local BGE reranker pipeline', diff: 'i' }, { name: 'Contextual compression with LLM extractor', diff: 'a' },
+                ]
+            },
+
+            /* ─── 07 QUERY TRANSFORMATIONS ─── */
+            {
+                id: 'query-transform', num: '07', title: 'Query Transformations',
+                cat: 'Advanced RAG', color: '#f97316', icon: '🔄', diff: 'a',
+                tags: ['HyDE', 'Multi-query', 'Step-back'],
+                tagline: 'Transform the query before retrieval — better queries find better chunks.',
+                concept: `The user\'s raw query is often too vague, ambiguous, or short for good retrieval. <b>Query Transformations</b> use an LLM to rewrite or expand the query before hitting the vector store.<br><br>
+<b>HyDE</b>: Generate a hypothetical answer, embed it. <b>Multi-query</b>: Generate 5 paraphrases of the query, retrieve for each. <b>Step-back</b>: Abstract to higher-level question. <b>Query decomposition</b>: Break complex query into sub-questions.`,
+                when: ['Short/ambiguous user queries (< 5 words)', 'Complex multi-hop questions', 'Low retrieval recall on good documents', 'When you can afford 1-2 extra LLM calls per query'],
+                keypoints: ['HyDE: hypothetical doc often closer to actual doc than the query', 'Multi-query: deduplication needed — use set of retrieved doc IDs', 'Step-back: great for factual questions that need context', 'Query decomp: chain sub-question answers for final answer'],
+                examples: [
+                    {
+                        title: 'HyDE — Hypothetical Document Embeddings',
+                        prob: 'User asks vague query: "refund". Improve retrieval with HyDE.',
+                        input: 'Query: "refund"',
+                        output: 'HyDE generates rich hypothetical answer, retrieves much better chunks',
+                        steps: [
+                            {
+                                desc: '❌ Problem: embedding "refund" is a very short, ambiguous query. Its vector is generic and may not match the specific refund policy chunk well.',
+                                viz: 'scores', items: [{ label: '"refund": generic query vector', val: 0.55, pct: 55 }, { label: '"Return Policy: 30-day refund..."', val: 0.55, pct: 55 }, { label: '"Money-back guarantee clause"', val: 0.52, pct: 52 }], title: 'Direct "refund" query — low similarity'
+                            },
+                            {
+                                desc: '💡 HyDE step 1: ask LLM to generate a HYPOTHETICAL answer to the query. LLM writes: "Our refund policy allows customers to return products within 30 days for a full refund provided..."',
+                                viz: 'docs', items: [{ label: 'LLM generates hypothetical answer:', note: '"Our refund policy allows returns within 30 days. Original payment method is refunded within 5 business days..."', cls: 'active' }, { label: 'Now embed THIS hypothetical answer', note: 'Much richer vector than just "refund"', cls: 'done' }]
+                            },
+                            {
+                                desc: '📈 HyDE step 2: embed the hypothetical answer (not the original query). This longer, richer text lands much closer to actual policy chunks in vector space!',
+                                viz: 'scores', items: [{ label: '"Return Policy: 30-day refund..."', val: 0.91, pct: 91 }, { label: '"Money-back guarantee clause"', val: 0.87, pct: 87 }, { label: '"Customer returns procedure"', val: 0.84, pct: 84 }], title: 'HyDE — Hypothetical answer similarity (much better!)'
+                            },
+                            {
+                                desc: '✅ HyDE improvement: direct query retrieval = 55% similarity. HyDE = 91% similarity. Works best when the hypothetical answer domain matches the indexed documents.',
+                                viz: 'docs', items: [{ label: 'HyDE works well:', note: 'FAQ-style documents, policy docs, technical manuals', cls: 'done' }, { label: 'HyDE works poorly:', note: 'Real-time data, numerical facts, tables', cls: 'warn' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Multi-Query Retrieval',
+                        prob: 'Generate 5 paraphrases of the query, retrieve for each, merge results.',
+                        input: 'Query: "How does the refund process work?"',
+                        output: '5 query variants retrieve more diverse, higher-recall chunk set',
+                        steps: [
+                            {
+                                desc: '🔄 LLM generates 5 different phrasings of the same question. Each may retrieve different (but relevant) chunks due to vocabulary variation.',
+                                viz: 'docs', items: [{ label: 'Original: "How does refund process work?"', note: '', cls: 'active' }, { label: 'Variant 1: "What are the steps to get a refund?"', note: '', cls: 'done' }, { label: 'Variant 2: "Explain the money-back procedure"', note: '', cls: 'done' }, { label: 'Variant 3: "Return policy and refund timeline"', note: '', cls: 'done' }, { label: 'Variant 4: "Customer reimbursement process"', note: '', cls: 'done' }]
+                            },
+                            {
+                                desc: '🔍 Retrieve top-3 chunks for each of the 5 queries → up to 15 candidate chunks. Deduplicate by document ID → typically 8-12 unique chunks.',
+                                viz: 'scores', items: [{ label: 'Query 1 retrieves: C1, C2, C3', val: 0.85, pct: 85 }, { label: 'Query 2 retrieves: C1, C4, C5 (new chunks!)', val: 0.82, pct: 82 }, { label: 'Query 3 retrieves: C2, C6, C7 (new chunks!)', val: 0.80, pct: 80 }], title: 'Coverage across query variants'
+                            },
+                            {
+                                desc: '✅ Union of all retrieved chunks = much higher RECALL than single query. Deduplicate by doc_id. Feed unique set to LLM. More diverse context = fewer gaps.',
+                                viz: 'docs', items: [{ label: 'Single query: 3 chunks', note: 'May miss chunks phrased differently in the doc', cls: 'warn' }, { label: 'Multi-query (5 variants): 8-12 unique chunks', note: 'Higher recall, captures all relevant angles', cls: 'done' }]
+                            },
+                            {
+                                desc: '⚠️ Cost: multi-query = 1 LLM call (to generate variants) + 5 retrieval calls. 5x retrieval cost + 1 extra LLM call. Only use when recall is critical and budget allows.',
+                                viz: 'docs', items: [{ label: 'latency overhead: ~2-3x', note: '1 LLM for variants + 5 parallel retrievals', cls: 'warn' }, { label: 'Quality improvement: ~15-25% recall gain', note: 'Worth it for complex or high-stakes queries', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Step-back Prompting',
+                        prob: 'Abstract a specific question to a broader concept for better retrieval.',
+                        input: '"What GPU does NVIDIA\'s H100 80GB SXM5 use?"',
+                        output: 'Step-back: "What is the H100 architecture?" → retrieves the right context',
+                        steps: [
+                            {
+                                desc: '🔍 Problem: Very specific question. The document may not say "H100 80GB SXM5 GPU specs" but instead has a section on "Hopper Architecture Overview".',
+                                viz: 'docs', items: [{ label: 'Specific query: "H100 80GB SXM5 GPU"', note: 'May not exactly match any chunk heading', cls: 'warn' }, { label: 'Step-back: "H100 / Hopper architecture"', note: 'Broader concept — documents are indexed at this level', cls: 'done' }]
+                            },
+                            {
+                                desc: '⬆️ LLM generates step-back question: "What is the overall architecture and specifications of NVIDIA H100?" This broader query retrieves the architecture section.',
+                                viz: 'scores', items: [{ label: 'Direct query retrieval quality', val: 0.55, pct: 55 }, { label: 'Step-back query retrieval quality', val: 0.88, pct: 88 }], title: 'Step-back Retrieval Improvement'
+                            },
+                            {
+                                desc: '🔄 Two-query strategy: retrieve with BOTH the original specific query AND the step-back query. Merge results. Original → specific details, step-back → broader context.',
+                                viz: 'docs', items: [{ label: 'Original query → specific facts', note: 'Direct answer chunk if it exists', cls: 'active' }, { label: 'Step-back query → background context', note: 'Architecture overview, principles', cls: 'done' }, { label: 'Merge both → rich context for LLM', note: '', cls: 'done' }]
+                            },
+                            {
+                                desc: '✅ Step-back works best when: user asks very specific technical questions, docs are structured with concept overviews, or the question requires background knowledge.',
+                                viz: 'docs', items: [{ label: 'Best use case: technical documentation', note: 'API references, architecture guides, scientific papers', cls: 'done' }, { label: 'Less useful for: specific numbers/dates', note: '"What is the price of X?" — step-back doesn\'t help much', cls: 'warn' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> langchain.retrievers <span class="kw">import</span> MultiQueryRetriever
+<span class="kw">from</span> langchain.chat_models <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain.prompts <span class="kw">import</span> ChatPromptTemplate
+<span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> StrOutputParser
+
+llm = <span class="cls">ChatOpenAI</span>(temperature=<span class="num">0</span>)
+
+<span class="cm"># ── Multi-Query Retriever ─────────────────────</span>
+multi_retriever = <span class="cls">MultiQueryRetriever</span>.<span class="fn">from_llm</span>(
+    retriever=vectorstore.<span class="fn">as_retriever</span>(),
+    llm=llm,
+)
+docs = multi_retriever.<span class="fn">invoke</span>(<span class="str">"How does the refund process work?"</span>)
+
+<span class="cm"># ── HyDE ─────────────────────────────────────</span>
+hyde_prompt = <span class="cls">ChatPromptTemplate</span>.<span class="fn">from_template</span>(
+    <span class="str">"Write a hypothetical document that answers: {question}"</span>
+)
+hyde_chain = hyde_prompt | llm | <span class="cls">StrOutputParser</span>()
+hypothetical_doc = hyde_chain.<span class="fn">invoke</span>({<span class="str">"question"</span>: <span class="str">"refund policy"</span>})
+<span class="cm"># Now retrieve using hypothetical_doc as query</span>
+docs = vectorstore.<span class="fn">similarity_search</span>(hypothetical_doc, k=<span class="num">5</span>)
+
+<span class="cm"># ── Step-back prompting ───────────────────────</span>
+stepback_prompt = <span class="cls">ChatPromptTemplate</span>.<span class="fn">from_template</span>(
+    <span class="str">"Generate a more general question that helps answer: {question}"</span>
+)
+stepback_chain = stepback_prompt | llm | <span class="cls">StrOutputParser</span>()
+broader_q = stepback_chain.<span class="fn">invoke</span>({<span class="str">"question"</span>: user_query})
+<span class="cm"># Retrieve with both original + broader question</span>`,
+                problems: [
+                    { name: 'Implement HyDE for your RAG pipeline', diff: 'i' }, { name: 'Multi-query with custom prompt template', diff: 'i' },
+                    { name: 'Query decomposition for multi-hop questions', diff: 'a' }, { name: 'A/B test query transformations', diff: 'a' },
+                ]
+            },
+
+            /* ─── 08 AGENTIC RAG ─── */
+            {
+                id: 'agentic-rag', num: '08', title: 'Agentic RAG',
+                cat: 'Advanced RAG', color: '#4ade80', icon: '🤖', diff: 'a',
+                tags: ['Agent', 'Tool-use', 'Reflection'],
+                tagline: 'Let the LLM decide when and how to retrieve — self-directed, multi-hop knowledge gathering.',
+                concept: `<b>Agentic RAG</b> replaces the fixed retrieve-then-generate pipeline with an LLM agent that <b>decides when to retrieve</b>, <b>what to search for</b>, and <b>how many times</b>. The agent has retrieval as a tool and reasons step-by-step using ReAct (Reason → Act → Observe cycles).<br><br>
+Key patterns: <b>Corrective RAG</b> (grade retrieved docs, re-retrieve if poor), <b>Self-RAG</b> (generate with self-reflection tokens), <b>Adaptive RAG</b> (route query to right retriever).`,
+                when: ['Multi-hop questions requiring multiple retrievals', 'Low confidence on initial retrieval quality', 'Complex tasks: answer, cite, verify, then synthesize', 'When retrieval strategy itself needs to be dynamic'],
+                keypoints: ['ReAct: Reason + Act — LLM alternates thinking and tool use', 'Always set max_iterations to prevent infinite loops', 'Grade retrieved docs before using them (Corrective RAG)', 'CRAG (Corrective RAG): if grade < threshold → web search fallback'],
+                examples: [
+                    {
+                        title: 'ReAct Loop — Reason, Act, Observe',
+                        prob: 'Multi-hop question: "Who founded the company that makes the GPU used in GPT-4 training?"',
+                        input: 'Complex question requiring 2+ retrieval steps',
+                        output: 'Agent iterates: retrieve GPU info → retrieve company founder → synthesize',
+                        steps: [
+                            {
+                                desc: '🧠 Thought 1: "I need to find which GPU was used for GPT-4 training." → Action: retrieve("GPT-4 training hardware")',
+                                viz: 'docs', items: [{ label: 'Thought: Need GPU info for GPT-4', note: 'Agent decides to search', cls: 'active' }, { label: 'Action: retrieve("GPT-4 training compute")', note: 'Tool call #1', cls: 'done' }, { label: 'Observation: "GPT-4 trained on NVIDIA A100 GPUs"', note: 'Retrieved chunk content', cls: 'done' }]
+                            },
+                            {
+                                desc: '🔍 Thought 2: "GPT-4 used NVIDIA A100. Now I need to find who founded NVIDIA." → Action: retrieve("NVIDIA founder history")',
+                                viz: 'docs', items: [{ label: 'Thought: Need NVIDIA founder info', note: 'Second reasoning step', cls: 'active' }, { label: 'Action: retrieve("NVIDIA founding history")', note: 'Tool call #2', cls: 'done' }, { label: 'Observation: "Jensen Huang co-founded NVIDIA in 1993"', note: 'Retrieved chunk content', cls: 'done' }]
+                            },
+                            {
+                                desc: '✅ Final answer synthesis: Agent has all facts. Generates: "Jensen Huang co-founded NVIDIA, which manufactures the A100 GPUs used in GPT-4 training." Two-hop reasoning complete!',
+                                viz: 'docs', items: [{ label: 'Thought: I have enough information now', note: '', cls: 'active' }, { label: 'Final Answer: "Jensen Huang, co-founder of NVIDIA..."', note: 'Multi-hop reasoning complete ✓', cls: 'done' }]
+                            },
+                            {
+                                desc: '⚠️ Set max_iterations=5 to prevent agent loops. Add a "Final Answer" trigger. ReAct agents can get stuck — always add escape conditions.',
+                                viz: 'docs', items: [{ label: 'max_iterations=5 — always set this!', note: 'Prevents infinite tool-call loops', cls: 'warn' }, { label: 'Return intermediate steps=True', note: 'For debugging agent reasoning', cls: 'active' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Corrective RAG (CRAG)',
+                        prob: 'Grade retrieved docs — if irrelevant, fall back to web search.',
+                        input: 'Query: "Latest LLM benchmark results 2025" — not in knowledge base',
+                        output: 'CRAG detects irrelevant retrieval, falls back to web search, answers correctly',
+                        steps: [
+                            {
+                                desc: '📋 Retrieve top-3 chunks for the query. Send to a GRADER LLM: "Is this chunk relevant to the query?" Grade each as RELEVANT, IRRELEVANT, or AMBIGUOUS.',
+                                viz: 'scores', items: [{ label: 'Chunk 1: "LLM benchmarks 2023 overview"', val: 0.40, pct: 40 }, { label: 'Chunk 2: "MMLU dataset description"', val: 0.35, pct: 35 }, { label: 'Chunk 3: "GPT-4 release notes"', val: 0.30, pct: 30 }], title: 'Grader LLM scores — all LOW (outdated docs)'
+                            },
+                            {
+                                desc: '🚨 All chunks graded IRRELEVANT (scores < 0.5). CRAG triggers fallback: web search for "Latest LLM benchmark results 2025". Gets fresh, accurate data.',
+                                viz: 'docs', items: [{ label: 'Grader result: IRRELEVANT — trigger fallback', note: '', cls: 'bad' }, { label: 'Fallback: web_search("LLM benchmarks 2025")', note: 'Tool: Tavily / SerpAPI / DuckDuckGo', cls: 'active' }, { label: 'Web result: fresh accurate data returned', note: '', cls: 'done' }]
+                            },
+                            {
+                                desc: '🔄 If any chunk is AMBIGUOUS: query transformation + re-retrieve before deciding. Corrective loop: grade → fix query → retrieve again → grade → answer.',
+                                viz: 'docs', items: [{ label: 'RELEVANT: use retrieved chunks directly', note: '', cls: 'done' }, { label: 'AMBIGUOUS: transform query → re-retrieve', note: '', cls: 'warn' }, { label: 'IRRELEVANT: web search fallback', note: '', cls: 'bad' }]
+                            },
+                            {
+                                desc: '✅ CRAG prevents confident wrong answers from stale/irrelevant docs. The grader is typically a small fast LLM (GPT-3.5, Llama-3-8B) — cheap to run on every retrieval.',
+                                viz: 'docs', items: [{ label: 'CRAG = Self-healing RAG', note: 'Detects and corrects poor retrieval automatically', cls: 'done' }, { label: 'Grader: small fast LLM (< 0.001$ per call)', note: 'Cost-efficient quality gate', cls: 'active' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Adaptive RAG — Route Queries to Best Retriever',
+                        prob: 'Not all queries need the same retrieval strategy. Route intelligently.',
+                        input: 'Mix of: factual, conversational, multi-hop, and data queries',
+                        output: 'Each query type routed to the optimal retrieval path',
+                        steps: [
+                            {
+                                desc: '🗺️ Query router: LLM classifier decides which retrieval path to use. Categories: NO_RETRIEVAL (simple facts), VECTOR_SEARCH (semantic), BM25 (keyword), WEB_SEARCH (current events), SQL (structured data).',
+                                viz: 'docs', items: [{ label: '"What is 2+2?" → NO_RETRIEVAL', note: 'LLM knows this — no retrieval needed', cls: 'done' }, { label: '"Explain our refund policy" → VECTOR_SEARCH', note: 'Semantic search on policy docs', cls: 'active' }, { label: '"SK-102 defect cases" → BM25', note: 'Exact keyword search', cls: 'done' }, { label: '"Latest AI news 2025" → WEB_SEARCH', note: 'Real-time information needed', cls: 'active' }]
+                            },
+                            {
+                                desc: '⚡ Routing reduces cost and latency. Simple factual queries don\'t need retrieval. Exact keyword queries don\'t need expensive embedding. Route to cheapest path that works.',
+                                viz: 'scores', items: [{ label: 'No retrieval: 0ms, $0', val: 1.0, pct: 100 }, { label: 'BM25: 5ms, $0', val: 0.95, pct: 95 }, { label: 'Vector search: 20ms, $0.001', val: 0.80, pct: 80 }, { label: 'Web search: 500ms, $0.01', val: 0.40, pct: 40 }], title: 'Retrieval Path Efficiency (higher = faster/cheaper)'
+                            },
+                            {
+                                desc: '🔧 Implement with a classifier prompt: "Given this query, classify the retrieval strategy: [NO_RETRIEVAL, VECTOR, BM25, WEB, SQL]". Use structured output for reliable classification.',
+                                viz: 'docs', items: [{ label: 'Router LLM prompt', note: '"Classify: {query} → One of: {strategies}"', cls: 'active' }, { label: 'Structured output', note: 'pydantic model with Literal["vector","bm25","web","none"]', cls: 'done' }]
+                            },
+                            {
+                                desc: '🏗️ LangGraph makes adaptive RAG easy: define nodes (router, retrieve, grade, generate), edges (conditional routing), and build the graph. Fully visualizable and debuggable.',
+                                viz: 'docs', items: [{ label: 'LangGraph node: route_query', note: '→ conditional edge based on query type', cls: 'active' }, { label: 'LangGraph node: retrieve → grade → generate', note: 'Full pipeline with loops', cls: 'done' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> langgraph.graph <span class="kw">import</span> StateGraph, END
+<span class="kw">from</span> langchain_core.pydantic_v1 <span class="kw">import</span> BaseModel
+<span class="kw">from</span> typing <span class="kw">import</span> Literal
+
+<span class="cm"># ── Corrective RAG with LangGraph ────────────</span>
+<span class="kw">class</span> <span class="cls">RAGState</span>(BaseModel):
+    query: str; documents: list; generation: str = <span class="str">""</span>
+
+<span class="kw">def</span> <span class="fn">retrieve</span>(state):
+    docs = retriever.<span class="fn">invoke</span>(state.query)
+    <span class="kw">return</span> {<span class="str">"documents"</span>: docs}
+
+<span class="kw">def</span> <span class="fn">grade_documents</span>(state):
+    <span class="cm"># Grade each doc for relevance</span>
+    grader_prompt = <span class="str">"Is this chunk relevant to '{q}'? YES or NO."</span>
+    filtered = [d <span class="kw">for</span> d <span class="kw">in</span> state.documents
+                <span class="kw">if</span> llm.<span class="fn">invoke</span>(grader_prompt.<span class="fn">format</span>(q=state.query)) == <span class="str">"YES"</span>]
+    <span class="kw">return</span> {<span class="str">"documents"</span>: filtered}
+
+<span class="kw">def</span> <span class="fn">decide_to_generate</span>(state) -> Literal[<span class="str">"generate"</span>, <span class="str">"web_search"</span>]:
+    <span class="kw">return</span> <span class="str">"generate"</span> <span class="kw">if</span> state.documents <span class="kw">else</span> <span class="str">"web_search"</span>
+
+graph = <span class="cls">StateGraph</span>(<span class="cls">RAGState</span>)
+graph.<span class="fn">add_node</span>(<span class="str">"retrieve"</span>, retrieve)
+graph.<span class="fn">add_node</span>(<span class="str">"grade"</span>, grade_documents)
+graph.<span class="fn">add_conditional_edges</span>(<span class="str">"grade"</span>, decide_to_generate)
+workflow = graph.<span class="fn">compile</span>()`,
+                problems: [
+                    { name: 'Build ReAct agent with retrieval tool', diff: 'i' }, { name: 'Implement CRAG with document grader', diff: 'a' },
+                    { name: 'Adaptive RAG with LangGraph routing', diff: 'a' }, { name: 'Self-RAG with reflection tokens', diff: 'a' },
+                ]
+            },
+
+            /* ─── 09 RAG EVALUATION ─── */
+            {
+                id: 'rag-eval', num: '09', title: 'RAG Evaluation (RAGAS)',
+                cat: 'Evaluation', color: '#e879f9', icon: '📊', diff: 'i',
+                tags: ['RAGAS', 'Metrics', 'Hallucination'],
+                tagline: 'You can\'t improve what you don\'t measure — evaluate retrieval and generation separately.',
+                concept: `<b>RAGAS</b> (RAG Assessment) provides automated metrics using an LLM as judge. Two components to evaluate: <b>Retrieval</b> (did we get the right chunks?) and <b>Generation</b> (did the LLM answer correctly from those chunks?).<br><br>
+Core RAGAS metrics: <b>Faithfulness</b> (no hallucinations), <b>Answer Relevancy</b> (answers the question), <b>Context Precision</b> (retrieved docs are relevant), <b>Context Recall</b> (all needed info was retrieved).`,
+                when: ['Before deploying a RAG pipeline to production', 'When comparing chunking/embedding/retrieval strategies', 'After any pipeline change — regression testing', 'Ongoing monitoring of live RAG system quality'],
+                keypoints: ['Faithfulness < 0.8: LLM is hallucinating — fix retrieval or prompt', 'Context Precision < 0.7: retriever returning irrelevant chunks', 'Context Recall < 0.7: retriever missing important chunks', 'Answer Relevancy < 0.8: LLM not using retrieved context well'],
+                examples: [
+                    {
+                        title: 'The 4 Core RAGAS Metrics',
+                        prob: 'Understand what each RAGAS metric measures and what low scores mean.',
+                        input: 'RAG system answering questions over HR policy documents',
+                        output: '4 scores showing what exactly to fix',
+                        steps: [
+                            {
+                                desc: '🎯 Faithfulness: are all claims in the answer supported by the retrieved context? Score = #supported claims / #total claims. Low faithfulness = LLM hallucinating facts not in context.',
+                                viz: 'scores', items: [{ label: 'High (0.95): "Refund period is 30 days per policy"', val: 0.95, pct: 95 }, { label: 'Low (0.30): "Refund period is 60 days" (not in context!)', val: 0.30, pct: 30 }], title: 'Faithfulness — Hallucination Detection'
+                            },
+                            {
+                                desc: '❓ Answer Relevancy: does the answer actually address the question asked? Low = LLM gave a tangentially related but non-responsive answer.',
+                                viz: 'scores', items: [{ label: 'High (0.92): Question about refunds → answers refund policy', val: 0.92, pct: 92 }, { label: 'Low (0.41): Question about refunds → answers return shipping process', val: 0.41, pct: 41 }], title: 'Answer Relevancy — Is the Question Answered?'
+                            },
+                            {
+                                desc: '🎯 Context Precision: of all retrieved chunks, what fraction were actually useful? Low = retriever returns noisy/irrelevant chunks wasting LLM context.',
+                                viz: 'scores', items: [{ label: 'High (0.90): 9 of 10 retrieved chunks relevant', val: 0.90, pct: 90 }, { label: 'Low (0.40): Only 4 of 10 chunks relevant', val: 0.40, pct: 40 }], title: 'Context Precision — Retriever Precision'
+                            },
+                            {
+                                desc: '📚 Context Recall: did retrieved chunks contain ALL information needed to answer? Low = retriever missed important chunks (recall problem).',
+                                viz: 'scores', items: [{ label: 'High (0.88): Retrieved all relevant sections', val: 0.88, pct: 88 }, { label: 'Low (0.45): Missed half the relevant sections', val: 0.45, pct: 45 }], title: 'Context Recall — Retriever Coverage'
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Diagnosing Low RAGAS Scores',
+                        prob: 'RAGAS scores are low. What to fix?',
+                        input: 'Faithfulness=0.6, ContextPrecision=0.5, ContextRecall=0.4',
+                        output: 'Diagnostic plan: fix chunking → fix retrieval → fix prompt',
+                        steps: [
+                            {
+                                desc: '🔍 Low Context Recall (0.4): retriever missing relevant chunks. Fix: increase K, improve chunking, try hybrid search, check if content is even indexed.',
+                                viz: 'docs', items: [{ label: 'Low Context Recall → Fix Retrieval', note: 'Increase K from 3 to 8', cls: 'warn' }, { label: 'Check indexing', note: 'Are all relevant docs actually indexed?', cls: 'active' }, { label: 'Try hybrid search', note: 'BM25 + Dense may catch missed chunks', cls: 'done' }]
+                            },
+                            {
+                                desc: '🎯 Low Context Precision (0.5): retriever returning too many irrelevant chunks. Fix: add re-ranking, metadata filtering, or MMR to diversify.',
+                                viz: 'docs', items: [{ label: 'Low Context Precision → Add Re-ranking', note: 'Cohere Rerank or BGE-Reranker', cls: 'warn' }, { label: 'Add metadata filters', note: 'Restrict retrieval to relevant document subset', cls: 'active' }, { label: 'Use MMR', note: 'Reduce redundant/irrelevant chunks', cls: 'done' }]
+                            },
+                            {
+                                desc: '🚫 Low Faithfulness (0.6): LLM is hallucinating despite decent retrieval. Fix: strengthen system prompt, reduce temperature, instruct LLM to cite only from context.',
+                                viz: 'docs', items: [{ label: 'Low Faithfulness → Fix Prompt', note: 'Add: "ONLY use information from the provided context. Never add facts from training."', cls: 'warn' }, { label: 'Set temperature=0', note: 'Deterministic, less creative = less hallucination', cls: 'done' }, { label: 'Add citation requirement', note: '"Cite the specific section for every claim"', cls: 'active' }]
+                            },
+                            {
+                                desc: '📈 Target scores for production RAG: Faithfulness > 0.85, ContextPrecision > 0.80, ContextRecall > 0.75, AnswerRelevancy > 0.85. Below these = significant quality issues.',
+                                viz: 'scores', items: [{ label: 'Faithfulness target: > 0.85', val: 0.85, pct: 85 }, { label: 'Context Precision target: > 0.80', val: 0.80, pct: 80 }, { label: 'Context Recall target: > 0.75', val: 0.75, pct: 75 }, { label: 'Answer Relevancy target: > 0.85', val: 0.85, pct: 85 }], title: 'Production Quality Targets'
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Building a Test Dataset',
+                        prob: 'How to create a RAGAS evaluation dataset from your documents.',
+                        input: 'Your indexed document corpus',
+                        output: 'Synthetic QA pairs for automated evaluation',
+                        steps: [
+                            {
+                                desc: '🤖 RAGAS TestsetGenerator: auto-generates questions from your documents. Creates: simple (single-chunk), multi-hop (needs multiple chunks), and conversational questions.',
+                                viz: 'docs', items: [{ label: 'Simple Q: "What is the notice period for termination?"', note: 'Answer found in single chunk', cls: 'done' }, { label: 'Multi-hop Q: "How does the refund policy differ for premium vs standard users?"', note: 'Requires combining 2+ chunks', cls: 'active' }, { label: 'Conversational Q: follows up on previous answers', note: 'Tests multi-turn capability', cls: 'done' }]
+                            },
+                            {
+                                desc: '📋 Generated test set format: {question, answer, context, ground_truth}. Ground truth = the correct answer. Used as reference for all 4 metrics.',
+                                viz: 'docs', items: [{ label: 'question: "What is the refund window?"', note: '', cls: 'active' }, { label: 'ground_truth: "30 calendar days from purchase date"', note: 'Reference answer for evaluation', cls: 'done' }, { label: 'context: [retrieved chunks]', note: 'What the RAG pipeline retrieved', cls: 'done' }, { label: 'answer: [LLM response]', note: 'What the LLM generated', cls: 'done' }]
+                            },
+                            {
+                                desc: '🔄 Iterative eval: generate test set once, save to CSV. After every pipeline change, run RAGAS on the same test set. Track scores over time to prevent regression.',
+                                viz: 'scores', items: [{ label: 'Baseline (chunking v1): Faithfulness=0.72', val: 0.72, pct: 72 }, { label: 'After rerank (v2): Faithfulness=0.81', val: 0.81, pct: 81 }, { label: 'After prompt fix (v3): Faithfulness=0.91', val: 0.91, pct: 91 }], title: 'Score Improvement Over Iterations'
+                            },
+                            {
+                                desc: '✅ Always human-review at least 20 generated questions for quality. Remove nonsensical or unanswerable questions before using as eval set.',
+                                viz: 'docs', items: [{ label: 'Generate 50 questions', note: '', cls: 'active' }, { label: 'Human review: remove 10 bad ones', note: 'Quality gate before using as eval set', cls: 'done' }, { label: 'Use 40 as test set → run RAGAS', note: 'Automated evaluation from here', cls: 'done' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> ragas <span class="kw">import</span> evaluate
+<span class="kw">from</span> ragas.metrics <span class="kw">import</span> (
+    faithfulness, answer_relevancy,
+    context_precision, context_recall
+)
+<span class="kw">from</span> ragas.testset.generator <span class="kw">import</span> TestsetGenerator
+<span class="kw">from</span> datasets <span class="kw">import</span> Dataset
+
+<span class="cm"># ── Generate synthetic test set ───────────────</span>
+generator = <span class="cls">TestsetGenerator</span>.<span class="fn">with_openai</span>()
+testset = generator.<span class="fn">generate_with_langchain_docs</span>(
+    documents,
+    test_size=<span class="num">50</span>,
+    distributions={simple: <span class="num">0.5</span>, multi_context: <span class="num">0.4</span>, reasoning: <span class="num">0.1</span>}
+)
+
+<span class="cm"># ── Build evaluation dataset ──────────────────</span>
+data = []
+<span class="kw">for</span> item <span class="kw">in</span> testset:
+    docs = retriever.<span class="fn">invoke</span>(item.question)
+    answer = chain.<span class="fn">invoke</span>(item.question)
+    data.<span class="fn">append</span>({
+        <span class="str">"question"</span>: item.question,
+        <span class="str">"answer"</span>: answer,
+        <span class="str">"contexts"</span>: [d.page_content <span class="kw">for</span> d <span class="kw">in</span> docs],
+        <span class="str">"ground_truth"</span>: item.ground_truth,
+    })
+
+<span class="cm"># ── Evaluate ──────────────────────────────────</span>
+dataset = <span class="cls">Dataset</span>.<span class="fn">from_list</span>(data)
+results = <span class="fn">evaluate</span>(
+    dataset,
+    metrics=[faithfulness, answer_relevancy, context_precision, context_recall]
+)
+<span class="fn">print</span>(results)   <span class="cm"># {'faithfulness': 0.85, 'answer_relevancy': 0.91, ...}</span>`,
+                problems: [
+                    { name: 'Run RAGAS on your existing RAG pipeline', diff: 'i' }, { name: 'Build regression test suite with RAGAS', diff: 'i' },
+                    { name: 'Custom RAGAS metrics for your domain', diff: 'a' }, { name: 'LLM-as-judge without RAGAS framework', diff: 'a' },
+                ]
+            },
+
+            /* ─── 10 PROMPT ENGINEERING FOR RAG ─── */
+            {
+                id: 'rag-prompts', num: '10', title: 'Prompt Engineering for RAG',
+                cat: 'Generation', color: '#fbbf24', icon: '💬', diff: 'i',
+                tags: ['Prompt', 'System', 'Hallucination'],
+                tagline: 'How you structure the prompt determines if the LLM uses your context or ignores it.',
+                concept: `The quality of RAG answers depends heavily on the prompt structure. A poor prompt lets the LLM answer from training memory (hallucinating). A good prompt <b>constrains the LLM to only use retrieved context</b>, requests citations, and handles the "I don't know" case gracefully.<br><br>
+Key techniques: context sandwich, explicit citation requests, unknown graceful handling, conversation history management in multi-turn RAG.`,
+                when: ['High hallucination rate despite good retrieval', 'LLM mixing retrieved facts with training knowledge', 'Multi-turn chat RAG needing conversation history', 'Answers not citing specific document sources'],
+                keypoints: ['Never let the LLM answer from training — always restrict to context', 'Explicitly ask for citations in the system prompt', 'Handle "not found in context" gracefully — never force an answer', 'In multi-turn RAG: rewrite follow-up questions to be standalone'],
+                examples: [
+                    {
+                        title: 'RAG System Prompt Best Practices',
+                        prob: 'Write a system prompt that maximizes faithfulness and minimizes hallucination.',
+                        input: 'Retrieved context about refund policy + user question',
+                        output: 'Faithful answer citing specific policy sections',
+                        steps: [
+                            {
+                                desc: '❌ Bad system prompt: "You are a helpful assistant. Use the provided context to answer questions." — Too vague. LLM may mix training knowledge with context.',
+                                viz: 'docs', items: [{ label: 'Vague prompt → LLM mixes sources', note: '"Based on general knowledge and your policy, refunds typically take 5-10 days..." (5-10 is hallucinated)', cls: 'bad' }]
+                            },
+                            {
+                                desc: '✅ Better system prompt: explicit restriction + citation requirement + unknown handling. 3 key parts.',
+                                viz: 'docs', items: [{ label: 'Part 1: RESTRICT to context', note: '"Answer ONLY using the provided context. Do not use any information from your training."', cls: 'done' }, { label: 'Part 2: CITATION requirement', note: '"For every claim, cite the exact section from context (e.g., \'Per Section 5.2:\')"', cls: 'done' }, { label: 'Part 3: UNKNOWN handling', note: '"If the answer is not in the context, say: I don\'t have that information in the provided documents."', cls: 'active' }]
+                            },
+                            {
+                                desc: '📝 Full template: context is stuffed between XML-like tags for clarity. LLM attention mechanisms handle delimited content better.',
+                                viz: 'docs', items: [{ label: '<context>\\n{retrieved_chunks}\\n</context>', note: 'XML tags help LLM identify context boundaries', cls: 'active' }, { label: 'Question: {user_question}', note: '', cls: 'done' }, { label: 'Answer (cite section numbers):', note: 'Forces structured citation', cls: 'done' }]
+                            },
+                            {
+                                desc: '📈 With good RAG prompt: Faithfulness 0.72 → 0.91. Just changing the prompt adds 19 percentage points without changing any retrieval component.',
+                                viz: 'scores', items: [{ label: 'Vague prompt: Faithfulness=0.72', val: 0.72, pct: 72 }, { label: 'Explicit restriction: Faithfulness=0.88', val: 0.88, pct: 88 }, { label: '+ Citation requirement: Faithfulness=0.91', val: 0.91, pct: 91 }], title: 'Prompt Quality vs Faithfulness'
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Conversational RAG — Follow-up Questions',
+                        prob: 'Handle "What about their premium plan?" after asking about pricing.',
+                        input: 'Follow-up question with coreference ("their") requires conversation history',
+                        output: 'Standalone question: "What is the premium plan pricing?"',
+                        steps: [
+                            {
+                                desc: '❓ Problem: "What about their premium plan?" is meaningless without history. If you embed this as-is, retrieval will be poor — "their" has no referent.',
+                                viz: 'docs', items: [{ label: 'Turn 1: "What is Anthropic\'s pricing?"', note: 'Retrieved: pricing page chunks', cls: 'done' }, { label: 'Turn 2: "What about their premium plan?"', note: '"their" = Anthropic, "premium plan" = specific tier — but standalone this is ambiguous', cls: 'bad' }]
+                            },
+                            {
+                                desc: '🔄 Question condenser: LLM rewrites follow-up question to be STANDALONE using conversation history. "What about their premium plan?" → "What is Anthropic\'s Claude Pro/premium plan pricing?"',
+                                viz: 'docs', items: [{ label: 'Input to condenser LLM:', note: 'History + follow-up question', cls: 'active' }, { label: 'Output: standalone question', note: '"What is Anthropic\'s Claude Pro premium plan pricing?"', cls: 'done' }, { label: 'Now retrieve with this standalone question', note: 'Perfect retrieval — no ambiguity', cls: 'done' }]
+                            },
+                            {
+                                desc: '💾 What history to include in prompt? Keep last 3-5 turns max. Summarize older history. Too much history wastes context window and confuses LLM.',
+                                viz: 'docs', items: [{ label: 'Keep: last 3 turns (current session)', note: '~300-600 tokens', cls: 'done' }, { label: 'Summarize: older turns', note: '"Earlier we discussed pricing and features..."', cls: 'active' }, { label: 'Discard: very old irrelevant turns', note: 'Saves context window for retrieved chunks', cls: 'done' }]
+                            },
+                            {
+                                desc: '⚡ LangChain\'s create_history_aware_retriever does all of this automatically: condenses follow-up question, then retrieves with standalone version.',
+                                viz: 'docs', items: [{ label: 'create_history_aware_retriever(llm, retriever, condense_prompt)', note: 'Auto-handles follow-up question rewriting', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Handling "I Don\'t Know" Gracefully',
+                        prob: 'LLM must admit knowledge gaps rather than hallucinating an answer.',
+                        input: 'Query asks about something not in the knowledge base',
+                        output: '"I don\'t have that information in the provided documents." — Not a hallucinated answer',
+                        steps: [
+                            {
+                                desc: '⚠️ Without explicit instruction: LLM will answer from training memory when context is insufficient. This creates confident-sounding hallucinations.',
+                                viz: 'docs', items: [{ label: 'Query: "What is our Q5 2024 revenue?" (not in docs)', note: '', cls: 'active' }, { label: 'Without IDK prompt: "Based on typical SaaS metrics, approximately $2.4M..." ← HALLUCINATION', note: '', cls: 'bad' }]
+                            },
+                            {
+                                desc: '✅ Add explicit "I don\'t know" instruction + confidence threshold. If no retrieved chunk scores > 0.7 similarity, explicitly tell LLM context is insufficient.',
+                                viz: 'docs', items: [{ label: 'System prompt addition:', note: '"If the provided context does not contain sufficient information to answer the question, respond with: I don\'t have that information in the provided documents. Do not guess or infer."', cls: 'done' }, { label: 'Result: "I don\'t have Q5 2024 revenue data in the provided documents."', note: 'Honest, safe response ✓', cls: 'done' }]
+                            },
+                            {
+                                desc: '🎛️ Confidence routing: check max retrieval similarity before calling LLM. If max_sim < 0.6 → return standard "not found" without LLM call. Saves cost + prevents hallucinations.',
+                                viz: 'scores', items: [{ label: 'max_similarity < 0.6 → skip LLM, return "not found"', val: 0.50, pct: 50 }, { label: '0.6-0.8 → LLM with strong IDK instruction', val: 0.70, pct: 70 }, { label: '> 0.8 → LLM with normal RAG prompt', val: 0.90, pct: 90 }], title: 'Confidence-based Routing'
+                            },
+                            {
+                                desc: '💡 Also: always include "If unsure, say so" in system prompt. Test edge cases: questions that are close to but not in docs. Verify LLM admits uncertainty vs confidently hallucinating.',
+                                viz: 'docs', items: [{ label: 'Test: questions slightly out-of-scope', note: 'Verify LLM says "not in documents" vs hallucinating', cls: 'active' }, { label: 'Monitor: track "not found" rate in production', note: 'High rate = docs need updating', cls: 'done' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> langchain.prompts <span class="kw">import</span> ChatPromptTemplate, MessagesPlaceholder
+<span class="kw">from</span> langchain.chains <span class="kw">import</span> create_history_aware_retriever, create_retrieval_chain
+<span class="kw">from</span> langchain.chains.combine_documents <span class="kw">import</span> create_stuff_documents_chain
+
+<span class="cm"># ── Production RAG system prompt ──────────────</span>
+system_prompt = <span class="str">"""You are a precise assistant. Follow these rules strictly:
+1. Answer ONLY using information from the provided context below.
+2. Do NOT use your training knowledge for any factual claims.
+3. For every claim, cite the specific section (e.g., 'Per Section 3.2:').
+4. If the context doesn't contain the answer, respond EXACTLY:
+   "I don't have that information in the provided documents."
+5. Never guess, infer, or extrapolate beyond what's in the context.
+
+Context:
+{context}
+"""</span>
+
+qa_prompt = <span class="cls">ChatPromptTemplate</span>.<span class="fn">from_messages</span>([
+    (<span class="str">"system"</span>, system_prompt),
+    <span class="cls">MessagesPlaceholder</span>(<span class="str">"chat_history"</span>),
+    (<span class="str">"human"</span>, <span class="str">"{input}"</span>),
+])
+
+<span class="cm"># ── Conversational RAG with history ───────────</span>
+condense_prompt = <span class="cls">ChatPromptTemplate</span>.<span class="fn">from_messages</span>([
+    <span class="cls">MessagesPlaceholder</span>(<span class="str">"chat_history"</span>),
+    (<span class="str">"human"</span>, <span class="str">"{input}"</span>),
+    (<span class="str">"human"</span>, <span class="str">"Rewrite as standalone question with no coreferences."</span>),
+])
+history_retriever = <span class="fn">create_history_aware_retriever</span>(llm, retriever, condense_prompt)
+qa_chain = <span class="fn">create_stuff_documents_chain</span>(llm, qa_prompt)
+rag_chain = <span class="fn">create_retrieval_chain</span>(history_retriever, qa_chain)`,
+                problems: [
+                    { name: 'Write and test a production RAG prompt', diff: 'b' }, { name: 'Build conversational RAG with history', diff: 'i' },
+                    { name: 'Confidence-based routing before LLM call', diff: 'i' }, { name: 'Citation extraction and verification', diff: 'a' },
+                ]
+            },
+
+            /* ─── 11 GRAPH RAG ─── */
+            {
+                id: 'graph-rag', num: '11', title: 'Graph RAG',
+                cat: 'Advanced RAG', color: '#818cf8', icon: '🕸️', diff: 'a',
+                tags: ['Knowledge Graph', 'Entities', 'Relations'],
+                tagline: 'Build a knowledge graph from documents — traverse relationships, not just semantic similarity.',
+                concept: `<b>GraphRAG</b> extracts entities and relationships from documents and stores them as a knowledge graph. Instead of (or in addition to) vector similarity, retrieval traverses graph edges — enabling multi-hop reasoning that vector search can't do efficiently.<br><br>
+Example: Vector search can't directly answer "Who are the colleagues of people who work at companies founded after 2010 and partnered with Tesla?" But a graph traversal can.`,
+                when: ['Highly interconnected data with entity relationships', 'Multi-hop questions requiring traversal', 'Domain: legal, medical, financial networks', 'Questions about relationships between entities'],
+                keypoints: ['Microsoft GraphRAG: community detection on entity graphs', 'Entities → nodes, relationships → edges with types and properties', 'Two retrieval modes: local (entity subgraph) and global (community summaries)', 'Cost: expensive to build, excellent for relationship queries'],
+                examples: [
+                    {
+                        title: 'Building the Entity Knowledge Graph',
+                        prob: 'Extract entities and relationships from company documents.',
+                        input: 'Doc: "Sarah (VP Sales) manages Tom. Tom works with the Acme Corp partnership."',
+                        output: 'Graph: Sarah→[MANAGES]→Tom, Tom→[WORKS_WITH]→Acme',
+                        steps: [
+                            {
+                                desc: '🔍 Entity extraction: LLM reads each chunk and extracts entities (people, orgs, products, concepts) and their types.',
+                                viz: 'docs', items: [{ label: 'Input chunk', note: '"Sarah (VP Sales) manages Tom. Tom coordinates the Acme Corp partnership."', cls: 'active' }, { label: 'Entities extracted:', note: 'Sarah (Person), Tom (Person), Acme Corp (Organization)', cls: 'done' }, { label: 'Properties:', note: 'Sarah.title="VP Sales"', cls: 'done' }]
+                            },
+                            {
+                                desc: '🔗 Relationship extraction: LLM also extracts edges between entities with relationship type and direction.',
+                                viz: 'docs', items: [{ label: 'Relationship 1:', note: 'Sarah → MANAGES → Tom (confidence: 0.95)', cls: 'done' }, { label: 'Relationship 2:', note: 'Tom → COORDINATES → Acme Corp (confidence: 0.88)', cls: 'done' }, { label: 'Relationship 3:', note: 'Sarah → WORKS_AT → Our Company (implied)', cls: 'active' }]
+                            },
+                            {
+                                desc: '🕸️ Graph accumulates across ALL documents. Same entity mentioned in 100 docs → one node with 100 edges. Graph captures the full relationship network across the corpus.',
+                                viz: 'scores', items: [{ label: 'Documents indexed: 500', val: 0.90, pct: 90 }, { label: 'Entities extracted: ~2,000', val: 0.80, pct: 80 }, { label: 'Relationships extracted: ~8,000', val: 0.80, pct: 80 }], title: 'Graph Scale from 500 Documents'
+                            },
+                            {
+                                desc: '⚠️ Graph building is expensive: each chunk needs LLM for extraction. A 1000-doc corpus may cost $10-50 in LLM calls for graph extraction. One-time cost, then fast traversal.',
+                                viz: 'docs', items: [{ label: 'One-time indexing cost: $10-50 (1000 docs)', note: 'LLM extraction per chunk: ~$0.01/chunk', cls: 'warn' }, { label: 'Query cost after: near zero', note: 'Graph traversal is in-memory/DB — no LLM needed for traversal', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Graph Traversal for Multi-hop Retrieval',
+                        prob: '"Who are the partners of companies that Sarah manages relationships with?"',
+                        input: 'Multi-hop query involving traversal of 3 graph relationships',
+                        output: 'Graph traversal: Sarah→manages→Tom→coordinates→Acme→partnered_with→XYZ Corp',
+                        steps: [
+                            {
+                                desc: '🔍 Vector search approach fails: no single chunk contains "Sarah\'s indirect business partners". It requires traversing 3 hops across documents.',
+                                viz: 'docs', items: [{ label: 'Vector search: no single chunk', note: '"Sarah manages Tom" is in doc A, "Tom coordinates Acme" is in doc B, "Acme partners with XYZ" is in doc C', cls: 'bad' }, { label: 'Graph traversal: follows edges', note: 'Sarah → Tom → Acme → XYZ Corp (3 hops)', cls: 'done' }]
+                            },
+                            {
+                                desc: '🕸️ Graph query: start at Sarah node, traverse MANAGES edges → Tom, traverse COORDINATES edges → Acme Corp, traverse PARTNERED_WITH edges → partner companies.',
+                                viz: 'docs', items: [{ label: 'Cypher query (Neo4j):', note: 'MATCH (s:Person {name:"Sarah"})-[:MANAGES]->(p)-[:COORDINATES]->(co)-[:PARTNERED_WITH]->(partner) RETURN partner', cls: 'active' }, { label: 'Result: XYZ Corp, Globex Inc, Initech', note: 'Found via graph traversal ✓', cls: 'done' }]
+                            },
+                            {
+                                desc: '🔄 Hybrid approach (recommended): use BOTH graph traversal AND vector search. Vector for semantic chunks, graph for relationship queries. Merge at the retrieval layer.',
+                                viz: 'scores', items: [{ label: 'Vector only: relationship queries', val: 0.35, pct: 35 }, { label: 'Graph only: semantic concept queries', val: 0.50, pct: 50 }, { label: 'Hybrid (Vector + Graph)', val: 0.88, pct: 88 }], title: 'Retrieval Quality by Query Type'
+                            },
+                            {
+                                desc: '🏭 Microsoft GraphRAG adds community detection: cluster related entities into communities (departments, topics), generate community summaries. Global queries use community summaries.',
+                                viz: 'docs', items: [{ label: 'Local mode: answer from entity subgraph', note: 'For specific entity-relationship queries', cls: 'active' }, { label: 'Global mode: answer from community summaries', note: 'For broad thematic questions', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'LlamaIndex Property Graph Index',
+                        prob: 'Build and query a property graph with LlamaIndex.',
+                        input: '10 documents about a company\'s products, teams, and partnerships',
+                        output: 'Property graph with typed entities and queryable relationships',
+                        steps: [
+                            {
+                                desc: '🏗️ LlamaIndex PropertyGraphIndex: auto-extracts entities and relations, stores in a graph store (Neo4j, NetworkX). Supports both graph and vector retrieval.',
+                                viz: 'docs', items: [{ label: 'PropertyGraphIndex.from_documents(docs)', note: 'Auto-extracts entities and relations using LLM', cls: 'active' }, { label: 'Stores in: Neo4j / NetworkX / SimpleGraphStore', note: 'Choose based on scale requirements', cls: 'done' }]
+                            },
+                            {
+                                desc: '🔍 Two query engines: VectorContextRetriever (semantic), CypherTemplateRetriever (graph traversal). Use VectorContextRetriever for most questions.',
+                                viz: 'docs', items: [{ label: 'VectorContextRetriever', note: 'Semantic search on entity/relation text', cls: 'done' }, { label: 'CypherTemplateRetriever (Neo4j)', note: 'Structured Cypher graph queries', cls: 'active' }, { label: 'Both together (recommended)', note: 'Hybrid: vector + graph traversal', cls: 'done' }]
+                            },
+                            {
+                                desc: '💡 Use GraphRAG when: documents have rich entity relationships, questions involve indirect connections, or you have a domain like legal/medical/financial with structured entities.',
+                                viz: 'scores', items: [{ label: 'Legal contracts (parties, obligations)', val: 0.92, pct: 92 }, { label: 'Medical literature (drugs, interactions)', val: 0.90, pct: 90 }, { label: 'Financial reports (companies, metrics)', val: 0.85, pct: 85 }, { label: 'Generic FAQ documents', val: 0.30, pct: 30 }], title: 'GraphRAG Usefulness by Domain'
+                            },
+                            {
+                                desc: '⚠️ GraphRAG is NOT for every use case. For simple Q&A over policies or manuals, standard RAG is faster, cheaper, and just as good. GraphRAG shines for relationship-heavy queries.',
+                                viz: 'docs', items: [{ label: 'Use GraphRAG for: relationship queries, entity networks', note: '', cls: 'done' }, { label: 'Use standard RAG for: factual Q&A, summarization', note: '', cls: 'active' }, { label: 'Cost: GraphRAG is 5-10x more expensive to build', note: 'High ROI only for right use cases', cls: 'warn' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">from</span> llama_index.core <span class="kw">import</span> PropertyGraphIndex
+<span class="kw">from</span> llama_index.core.indices.property_graph <span class="kw">import</span> (
+    SimpleLLMPathExtractor, VectorContextRetriever
+)
+<span class="kw">from</span> llama_index.graph_stores.neo4j <span class="kw">import</span> Neo4jPropertyGraphStore
+
+<span class="cm"># ── Build Property Graph ──────────────────────</span>
+graph_store = <span class="cls">Neo4jPropertyGraphStore</span>(
+    username=<span class="str">"neo4j"</span>, password=<span class="str">"password"</span>, url=<span class="str">"bolt://localhost:7687"</span>
+)
+
+index = <span class="cls">PropertyGraphIndex</span>.<span class="fn">from_documents</span>(
+    documents,
+    kg_extractors=[<span class="cls">SimpleLLMPathExtractor</span>(llm=llm)],
+    property_graph_store=graph_store,
+    embed_kg_nodes=<span class="kw">True</span>,  <span class="cm"># also embed nodes for hybrid retrieval</span>
+)
+
+<span class="cm"># ── Query with hybrid retriever ───────────────</span>
+retriever = index.<span class="fn">as_retriever</span>(
+    sub_retrievers=[
+        <span class="cls">VectorContextRetriever</span>(index.property_graph_store, embed_model=embed),
+    ]
+)
+nodes = retriever.<span class="fn">retrieve</span>(<span class="str">"Who are Sarah's indirect business partners?"</span>)
+
+<span class="cm"># ── Microsoft GraphRAG ────────────────────────</span>
+<span class="cm"># pip install graphrag</span>
+<span class="cm"># graphrag index --root ./my_project</span>
+<span class="cm"># graphrag query --root ./my_project --method global --query "..."</span>`,
+                problems: [
+                    { name: 'Extract entity graph from your domain docs', diff: 'a' }, { name: 'Multi-hop Q&A with LlamaIndex graph index', diff: 'a' },
+                    { name: 'Compare GraphRAG vs standard RAG quality', diff: 'a' }, { name: 'Run Microsoft GraphRAG on local docs', diff: 'a' },
+                ]
+            },
+
+            /* ─── 12 RAG PRODUCTION ─── */
+            {
+                id: 'rag-production', num: '12', title: 'RAG in Production',
+                cat: 'Production', color: '#34d399', icon: '🚀', diff: 'a',
+                tags: ['Caching', 'Async', 'Monitoring'],
+                tagline: 'From prototype to production — caching, async, monitoring, and cost optimization.',
+                concept: `A RAG prototype is easy. A <b>production RAG system</b> needs: response caching (same question → instant reply), async retrieval (parallel embedding + retrieval), streaming responses (UX), cost monitoring, fallback handling, and observability.<br><br>
+Most RAG latency comes from: embedding query (~50ms), ANN search (~10ms), LLM generation (~500ms-2s). Optimize in that order of impact.`,
+                when: ['Moving from prototype to real users', 'Optimizing for latency and cost', 'Multi-user concurrent RAG applications', 'Monitoring quality in production over time'],
+                keypoints: ['Semantic cache: cache LLM responses for similar queries', 'Async retrieval: embed + retrieve concurrently with other ops', 'Streaming: stream LLM tokens for better perceived UX', 'Observability: log query, retrieved docs, answer, latency, cost'],
+                examples: [
+                    {
+                        title: 'Semantic Caching for Cost Reduction',
+                        prob: '"What is our refund policy?" asked 1000 times/day — paying for 1000 LLM calls.',
+                        input: 'Repeated similar queries hitting LLM every time',
+                        output: 'Semantic cache hits similar queries, saves 80% of LLM cost',
+                        steps: [
+                            {
+                                desc: '💰 Problem: 1000 queries/day × $0.01/query (GPT-4) = $10/day = $300/month. Many queries are near-duplicates: "refund policy?", "how to get refund?", "return policy?"',
+                                viz: 'scores', items: [{ label: '"What is refund policy?"', val: 0.99, pct: 99 }, { label: '"How do I get a refund?"', val: 0.94, pct: 94 }, { label: '"Return/refund process?"', val: 0.91, pct: 91 }, { label: '"Warranty and returns"', val: 0.73, pct: 73 }], title: 'Semantic Similarity of Common Variations'
+                            },
+                            {
+                                desc: '🗄️ Semantic cache: store (query_embedding, answer). For new query: if max cosine similarity with any cached query > 0.95 → return cached answer. No LLM call!',
+                                viz: 'docs', items: [{ label: 'Cache hit (sim > 0.95): return cached answer instantly', note: '0ms LLM wait, $0 cost', cls: 'done' }, { label: 'Cache miss (sim < 0.95): call LLM, cache result', note: 'Normal RAG pipeline', cls: 'active' }]
+                            },
+                            {
+                                desc: '📈 Typical cache hit rate: 60-80% for customer service / FAQ RAG. With hit rate 70%: LLM calls drop from 1000/day to 300/day. Cost: $10/day → $3/day.',
+                                viz: 'scores', items: [{ label: 'Without cache: 1000 LLM calls/day, $10', val: 1.0, pct: 100 }, { label: 'With cache (70% hit rate): 300 LLM calls/day, $3', val: 0.30, pct: 30 }], title: 'Cost with Semantic Cache (lower=better)'
+                            },
+                            {
+                                desc: '🔧 GPTCache / Redis + FAISS for semantic caching. Set TTL (time-to-live) for cached answers — policy docs change, cache should expire.',
+                                viz: 'docs', items: [{ label: 'GPTCache: drop-in semantic cache for LLM apps', note: 'pip install gptcache', cls: 'active' }, { label: 'TTL=24h for volatile content', note: 'Refresh daily so stale policies don\'t persist', cls: 'done' }, { label: 'TTL=7d for stable content', note: 'Product specs, stable docs', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'Async Retrieval & Streaming',
+                        prob: 'Optimize RAG latency from 3 seconds to under 1 second.',
+                        input: 'Sequential RAG: embed(200ms) → retrieve(50ms) → LLM(2000ms) = 2.25s',
+                        output: 'Streaming + async: first token in < 500ms, full response in 2.5s',
+                        steps: [
+                            {
+                                desc: '⏱️ Latency breakdown: embedding query (50-200ms), ANN search (5-50ms), LLM generation (500-3000ms). LLM dominates — but perceived latency improves with streaming.',
+                                viz: 'scores', items: [{ label: 'Embedding query: ~100ms', val: 0.10, pct: 10 }, { label: 'ANN vector search: ~20ms', val: 0.02, pct: 2 }, { label: 'LLM generation: ~1500ms', val: 0.15, pct: 15 }], title: 'Latency Components (ms, lower=better)'
+                            },
+                            {
+                                desc: '🌊 Streaming: LLM generates tokens one by one. Start showing text immediately after first token (500ms). User SEES progress. Perceived wait = 0.5s not 2s.',
+                                viz: 'docs', items: [{ label: 'Without streaming: wait 2000ms, then show full response', note: 'User stares at loading for 2 seconds', cls: 'bad' }, { label: 'With streaming: first word appears at 500ms', note: 'User reads as LLM generates — much better UX!', cls: 'done' }]
+                            },
+                            {
+                                desc: '⚡ Async retrieval: while embedding query, also fetch relevant metadata in parallel. Use asyncio.gather() to parallelize embedding + retrieval + any pre-processing.',
+                                viz: 'docs', items: [{ label: 'Sequential: embed → retrieve → LLM = 2.3s', note: '', cls: 'bad' }, { label: 'Async: embed ‖ retrieve concurrently = 2.1s', note: '~10% faster retrieval phase', cls: 'active' }, { label: '+ Streaming: first token at 0.5s = great UX', note: '', cls: 'done' }]
+                            },
+                            {
+                                desc: '📊 Production setup: use FastAPI + async + streaming. LangChain\'s astream() method yields token chunks. Frontend receives SSE (Server-Sent Events) and renders progressively.',
+                                viz: 'docs', items: [{ label: 'Backend: FastAPI + astream() + async retrieval', note: '', cls: 'active' }, { label: 'Frontend: EventSource (SSE) for streaming', note: '', cls: 'done' }, { label: 'Result: responsive RAG app < 1s perceived latency', note: '', cls: 'done' }]
+                            },
+                        ]
+                    },
+                    {
+                        title: 'RAG Observability & Monitoring',
+                        prob: 'Track what\'s happening in production — catch quality regressions early.',
+                        input: 'Live RAG system with 500 queries/day',
+                        output: 'Dashboard showing retrieval quality, costs, latency, and edge cases',
+                        steps: [
+                            {
+                                desc: '📋 Log every RAG interaction: query, retrieved chunks + scores, LLM response, latency breakdown, token count, cost. Store in database for analysis.',
+                                viz: 'docs', items: [{ label: 'Log: query + timestamp', note: '', cls: 'active' }, { label: 'Log: retrieved_docs + similarity_scores', note: '', cls: 'done' }, { label: 'Log: llm_response + token_count + cost', note: '', cls: 'done' }, { label: 'Log: total_latency_ms', note: '', cls: 'done' }]
+                            },
+                            {
+                                desc: '🚨 Set up alerts: if average faithfulness score drops below 0.80 over 24h → alert. If p95 latency > 5s → alert. If cache hit rate drops → alert (may indicate new query patterns).',
+                                viz: 'scores', items: [{ label: 'Faithfulness (daily avg): alert if < 0.80', val: 0.85, pct: 85 }, { label: 'P95 latency: alert if > 5000ms', val: 0.60, pct: 60 }, { label: 'Cache hit rate: alert if < 50%', val: 0.70, pct: 70 }], title: 'Production Health Metrics'
+                            },
+                            {
+                                desc: '🔍 Sample and review: weekly review of 20 random logged queries. Catch: hallucinations, "I don\'t know" when answer exists, wrong citations, slow queries.',
+                                viz: 'docs', items: [{ label: 'Weekly review: 20 sampled logs', note: 'Human review of edge cases', cls: 'active' }, { label: 'Track: "I don\'t know" rate', note: 'High rate = docs out of date', cls: 'done' }, { label: 'Track: user feedback (thumbs up/down)', note: 'Ground truth signal', cls: 'done' }]
+                            },
+                            {
+                                desc: '🛠️ Tools: LangSmith (LangChain tracing), Langfuse (open-source), Arize AI, or custom logging. LangSmith traces every LLM call with inputs/outputs/latency.',
+                                viz: 'docs', items: [{ label: 'LangSmith: official LangChain tracing platform', note: 'pip install langsmith — integrates automatically', cls: 'done' }, { label: 'Langfuse: open-source, self-hostable', note: 'Great for privacy-sensitive deployments', cls: 'active' }, { label: 'Custom: log to PostgreSQL + Grafana', note: 'Full control, more setup', cls: 'done' }]
+                            },
+                        ]
+                    }
+                ],
+                code: `<span class="kw">import</span> asyncio
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> fastapi.responses <span class="kw">import</span> StreamingResponse
+<span class="kw">from</span> langsmith <span class="kw">import</span> traceable
+
+app = <span class="cls">FastAPI</span>()
+
+<span class="cm"># ── Streaming RAG endpoint ────────────────────</span>
+@app.<span class="fn">get</span>(<span class="str">"/chat"</span>)
+<span class="kw">async def</span> <span class="fn">chat</span>(query: str):
+    <span class="kw">async def</span> <span class="fn">generate</span>():
+        docs = <span class="kw">await</span> retriever.<span class="fn">ainvoke</span>(query)   <span class="cm"># async retrieval</span>
+        context = <span class="str">"\n"</span>.<span class="fn">join</span>([d.page_content <span class="kw">for</span> d <span class="kw">in</span> docs])
+        <span class="kw">async for</span> chunk <span class="kw">in</span> llm.<span class="fn">astream</span>(prompt.<span class="fn">format</span>(context=context, query=query)):
+            <span class="kw">yield</span> chunk.content                  <span class="cm"># stream tokens</span>
+    <span class="kw">return</span> <span class="cls">StreamingResponse</span>(<span class="fn">generate</span>(), media_type=<span class="str">"text/event-stream"</span>)
+
+<span class="cm"># ── LangSmith tracing (automatic) ────────────</span>
+<span class="kw">import</span> os
+os.environ[<span class="str">"LANGCHAIN_TRACING_V2"</span>] = <span class="str">"true"</span>
+os.environ[<span class="str">"LANGCHAIN_API_KEY"</span>] = <span class="str">"your-langsmith-key"</span>
+<span class="cm"># All LangChain calls are now automatically traced!</span>
+
+<span class="cm"># ── Semantic cache with GPTCache ──────────────</span>
+<span class="kw">from</span> gptcache <span class="kw">import</span> cache
+<span class="kw">from</span> gptcache.adapter <span class="kw">import</span> openai
+cache.<span class="fn">init</span>(similarity_threshold=<span class="num">0.95</span>)
+<span class="cm"># Now openai.ChatCompletion calls check cache first!</span>`,
+                problems: [
+                    { name: 'Add LangSmith tracing to RAG pipeline', diff: 'b' }, { name: 'Build streaming RAG with FastAPI', diff: 'i' },
+                    { name: 'Implement semantic cache with GPTCache', diff: 'i' }, { name: 'Production RAG with monitoring + alerts', diff: 'a' },
+                ]
+            },
+
+        ]; // end PATTERNS
+
+        /* ════════════════════════════════
+           HOME RENDER
+        ════════════════════════════════ */
+        const CAT_ORDER = ['Foundations', 'Indexing', 'Retrieval', 'Advanced RAG', 'Generation', 'Evaluation', 'Production'];
+
+        function renderHome() {
+            const container = document.getElementById('cards-container');
+            const catMap = {};
+            PATTERNS.forEach(p => { if (!catMap[p.cat]) catMap[p.cat] = []; catMap[p.cat].push(p); });
+            let html = '';
+            CAT_ORDER.forEach(cat => {
+                if (!catMap[cat]) return;
+                html += `<div class="cat-section"><div class="cat-label">${cat}</div><div class="patterns-grid">`;
+                catMap[cat].forEach((p, i) => {
+                    html += `<div class="pat-card" style="--c:${p.color};animation-delay:${i * 0.08}s" onclick="openLesson('${p.id}')">
+        <div class="pat-card-top"><span class="pat-num">${p.num}</span><span class="pat-difficulty diff-${p.diff}">${{ b: 'Beginner', i: 'Intermediate', a: 'Advanced' }[p.diff]}</span></div>
+        <div class="pat-icon">${p.icon}</div>
+        <h3>${p.title}</h3><p>${p.tagline}</p>
+        <div class="pat-card-footer">${p.tags.map(t => `<span class="pat-tag">${t}</span>`).join('')}</div>
+        <span class="pat-arrow">→</span>
+      </div>`;
+                });
+                html += `</div></div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        /* ════════════════════════════════
+           LESSON RENDER
+        ════════════════════════════════ */
+        let currentIdx = 0;
+        const stepState = {};
+
+        function openLesson(id) {
+            const idx = PATTERNS.findIndex(p => p.id === id);
+            currentIdx = idx;
+            renderLesson(PATTERNS[idx]);
+            document.getElementById('lesson').classList.add('show');
+            document.getElementById('lesson').scrollTop = 0;
+            updateNavBtns();
+        }
+
+        function goHome() { document.getElementById('lesson').classList.remove('show'); }
+
+        function navigate(dir) {
+            const ni = currentIdx + dir;
+            if (ni < 0 || ni >= PATTERNS.length) return;
+            currentIdx = ni;
+            renderLesson(PATTERNS[currentIdx]);
+            document.getElementById('lesson').scrollTop = 0;
+            updateNavBtns();
+        }
+
+        function updateNavBtns() {
+            document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('next-btn').disabled = currentIdx === PATTERNS.length - 1;
+        }
+
+        function renderLesson(p) {
+            document.getElementById('lesson-breadcrumb-text').textContent = p.title;
+            document.querySelector('.progress-bar').style.cssText = `--c:${p.color};width:${((currentIdx + 1) / PATTERNS.length * 100)}%`;
+
+            const cx = p.time ? `
+    <div class="complexity-row" style="--c:${p.color}">
+      <div class="cx"><div class="cx-label">Approach</div><div class="cx-val">${p.time}</div></div>
+      <div class="cx-divider"></div>
+      <div class="cx"><div class="cx-label">Category</div><div class="cx-val">${p.cat}</div></div>
+    </div>` : '';
+
+            let html = `
+  <div class="lesson-header">
+    <div class="lesson-cat-badge" style="--c:${p.color}">${p.cat}</div>
+    <div class="lesson-title"><span class="num">${p.num}</span>${p.title}</div>
+    <div class="lesson-tagline">${p.tagline}</div>
+  </div>
+  ${cx}
+  <div class="concept-block" style="--c:${p.color}">
+    <div class="section-header" style="--c:${p.color}"><span class="section-num" style="background:${p.color}">concept</span><h2>What is it?</h2></div>
+    <div class="concept-text">${p.concept}</div>
+    <div class="when-grid">${p.when.map(w => `<div class="when-item"><div class="when-dot" style="background:${p.color}"></div>${w}</div>`).join('')}</div>
+  </div>
+
+  <div class="examples-section">
+    <div class="section-header" style="--c:${p.color}"><span class="section-num" style="background:${p.color}">examples</span><h2>Step-by-Step Walkthroughs</h2></div>
+    <div class="example-tabs">
+      ${p.examples.map((ex, i) => `<button class="ex-tab ${i === 0 ? 'active' : ''}" style="${i === 0 ? `--c:${p.color}` : ''}" onclick="switchEx(this,'${p.id}',${i},'${p.color}')">${p.examples.length > 1 ? `Ex ${i + 1}: ` : ''}${ex.title}</button>`).join('')}
+    </div>
+    ${p.examples.map((ex, i) => `
+      <div class="example-panel ${i === 0 ? 'active' : ''}" id="exp_${p.id}_${i}">
+        <div class="ex-problem" style="--c:${p.color}">
+          <div class="q-label">Scenario</div>
+          <div class="q-text">${ex.prob}</div>
+          <div class="q-io">Input: ${ex.input}</div>
+        </div>
+        <div class="stepper" id="stepper_${p.id}_${i}" style="--c:${p.color}">
+          <div class="stepper-header">
+            <div class="stepper-title">Walkthrough</div>
+            <div class="stepper-counter">Step <span class="step-counter-num" id="sc_${p.id}_${i}">1</span> / ${ex.steps.length}</div>
+          </div>
+          <div class="stepper-viz" id="viz_${p.id}_${i}"></div>
+          <div class="stepper-desc" id="desc_${p.id}_${i}"></div>
+          <div class="stepper-controls">
+            <button class="step-btn" id="prev_${p.id}_${i}" onclick="stepEx('${p.id}',${i},-1,'${p.color}')" style="--c:${p.color}">← Prev</button>
+            <button class="step-btn" id="next_${p.id}_${i}" onclick="stepEx('${p.id}',${i},1,'${p.color}')" style="--c:${p.color}">Next →</button>
+            <div class="step-dots">${ex.steps.map((_, si) => `<div class="step-dot ${si === 0 ? 'active' : ''}" id="dot_${p.id}_${i}_${si}" style="--c:${p.color}"></div>`).join('')}</div>
+          </div>
+        </div>
+        <div class="result-box"><span class="result-label">Outcome</span><span class="result-val">${ex.output}</span></div>
+      </div>`).join('')}
+  </div>
+
+  <div class="code-section">
+    <div class="section-header" style="--c:${p.color}"><span class="section-num" style="background:${p.color}">code</span><h2>Python Implementation</h2></div>
+    <div class="code-box">
+      <div class="code-header"><span class="code-lang">Python · LangChain</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre>${p.code}</pre>
+    </div>
+  </div>
+
+  <div class="problems-section">
+    <div class="section-header" style="--c:${p.color}"><span class="section-num" style="background:${p.color}">practice</span><h2>Build & Explore</h2></div>
+    <div class="prob-grid">${p.problems.map(prob => `
+      <div class="prob-item"><span class="prob-diff ${prob.diff}">${{ b: 'Beginner', i: 'Intermediate', a: 'Advanced' }[prob.diff][0]}</span>${prob.name}</div>`).join('')}
+    </div>
+  </div>`;
+
+            document.getElementById('lesson-content').innerHTML = html;
+            p.examples.forEach((_, i) => { stepState[`${p.id}_${i}`] = 0; renderStep(p.id, i, p.examples[i], 0, p.color); });
+        }
+
+        /* ════════════════════════════════
+           STEP RENDER
+        ════════════════════════════════ */
+        function renderStep(pid, eidx, ex, si, color) {
+            const step = ex.steps[si];
+            const key = `${pid}_${eidx}`;
+
+            // VIZ
+            const vizEl = document.getElementById(`viz_${pid}_${eidx}`);
+            if (vizEl) {
+                let v = '';
+                if (step.viz === 'pipeline') {
+                    v = `<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">RAG Pipeline</div>
+        <div class="pipeline">
+          ${step.nodes.map((n, ni) => `<div class="${n === '→' ? 'pipe-arrow' : 'pipe-node' + (ni === step.active * 2 ? ' active' : '')}">${n}</div>`).join('')}
+        </div>`;
+                    if (step.info) v += `<div class="info-row">${step.info.map(i => `<div class="info-badge">${i}</div>`).join('')}</div>`;
+                } else if (step.viz === 'docs') {
+                    v = `<div class="doc-viz">${(step.items || []).map(item => `<div class="doc-block ${item.cls || ''}">${item.label}${item.note ? `<span style="color:var(--muted2);font-size:10px;display:block;margin-top:3px">${item.note}</span>` : ''}</div>`).join('')}</div>`;
+                } else if (step.viz === 'scores') {
+                    v = `<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px">${step.title || 'Scores'}</div>
+        <div class="score-row">${(step.items || []).map((item, ii) => `<div class="score-item ${ii === 0 ? 'top' : ''}">
+          <div class="score-label">${item.label}</div>
+          <div style="flex:1;background:var(--border);border-radius:4px;height:8px;overflow:hidden"><div class="score-bar" style="width:${item.pct}%;background:${color}"></div></div>
+          <div class="score-val">${item.val}</div>
+        </div>`).join('')}</div>`;
+                } else if (step.viz === 'chunks') {
+                    v = `<div class="chunk-row">${(step.chunks || []).map(c => `<div class="chunk ${c.cls || ''}">${c.text}</div>`).join('')}</div>
+        ${step.note ? `<div style="font-family:var(--mono);font-size:10px;color:${color};margin-top:10px">${step.note}</div>` : ''}`;
+                } else if (step.viz === 'embed') {
+                    const COLORS = ['#818cf8', '#38bdf8', '#34d399', '#f59e0b', '#fb7185', '#a78bfa', '#6ee7b7', '#fbbf24'];
+                    v = `<div style="margin-bottom:10px">${(step.words || []).map((w, wi) => `<div style="margin-bottom:8px">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted2);margin-bottom:4px">${w}</div>
+        <div class="embed-row">${(step.vecs && step.vecs[wi] ? step.vecs[wi] : []).map((val, di) => {
+                        const v = Math.round((val + 1) / 2 * 255); const bg = `rgba(${COLORS[di % 8].slice(1).match(/../g).map(h => parseInt(h, 16)).join(',')},${Math.abs(val) * 0.8 + 0.1})`;
+                        return `<div class="embed-cell" style="background:${bg};color:${val > 0 ? '#fff' : '#000'}">${val.toFixed(1)}</div>`;
+                    }).join('')}<span style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:8px">...1536 dims</span></div>
+      </div>`).join('')}
+      ${step.note ? `<div style="font-family:var(--mono);font-size:10px;color:${color};margin-top:4px">${step.note}</div>` : ''}`;
+                }
+                vizEl.innerHTML = v;
+            }
+
+            document.getElementById(`desc_${pid}_${eidx}`).innerHTML = step.desc;
+            document.getElementById(`sc_${pid}_${eidx}`).textContent = si + 1;
+            ex.steps.forEach((_, s) => {
+                const d = document.getElementById(`dot_${pid}_${eidx}_${s}`);
+                if (d) d.classList.toggle('active', s === si);
+            });
+            const p = document.getElementById(`prev_${pid}_${eidx}`);
+            const n = document.getElementById(`next_${pid}_${eidx}`);
+            if (p) p.disabled = si === 0;
+            if (n) n.disabled = si === ex.steps.length - 1;
+        }
+
+        function stepEx(pid, eidx, dir, color) {
+            const key = `${pid}_${eidx}`;
+            const p = PATTERNS.find(x => x.id === pid);
+            const ex = p.examples[eidx];
+            const ns = Math.max(0, Math.min(ex.steps.length - 1, (stepState[key] || 0) + dir));
+            stepState[key] = ns;
+            renderStep(pid, eidx, ex, ns, color);
+        }
+
+        function switchEx(btn, pid, idx, color) {
+            btn.closest('.examples-section').querySelectorAll('.ex-tab').forEach(t => { t.classList.remove('active'); t.style.removeProperty('--c'); });
+            btn.classList.add('active'); btn.style.setProperty('--c', color);
+            btn.closest('.examples-section').querySelectorAll('.example-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+        }
+
+        function copyCode(btn) {
+            navigator.clipboard.writeText(btn.closest('.code-box').querySelector('pre').innerText).then(() => {
+                btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500);
+            });
+        }
+
+        document.getElementById('lesson').addEventListener('scroll', function () {
+            const pct = this.scrollTop / (this.scrollHeight - this.clientHeight) * 100;
+            document.querySelector('.progress-bar').style.width = pct + '%';
+        });
+
+        renderHome();
+    </script>
+</body>
+
+</html>
