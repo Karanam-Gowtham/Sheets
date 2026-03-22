@@ -1007,7 +1007,48 @@
                 display: none;
             }
         }
-    </style>
+    
+        /* 📱 UNIVERSAL MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            #home {
+                padding: 32px 16px 60px !important;
+            }
+            .hero h1, .home-hero h1 {
+                font-size: clamp(28px, 8vw, 42px) !important;
+            }
+            .lbody, .lesson-body {
+                padding: 24px 16px 60px !important;
+            }
+            /* Force grids into single column on mobile */
+            .grid, .patterns-grid, .ag, .cg, .stats-row, .when-grid, .tag-row {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 16px !important;
+            }
+            .topbar, .lesson-topbar {
+                padding: 0 16px !important;
+            }
+            .cc, .pat-card, .concept-block, .ex-problem {
+                padding: 16px !important;
+            }
+            /* Prevent tables from breaking mobile view */
+            .tbl-wrap {
+                overflow-x: auto !important;
+                width: 100% !important;
+            }
+            table {
+                min-width: 500px !important;
+            }
+            /* Text sizing resets for mobile legsibility */
+            .pat-card h3, .ltitle, .lesson-title {
+                font-size: clamp(20px, 6vw, 32px) !important;
+            }
+            .bt, .pl li, .nl li, .mf, .lvd, .phb, td, th, .concept-text, .ex-problem .q-text {
+                font-size: 15px !important;
+                line-height: 1.6 !important;
+            }
+        }
+</style>
 </head>
 
 <body>
