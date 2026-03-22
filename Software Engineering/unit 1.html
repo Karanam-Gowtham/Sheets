@@ -10,14 +10,14 @@
         rel="stylesheet" />
     <style>
         :root {
-            --bg: #0f111a;
-            --surface: #151924;
-            --card: #181d2a;
-            --border: #232a3e;
-            --border2: #333d5a;
-            --text: #ffffff;
-            --muted: #8b96b5;
-            --muted2: #b4bed4;
+            --bg: #06080f;
+            --surface: #0c0f1a;
+            --card: #10141f;
+            --border: #1a2035;
+            --border2: #2a3350;
+            --text: #e8eaf6;
+            --muted: #5a6380;
+            --muted2: #8892b0;
             --mono: "Space Mono", monospace;
             --body: "Plus Jakarta Sans", sans-serif;
         }
@@ -68,7 +68,7 @@
 
         .eyebrow {
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 11px;
             color: #818cf8;
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -94,11 +94,11 @@
         }
 
         .hero p {
-            font-size: 20px;
+            font-size: 15px;
             color: var(--muted2);
             max-width: 520px;
             margin: 0 auto 28px;
-            line-height: 1.85;
+            line-height: 1.75;
             opacity: 0;
             animation: fu .6s ease .3s forwards
         }
@@ -114,7 +114,7 @@
 
         .stat-pill {
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 11px;
             padding: 5px 14px;
             border-radius: 20px;
             background: rgba(255, 255, 255, .04);
@@ -145,14 +145,14 @@
 
         .cat-label {
             font-family: var(--mono);
-            font-size: 14px;
-            color: var(--text);
+            font-size: 10px;
+            color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 3px;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
-            gap: 15px
+            gap: 10px
         }
 
         .cat-label::after {
@@ -164,8 +164,8 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px
+            grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+            gap: 14px
         }
 
         .pat-card {
@@ -213,13 +213,13 @@
 
         .pnum {
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 10px;
             color: var(--muted)
         }
 
         .pdiff {
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 9px;
             padding: 2px 8px;
             border-radius: 4px;
             font-weight: 700
@@ -241,20 +241,20 @@
         }
 
         .picon {
-            font-size: 34px;
+            font-size: 26px;
             margin-bottom: 10px
         }
 
         .pat-card h3 {
-            font-size: 20px;
+            font-size: 15px;
             font-weight: 700;
             margin-bottom: 5px
         }
 
         .pat-card p {
-            font-size: 16px;
+            font-size: 12px;
             color: var(--muted2);
-            line-height: 1.7
+            line-height: 1.6
         }
 
         .pfoot {
@@ -265,7 +265,7 @@
         }
 
         .ptag {
-            font-size: 14px;
+            font-size: 10px;
             padding: 2px 8px;
             border-radius: 4px;
             background: rgba(255, 255, 255, .05);
@@ -277,7 +277,7 @@
             position: absolute;
             bottom: 16px;
             right: 16px;
-            font-size: 23px;
+            font-size: 18px;
             color: var(--muted);
             opacity: 0;
             transition: opacity .2s, color .2s
@@ -322,7 +322,7 @@
             color: var(--muted2);
             padding: 6px 14px;
             cursor: pointer;
-            font-size: 17px;
+            font-size: 13px;
             font-family: var(--body);
             display: flex;
             align-items: center;
@@ -337,7 +337,7 @@
 
         .breadcrumb {
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 11px;
             color: var(--muted);
             display: flex;
             align-items: center;
@@ -362,7 +362,7 @@
             color: var(--muted2);
             padding: 6px 14px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 12px;
             font-family: var(--body);
             transition: all .15s
         }
@@ -388,9 +388,9 @@
         }
 
         .lbody {
-            max-width: 1080px;
+            max-width: 940px;
             margin: 0 auto;
-            padding: 40px 32px 80px
+            padding: 40px 24px 80px
         }
 
         .lhead {
@@ -399,7 +399,7 @@
 
         .lbadge {
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 10px;
             padding: 4px 12px;
             border-radius: 20px;
             border: 1px solid var(--c, #818cf8);
@@ -425,9 +425,9 @@
         }
 
         .lsub {
-            font-size: 18px;
+            font-size: 14px;
             color: var(--muted2);
-            line-height: 1.85;
+            line-height: 1.75;
             max-width: 640px
         }
 
@@ -447,13 +447,13 @@
         }
 
         .sh h2 {
-            font-size: 22px;
+            font-size: 17px;
             font-weight: 700
         }
 
         .sn {
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 10px;
             background: var(--c, #818cf8);
             color: #000;
             padding: 2px 8px;
@@ -461,7 +461,7 @@
         }
 
         .bt {
-            font-size: 18px;
+            font-size: 13.5px;
             color: var(--muted2);
             line-height: 1.9
         }
@@ -487,16 +487,16 @@
             display: flex;
             align-items: flex-start;
             gap: 10px;
-            font-size: 17px;
+            font-size: 13px;
             color: var(--muted2);
-            line-height: 1.85
+            line-height: 1.65
         }
 
         .pl li::before {
             content: "→";
             color: var(--c, #818cf8);
             font-family: var(--mono);
-            font-size: 16px;
+            font-size: 12px;
             flex-shrink: 0;
             margin-top: 2px
         }
@@ -519,21 +519,21 @@
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            font-size: 17px;
+            font-size: 13px;
             color: var(--muted2);
-            line-height: 1.85;
+            line-height: 1.65;
             counter-increment: nl
         }
 
         .nl li::before {
             content: counter(nl);
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 11px;
             background: var(--c, #818cf8);
             color: #000;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -563,7 +563,7 @@
             background: rgba(251, 113, 133, .08);
             border-bottom: 1px solid var(--border);
             padding: 10px 14px;
-            font-size: 16px;
+            font-size: 12.5px;
             color: #fb7185;
             font-weight: 600
         }
@@ -571,9 +571,9 @@
         .mf {
             background: rgba(52, 211, 153, .06);
             padding: 10px 14px;
-            font-size: 16px;
+            font-size: 12.5px;
             color: var(--muted2);
-            line-height: 1.85
+            line-height: 1.65
         }
 
         .mf b {
@@ -590,14 +590,14 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 16px
+            font-size: 12px
         }
 
         th {
             background: rgba(129, 140, 248, .1);
             color: #818cf8;
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
             padding: 10px 14px;
@@ -609,7 +609,7 @@
             padding: 10px 14px;
             border-bottom: 1px solid var(--border);
             color: var(--muted2);
-            line-height: 1.7;
+            line-height: 1.6;
             vertical-align: top
         }
 
@@ -645,13 +645,13 @@
 
         .lvn {
             font-family: var(--mono);
-            font-size: 16px;
+            font-size: 12px;
             font-weight: 700;
             color: #000;
             background: var(--c, #818cf8);
             border-radius: 6px;
-            min-width: 38px;
-            height: 38px;
+            min-width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -659,16 +659,16 @@
         }
 
         .lvname {
-            font-size: 17px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--text);
             margin-bottom: 4px
         }
 
         .lvd {
-            font-size: 16px;
+            font-size: 12px;
             color: var(--muted2);
-            line-height: 1.7
+            line-height: 1.6
         }
 
         .ph {
@@ -687,14 +687,14 @@
         }
 
         .phtitle {
-            font-size: 17px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--text);
             margin-bottom: 5px
         }
 
         .phb {
-            font-size: 16px;
+            font-size: 12.5px;
             color: var(--muted2);
             line-height: 1.7
         }
@@ -727,7 +727,7 @@
         }
 
         .abox h4 {
-            font-size: 14px;
+            font-size: 11px;
             font-family: var(--mono);
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -750,9 +750,9 @@
         }
 
         .abox ul li {
-            font-size: 16px;
+            font-size: 12px;
             color: var(--muted2);
-            line-height: 1.7;
+            line-height: 1.6;
             display: flex;
             align-items: flex-start;
             gap: 7px
@@ -784,7 +784,7 @@
         .icap {
             text-align: center;
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 10px;
             color: var(--muted);
             margin-top: -6px;
             margin-bottom: 10px
@@ -796,7 +796,7 @@
             border-radius: 0 8px 8px 0;
             padding: 12px 16px;
             margin: 12px 0;
-            font-size: 17px;
+            font-size: 13px;
             color: var(--muted2);
             line-height: 1.7
         }
@@ -820,7 +820,7 @@
         }
 
         .cbox h4 {
-            font-size: 14px;
+            font-size: 11px;
             font-family: var(--mono);
             text-transform: uppercase;
             letter-spacing: 1px;
