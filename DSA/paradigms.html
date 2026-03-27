@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DSA Paradigms</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        :root{--bg:#08111f;--panel:#10213b;--line:rgba(164,189,255,.14);--text:#edf4ff;--muted:#9bb0d5;--accent:#7df9d0;--accent2:#ffd76a;--mono:"IBM Plex Mono",monospace;--display:"Space Grotesk",sans-serif}
+        *{box-sizing:border-box} html{scroll-behavior:smooth}
+        body{margin:0;min-height:100vh;color:var(--text);font-family:var(--display);background:radial-gradient(circle at top left,rgba(125,249,208,.12),transparent 30%),radial-gradient(circle at top right,rgba(255,215,106,.1),transparent 26%),linear-gradient(180deg,#08111f 0%,#091526 45%,#06111d 100%)}
+        body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 90%)}
+        a{text-decoration:none;color:inherit}
+        .wrap{width:min(1160px,calc(100% - 28px));margin:0 auto;padding:26px 0 52px;position:relative;z-index:1}
+        .hero,.chooser-shell,.section,.footer{border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(16,33,59,.94),rgba(7,18,31,.94));box-shadow:0 20px 44px rgba(0,0,0,.28)}
+        .hero{padding:28px}
+        .eyebrow,.stat span,.jump,.section-tag,.card-label,.footer{font-family:var(--mono)}
+        .eyebrow{margin:0 0 10px;color:var(--accent);font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+        h1{margin:0;font-size:clamp(34px,7vw,68px);line-height:.96;letter-spacing:-.05em;max-width:780px}
+        h1 span{color:var(--accent2)}
+        .intro{margin:16px 0 0;max-width:760px;color:var(--muted);line-height:1.8}
+        .hero-row{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:24px}
+        .stats,.note{padding:18px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03)}
+        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+        .stat{padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
+        .stat strong{display:block;margin-bottom:6px;font-size:24px;color:var(--accent2)}
+        .stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+        .note h2,.section h2,.card h3{margin:0}
+        .note h2{font-size:15px}
+        .note ul{margin:10px 0 0;padding-left:18px;color:var(--muted);line-height:1.8}
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+        .jump{padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.04);color:var(--muted);font-size:12px}
+        .chooser-shell,.section{margin-top:22px;padding:22px}
+        .chooser-head,.section-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:16px}
+        .section-tag{margin:0 0 8px;color:var(--muted);font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+        .section h2,.chooser-shell h2{font-size:clamp(24px,4vw,32px);letter-spacing:-.04em}
+        .chooser-shell p,.section p{margin:8px 0 0;color:var(--muted);line-height:1.75}
+        .chooser-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+        .chooser-card,.card{padding:18px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(18,35,58,.84),rgba(9,20,35,.92))}
+        .chooser-card h3{margin:0 0 8px;font-size:17px}
+        .chooser-card p{margin:0;color:var(--muted);line-height:1.7}
+        .chooser-answer{display:inline-block;margin-top:12px;padding:8px 10px;border-radius:999px;background:rgba(125,249,208,.08);border:1px solid rgba(125,249,208,.14);color:var(--accent);font:500 12px/1 var(--mono)}
+        .card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+        .card-label{display:inline-flex;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.05);color:var(--accent);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+        .card h3{margin-top:12px;font-size:26px;letter-spacing:-.04em}
+        .summary{margin:10px 0 0;color:var(--muted);line-height:1.75}
+        .meta{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+        .meta-box{padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.03)}
+        .meta-box h4{margin:0 0 8px;font-size:13px;color:var(--text);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono)}
+        .meta-box ul{margin:0;padding-left:18px;color:var(--muted);line-height:1.7}
+        .meta-line{margin:0;color:var(--muted);line-height:1.7}
+        .examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+        .example{padding:8px 10px;border-radius:999px;background:rgba(255,215,106,.08);border:1px solid rgba(255,215,106,.14);color:var(--accent2);font:500 12px/1 var(--mono)}
+        .footer{margin-top:22px;padding:18px;text-align:center;color:var(--muted);font-size:12px;line-height:1.7}
+        @media (max-width:900px){.hero-row,.stats-grid,.chooser-grid,.card-grid,.meta{grid-template-columns:1fr}.chooser-head,.section-head{flex-direction:column;align-items:start}}
+        @media (max-width:640px){.wrap{width:min(100% - 18px,1160px);padding:18px 0 34px}.hero,.chooser-shell,.section,.chooser-card,.card,.stats,.note,.footer{padding:16px}}
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header class="hero">
+            <p class="eyebrow">DSA Paradigms</p>
+            <h1>How to think about a problem <span>before you code it</span></h1>
+            <p class="intro">Patterns tell you what shape a solution takes. Paradigms tell you how to think. This page explains the major DSA approaches, what signals point to them, and what kind of question each one answers well.</p>
+            <div class="hero-row">
+                <div class="stats"><div class="stats-grid" id="stats"></div></div>
+                <div class="note">
+                    <h2>How to use this page</h2>
+                    <ul>
+                        <li>Read the clue first and try to name the paradigm before looking at the answer.</li>
+                        <li>Use the "ask yourself" prompt to test whether the paradigm really fits.</li>
+                        <li>Treat the examples as memory hooks, not as the full boundary of that approach.</li>
+                    </ul>
+                </div>
+            </div>
+            <nav class="nav" id="nav"></nav>
+        </header>
+
+        <section class="chooser-shell">
+            <div class="chooser-head">
+                <div>
+                    <p class="section-tag">Quick chooser</p>
+                    <h2>Pick the right lens</h2>
+                    <p>These are the fastest recognition cues when you are stuck and do not know which direction to try first.</p>
+                </div>
+            </div>
+            <div class="chooser-grid" id="chooser"></div>
+        </section>
+
+        <main id="app"></main>
+        <footer class="footer" id="footer"></footer>
+    </div>
+
+    <script>
+        const chooser = [
+            { clue: "The input is small and you need the exact answer.", note: "Start with the direct solution first, then improve only after you understand the state space.", answer: "Brute Force or Backtracking" },
+            { clue: "You need the minimum number of steps in an unweighted graph.", note: "Thinking in layers is usually more important than thinking deeply.", answer: "BFS" },
+            { clue: "The best local move seems to stay safe globally.", note: "Try to prove the choice can never hurt a future optimum.", answer: "Greedy" },
+            { clue: "Subproblems repeat and the same state appears again and again.", note: "Store the answer once and reuse it instead of recomputing.", answer: "Dynamic Programming" },
+            { clue: "A yes or no condition becomes true after some threshold.", note: "Do not search values one by one if feasibility is monotonic.", answer: "Binary Search on Answer" },
+            { clue: "You keep merging groups and checking connectivity.", note: "Repeated graph traversal is often too expensive after every merge.", answer: "Union Find" }
+        ];
+        const sections = [
+            { id: "foundation", kicker: "Mental model", title: "Foundation Approaches", subtitle: "These are the first ways to frame a problem before choosing a more specialized tool.", cards: [
+                { label: "Start simple", name: "Brute Force", summary: "Try every valid possibility directly. It is not glamorous, but it reveals the true search space and often becomes the baseline that later optimizations improve.", when: ["The constraints are small enough to enumerate safely.", "You need a correctness baseline before optimizing.", "You do not yet understand what structure the problem hides."], question: "If I try every choice honestly, what exactly am I recomputing or wasting?", examples: ["Two Sum naive", "All subarrays", "Try every pair"] },
+                { label: "Save work", name: "Precomputation", summary: "Do extra work once up front so later queries become cheap. The main idea is to trade setup time or memory for faster repeated answers.", when: ["The same type of query is asked many times.", "Range answers can be derived from a prebuilt array.", "A one-time pass can summarize useful information."], question: "What can I compute once and reuse instead of rebuilding each time?", examples: ["Prefix Sum", "Suffix max", "Range Sum Query"] },
+                { label: "Constant lookup", name: "Hashing", summary: "Replace searching with near O(1) lookup by storing seen values, counts, or positions in a hash map or set.", when: ["You need to know whether something was seen before.", "Counts or frequencies matter more than order.", "Pairing or complement logic appears in the problem."], question: "What fact would become easy if I could remember it instantly?", examples: ["Two Sum", "Valid Anagram", "Longest Consecutive Sequence"] },
+                { label: "Solve by self-call", name: "Recursion", summary: "Define the problem in terms of smaller versions of itself. It is powerful when the structure already looks like a tree of decisions or a recursive object.", when: ["The problem naturally breaks into smaller identical pieces.", "Trees, subsets, or nested structures are involved.", "The state is easier to describe with a call stack than a loop."], question: "What is the smaller version of this exact same problem, and what is the base case?", examples: ["Tree traversal", "Factorial", "Generate subsets"] },
+                { label: "Split and combine", name: "Divide and Conquer", summary: "Break the input into independent parts, solve each part, and combine the answers. The win comes from reducing a big problem into smaller clean subproblems.", when: ["Left and right halves can be solved separately.", "Combining solved subparts is cheaper than solving the whole thing directly.", "The recursion tree reduces the total work meaningfully."], question: "Can I solve the left and right sides independently and merge their answers?", examples: ["Merge Sort", "Quick Sort", "Maximum Subarray"] }
+            ]},
+            { id: "search", kicker: "Explore states", title: "Search and Traversal Approaches", subtitle: "These approaches are about how you walk through states, decisions, trees, or graphs.", cards: [
+                { label: "Go deep", name: "DFS", summary: "Depth-first search explores one path fully before trying the next. It is a natural fit for path tracking, subtree reasoning, and recursive exploration.", when: ["You need to explore all reachable states or paths.", "The answer depends on subtree information.", "Backtracking or recursive traversal feels natural."], question: "Do I care about fully exploring one branch before moving sideways?", examples: ["Number of Islands", "Path Sum", "Clone Graph"] },
+                { label: "Go layer by layer", name: "BFS", summary: "Breadth-first search explores level by level. In unweighted graphs, the first time you reach a node is often the shortest path to it.", when: ["You need the minimum number of moves.", "The graph is unweighted.", "Level order or wave expansion is part of the statement."], question: "Would processing nodes by distance from the source make the answer appear naturally?", examples: ["Rotting Oranges", "Word Ladder", "Level Order Traversal"] },
+                { label: "Try and undo", name: "Backtracking", summary: "Build a candidate step by step, abandon bad paths early, and undo the last move before trying the next one. It is brute force with structure and pruning.", when: ["You must generate combinations, permutations, or arrangements.", "Constraints allow search, but pruning is necessary.", "The problem says all ways, any valid way, or count the valid ways."], question: "What choice do I make now, and how do I undo it cleanly if it fails?", examples: ["N-Queens", "Combination Sum", "Word Search"] },
+                { label: "Split small state spaces", name: "Meet in the Middle", summary: "When brute force is too big but the input is still moderate, split the problem into two halves, solve each half, and combine cleverly.", when: ["The input size is around 30 to 40, too big for full brute force.", "The state can be represented as two half-enumerations.", "Pairing results from two halves is cheaper than full search."], question: "Can I cut the search space in half and combine two smaller enumerations?", examples: ["Closest Subsequence Sum", "Subset sum variants", "Half-half enumeration"] }
+            ]},
+            { id: "optimization", kicker: "Build the best answer", title: "Optimization Approaches", subtitle: "These paradigms show up when the problem is asking for minimum, maximum, feasibility, or best-next-choice behavior.", cards: [
+                { label: "Safe local choice", name: "Greedy", summary: "A greedy algorithm makes the best-looking choice right now and never goes back. It works only when local choices can be proven to lead to a global optimum.", when: ["The problem has a clear ordering or priority rule.", "A local decision can be justified with an exchange argument.", "You can prove delaying or changing the choice never helps."], question: "Can I prove that the best immediate choice cannot block the optimal final answer?", examples: ["Jump Game", "Gas Station", "Partition Labels"] },
+                { label: "Reuse subproblems", name: "Dynamic Programming", summary: "DP stores answers to overlapping subproblems and reuses them. The core work is defining the right state and transition, not writing the loop.", when: ["The same smaller problem appears many times.", "The answer asks for best value, count, or feasibility.", "A brute-force recursion repeats states."], question: "What state fully describes the future, and how do I move from one state to the next?", examples: ["House Robber", "Coin Change", "Edit Distance"] },
+                { label: "Search the threshold", name: "Binary Search on Answer", summary: "Instead of searching array positions, search the answer space itself. This works when a candidate value can be checked and feasibility changes monotonically.", when: ["A yes or no check exists for a guessed answer.", "All larger answers work or all smaller answers work.", "Trying every value linearly is too expensive."], question: "If I guess an answer, can I check it quickly and does the result flip only once?", examples: ["Koko Eating Bananas", "Ship Packages in D Days", "Split Array Largest Sum"] },
+                { label: "Keep the current best", name: "Heap-based Selection", summary: "A heap helps when the answer depends on repeatedly taking the smallest, largest, or next-best candidate without fully sorting everything.", when: ["You need top k, running best, or repeated min or max extraction.", "New candidates keep arriving over time.", "A full sort would do unnecessary work."], question: "Do I need all items ordered, or only the next best item at each step?", examples: ["Top K Frequent", "Merge k Lists", "Task Scheduler"] }
+            ]},
+            { id: "structure", kicker: "Represent cleverly", title: "Structure and Compression Approaches", subtitle: "Sometimes the fastest solution comes from changing how the problem is represented rather than how it is searched.", cards: [
+                { label: "Track components", name: "Union Find", summary: "Union Find maintains disjoint sets efficiently. It shines when components are formed dynamically and connectivity must be queried again and again.", when: ["Edges are added over time.", "You care about whether two nodes are connected.", "Repeated DFS or BFS after each merge is too expensive."], question: "Is this really a problem about groups merging and checking whether items belong to the same group?", examples: ["Number of Provinces", "Redundant Connection", "Accounts Merge"] },
+                { label: "Think in bits", name: "Bit Manipulation", summary: "Bitwise thinking treats integers as compact state containers. It is useful when toggling, counting, masking, or representing subsets more directly than arrays can.", when: ["Pairs cancel, flags toggle, or subsets can be encoded.", "Constant-space tricks are important.", "The problem has a binary pattern hidden inside it."], question: "Would this become simpler if I looked at the binary representation instead of the decimal value?", examples: ["Single Number", "Counting Bits", "Bitmask subsets"] }
+            ]},
+        ];
+
+        const stats = document.getElementById("stats");
+        const nav = document.getElementById("nav");
+        const chooserEl = document.getElementById("chooser");
+        const app = document.getElementById("app");
+        const footer = document.getElementById("footer");
+
+        const totalApproaches = sections.reduce((sum, section) => sum + section.cards.length, 0);
+
+        stats.innerHTML = [
+            { value: totalApproaches, label: "Approaches" },
+            { value: sections.length, label: "Study groups" },
+            { value: chooser.length, label: "Quick clues" }
+        ].map(item => `<div class="stat"><strong>${item.value}</strong><span>${item.label}</span></div>`).join("");
+
+        nav.innerHTML = sections.map(section => `<a class="jump" href="#${section.id}">${section.title}</a>`).join("");
+
+        chooserEl.innerHTML = chooser.map(item => `
+            <article class="chooser-card">
+                <h3>${item.clue}</h3>
+                <p>${item.note}</p>
+                <span class="chooser-answer">${item.answer}</span>
+            </article>
+        `).join("");
+
+        app.innerHTML = sections.map(section => `
+            <section class="section" id="${section.id}">
+                <div class="section-head">
+                    <div>
+                        <p class="section-tag">${section.kicker}</p>
+                        <h2>${section.title}</h2>
+                        <p>${section.subtitle}</p>
+                    </div>
+                </div>
+                <div class="card-grid">
+                    ${section.cards.map(card => `
+                        <article class="card">
+                            <span class="card-label">${card.label}</span>
+                            <h3>${card.name}</h3>
+                            <p class="summary">${card.summary}</p>
+                            <div class="meta">
+                                <div class="meta-box">
+                                    <h4>Use it when</h4>
+                                    <ul>${card.when.map(item => `<li>${item}</li>`).join("")}</ul>
+                                </div>
+                                <div class="meta-box">
+                                    <h4>Ask yourself</h4>
+                                    <p class="meta-line">${card.question}</p>
+                                </div>
+                            </div>
+                            <div class="examples">
+                                ${card.examples.map(example => `<span class="example">${example}</span>`).join("")}
+                            </div>
+                        </article>
+                    `).join("")}
+                </div>
+            </section>
+        `).join("");
+
+        footer.textContent = `${totalApproaches} major DSA approaches in one page. Start with the chooser, then drill into the section that matches your problem.`;
+    </script>
+</body>
+</html>
