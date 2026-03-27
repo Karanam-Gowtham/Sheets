@@ -4,6 +4,7 @@
 
 - [Sheet.html](https://Karanam-Gowtham.github.io/Sheets/DSA/Sheet.html)
 - [patterns.html](https://Karanam-Gowtham.github.io/Sheets/DSA/patterns.html)
+- [leetcode-patterns.html](https://Karanam-Gowtham.github.io/Sheets/DSA/leetcode-patterns.html)
 
 ## RAG
 
