@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sheets Learning Hub</title>
+    <meta name="description" content="A static learning website for DSA, RAG, and Software Engineering notes, roadmaps, and interactive study pages." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/learnsite.css" />
+</head>
+<body class="hub-home" data-site-root=".">
+    <div class="hub-shell">
+        <header class="hub-topbar">
+            <div class="hub-brand">
+                <span class="hub-brand-mark">Sheets Learning Hub</span>
+                <span class="hub-brand-title">One place for algorithms, RAG, and software engineering revision.</span>
+            </div>
+            <div class="hub-topbar-note" id="hub-top-progress">Progress is saved locally in your browser.</div>
+        </header>
+
+        <section class="hub-hero">
+            <div>
+                <p class="hub-kicker">Learning website</p>
+                <h1>Turn notes into a <span>study system</span>.</h1>
+                <p class="hub-lead">
+                    This repo now opens as a course-style website with a real learning hub, searchable lesson tracks,
+                    and lightweight progress tracking. Start with concepts, drill patterns, and come back for review
+                    without losing your place.
+                </p>
+                <div class="hub-hero-actions">
+                    <a class="hub-btn hub-btn-primary" id="hub-continue" href="DSA/paradigms.html">Start learning</a>
+                    <a class="hub-btn hub-btn-ghost" href="#catalog">Browse all lessons</a>
+                </div>
+                <div class="hub-stats" id="hub-hero-stats"></div>
+            </div>
+
+            <aside class="hub-hero-panel">
+                <p class="hub-panel-label">How this site works</p>
+                <div class="hub-panel-points">
+                    <div class="hub-panel-point">
+                        <strong>Follow a clear path</strong>
+                        <p>Start with mental models, move into detailed lessons, then switch into practice and review.</p>
+                    </div>
+                    <div class="hub-panel-point">
+                        <strong>Mix reading with drilling</strong>
+                        <p>The existing content stays intact, but the new hub makes it easier to study it with intention.</p>
+                    </div>
+                    <div class="hub-panel-point">
+                        <strong>Track your own momentum</strong>
+                        <p>Mark lessons complete and the site keeps that status in your browser without needing any backend.</p>
+                    </div>
+                </div>
+                <div class="hub-mini-progress" id="hub-mini-progress"></div>
+            </aside>
+        </section>
+
+        <section class="hub-toolbar" id="catalog">
+            <div>
+                <p class="hub-label">Lesson catalog</p>
+                <h2>Find the right lesson fast</h2>
+                <p>Filter by track, search by topic, and pick the right level for what you want to study right now.</p>
+            </div>
+
+            <div class="hub-toolbar-controls">
+                <label class="hub-search">
+                    <span>Search lessons</span>
+                    <input id="hub-search" type="search" placeholder="Try retrieval, sliding window, requirements..." />
+                </label>
+                <div class="hub-chip-row" id="hub-track-filters"></div>
+                <label class="hub-select">
+                    <span>Level</span>
+                    <select id="hub-level-filter">
+                        <option value="all">All levels</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </label>
+            </div>
+        </section>
+
+        <section class="hub-section">
+            <div class="hub-section-head">
+                <div>
+                    <p class="hub-label">Tracks</p>
+                    <h2>Study by subject</h2>
+                    <p>Each track keeps the original content intact while making the overall library easier to navigate.</p>
+                </div>
+            </div>
+            <div class="hub-track-stack" id="hub-catalog"></div>
+        </section>
+
+        <section class="hub-section">
+            <div class="hub-section-head">
+                <div>
+                    <p class="hub-label">Study flow</p>
+                    <h2>A better rhythm for revision</h2>
+                    <p>Use the repo like a learning website instead of a loose folder of pages.</p>
+                </div>
+            </div>
+            <div class="hub-roadmap">
+                <article class="hub-step">
+                    <span class="hub-step-no">01</span>
+                    <h3>Frame the problem</h3>
+                    <p>Begin with DSA paradigms or software engineering foundations so you know what questions to ask before memorizing details.</p>
+                </article>
+                <article class="hub-step">
+                    <span class="hub-step-no">02</span>
+                    <h3>Go deeper with guided pages</h3>
+                    <p>Open the interactive pattern and unit pages when you want structured explanation, diagrams, examples, and walkthroughs.</p>
+                </article>
+                <article class="hub-step">
+                    <span class="hub-step-no">03</span>
+                    <h3>Switch into practice mode</h3>
+                    <p>Use the cheat sheets and roadmap pages for fast review, spaced repetition, and deliberate problem solving.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="hub-section">
+            <div class="hub-section-head">
+                <div>
+                    <p class="hub-label">Progress board</p>
+                    <h2>See where to continue</h2>
+                    <p>The board updates automatically as you mark lessons complete from either the hub or any lesson page.</p>
+                </div>
+            </div>
+            <div class="hub-progress-board" id="hub-progress-board"></div>
+        </section>
+
+        <footer class="hub-footer">
+            Built on top of the existing repo content. No build step is required, and progress is stored only in your browser.
+        </footer>
+    </div>
+
+    <script defer src="assets/learnsite.js"></script>
+</body>
+</html>

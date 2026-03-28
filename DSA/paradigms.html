@@ -57,8 +57,9 @@
         @media (max-width:900px){.hero-row,.stats-grid,.chooser-grid,.card-grid,.meta{grid-template-columns:1fr}.chooser-head,.section-head{flex-direction:column;align-items:start}}
         @media (max-width:640px){.wrap{width:min(100% - 18px,1160px);padding:18px 0 34px}.hero,.chooser-shell,.section,.chooser-card,.card,.stats,.note,.footer{padding:16px}}
     </style>
+    <link rel="stylesheet" href="../assets/learnsite.css" />
 </head>
-<body>
+<body data-site-root=".." data-lesson-id="dsa-paradigms">
     <div class="wrap">
         <header class="hero">
             <p class="eyebrow">DSA Paradigms</p>
@@ -188,5 +189,6 @@
 
         footer.textContent = `${totalApproaches} major DSA approaches in one page. Start with the chooser, then drill into the section that matches your problem.`;
     </script>
+    <script defer src="../assets/learnsite.js"></script>
 </body>
 </html>
