@@ -1,5 +1,3 @@
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
 const LEARNSITE_TRACKS = [
     {
         id: "dsa",
@@ -112,7 +110,7 @@ const LEARNSITE_LABS = {
         recap: [
             "Paradigms are ways of thinking about a problem before you commit to a concrete pattern or data structure.",
             "Clues such as repeated states, shortest paths, or monotonic feasibility often tell you which approach fits.",
-            "A good first question is not “what code do I write?” but “what structure does this problem hide?”",
+            'A good first question is not "what code do I write?" but "what structure does this problem hide?"',
         ],
         next: "After this, move into DSA Patterns so you can map these mental models to specific implementation techniques.",
         quiz: [
@@ -152,7 +150,7 @@ const LEARNSITE_LABS = {
                 explain: "Sliding window is built for contiguous subarrays or substrings where the range can expand and shrink in one pass.",
             },
             {
-                question: "What pattern usually handles “next greater element” style problems most directly?",
+                question: 'What pattern usually handles "next greater element" style problems most directly?',
                 options: ["Prefix sum", "Monotonic stack", "Backtracking", "Two heaps"],
                 answer: 1,
                 explain: "Monotonic stacks keep candidates in useful order so each item is pushed and popped at most once.",
@@ -234,7 +232,7 @@ const LEARNSITE_LABS = {
         quiz: [
             {
                 question: "If answers are often ungrounded even though the prompt looks fine, what should you inspect first?",
-                options: ["Only the button styling", "Retrieval quality and context selection", "The user’s browser cache", "Whether the page title is short"],
+                options: ["Only the button styling", "Retrieval quality and context selection", "The user's browser cache", "Whether the page title is short"],
                 answer: 1,
                 explain: "Weak retrieval or irrelevant context often causes hallucination before the generation step even begins.",
             },
@@ -257,7 +255,7 @@ const LEARNSITE_LABS = {
         recap: [
             "Software engineering is about systematic development, not just writing code until something works.",
             "Lifecycle models exist because different project conditions need different planning, feedback, and risk handling.",
-            "The “software crisis” pushed the discipline toward better process, quality control, and maintainable systems.",
+            'The "software crisis" pushed the discipline toward better process, quality control, and maintainable systems.',
         ],
         next: "Once the process foundations are clear, move into Unit 2 for requirements, SRS structure, and system modeling.",
         quiz: [
@@ -303,7 +301,7 @@ const LEARNSITE_LABS = {
                 explain: "Context models focus on what sits outside the system and how the system interacts with it.",
             },
             {
-                question: "A requirement like “the system should respond within two seconds” is primarily:",
+                question: 'A requirement like "the system should respond within two seconds" is primarily:',
                 options: ["Functional", "Non-functional", "A use case actor", "A deployment diagram"],
                 answer: 1,
                 explain: "Response time is a system quality constraint, so it is a non-functional requirement.",
