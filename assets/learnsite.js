@@ -1,3 +1,5 @@
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
 const LEARNSITE_TRACKS = [
     {
         id: "dsa",
@@ -94,6 +96,15 @@ const LEARNSITE_LESSONS = [
         tags: ["requirements", "srs", "uml", "modeling"],
     },
 ];
+
+const LEARNSITE_TRACK_PATHS = {
+    dsa: [
+        { lessonId: "dsa-paradigms", label: "Think", title: "Paradigms" },
+        { lessonId: "dsa-patterns", label: "Learn", title: "Patterns" },
+        { lessonId: "dsa-cheat-sheet", label: "Review", title: "Cheat Sheet" },
+        { lessonId: "dsa-roadmap", label: "Drill", title: "Roadmap" },
+    ],
+};
 
 const LEARNSITE_LABS = {
     "dsa-paradigms": {
@@ -353,6 +364,10 @@ function learnsiteTrackById(trackId) {
     return LEARNSITE_TRACKS.find((track) => track.id === trackId);
 }
 
+function learnsiteTrackPath(trackId) {
+    return LEARNSITE_TRACK_PATHS[trackId] || null;
+}
+
 function learnsiteLessonById(lessonId) {
     return LEARNSITE_LESSONS.find((lesson) => lesson.id === lessonId);
 }
@@ -424,6 +439,36 @@ function learnsiteStatMarkup(value, label) {
     `;
 }
 
+function learnsitePathMarkup(trackId, currentLessonId, siteRoot, progress, eyebrow) {
+    const path = learnsiteTrackPath(trackId);
+    if (!path || !path.length) {
+        return "";
+    }
+
+    return `
+        <div class="hub-path">
+            ${eyebrow ? `<span class="hub-path-eyebrow">${eyebrow}</span>` : ""}
+            <div class="hub-path-steps">
+                ${path.map((step, index) => {
+                    const lesson = learnsiteLessonById(step.lessonId);
+                    const isCurrent = currentLessonId === step.lessonId;
+                    const isDone = lesson ? Boolean(progress[lesson.id]) : false;
+                    const href = lesson ? learnsiteLessonHref(siteRoot, lesson) : "#";
+                    return `
+                        <a class="hub-path-step ${isCurrent ? "is-current" : ""} ${isDone ? "is-done" : ""}" href="${href}">
+                            <span class="hub-path-order">${String(index + 1).padStart(2, "0")}</span>
+                            <div class="hub-path-copy">
+                                <strong>${step.label}</strong>
+                                <span>${step.title}</span>
+                            </div>
+                        </a>
+                    `;
+                }).join("")}
+            </div>
+        </div>
+    `;
+}
+
 function learnsiteModeCardMarkup(mode, siteRoot) {
     const lesson = learnsiteLessonById(mode.lessonId);
     const href = lesson ? learnsiteLessonHref(siteRoot, lesson) : "#tracks";
@@ -487,6 +532,7 @@ function learnsiteTrackMarkup(track, lessons, siteRoot, progress) {
                     <div class="hub-progress-bar"><span style="width:${summary.percent}%"></span></div>
                 </div>
             </div>
+            ${learnsitePathMarkup(track.id, null, siteRoot, progress, track.id === "dsa" ? "Recommended DSA flow" : "")}
             <div class="hub-card-grid">${lessons.map((lesson) => learnsiteLessonCardMarkup(lesson, siteRoot, progress)).join("")}</div>
         </section>
     `;
@@ -781,6 +827,7 @@ function learnsiteSetupDock() {
 function learnsiteLessonLabMarkup(lesson, lab, siteRoot, progress) {
     const next = learnsiteNextLesson(lesson.id);
     const done = Boolean(progress[lesson.id]);
+    const pathMarkup = learnsitePathMarkup(lesson.track, lesson.id, siteRoot, progress, lesson.track === "dsa" ? "Where this page fits" : "");
     return `
         <div class="lesson-lab-shell">
             <div class="lesson-lab-head">
@@ -799,6 +846,14 @@ function learnsiteLessonLabMarkup(lesson, lab, siteRoot, progress) {
                         ${lab.recap.map((item) => `<li>${item}</li>`).join("")}
                     </ul>
                 </article>
+
+                ${pathMarkup ? `
+                    <article class="lesson-lab-card">
+                        <h3>Page role</h3>
+                        <p>This lesson is one stop inside the broader study flow for this track.</p>
+                        ${pathMarkup}
+                    </article>
+                ` : ""}
 
                 <article class="lesson-lab-card">
                     <h3>Best next step</h3>
