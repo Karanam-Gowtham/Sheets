@@ -24,7 +24,6 @@
 }
 
 .hub-home a {
-    color: inherit;
     text-decoration: none;
 }
 
@@ -202,6 +201,11 @@
     box-shadow: 0 14px 32px rgba(16, 36, 63, 0.18);
 }
 
+.hub-home a.hub-btn-primary,
+.hub-home a.hub-btn-primary:visited {
+    color: #fff8f1;
+}
+
 .hub-btn-ghost,
 .hub-chip,
 .hub-search input,
@@ -213,6 +217,13 @@
 
 .hub-btn-ghost {
     cursor: pointer;
+}
+
+.hub-home a.hub-btn-ghost,
+.hub-home a.hub-btn-ghost:visited,
+.hub-progress-card a,
+.hub-progress-card a:visited {
+    color: #17385d;
 }
 
 .hub-stats,
